@@ -47,34 +47,45 @@ export function MagicProductUploader() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullContent = '';
+      let buffer = '';
 
       while (reader) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
 
         for (const line of lines) {
-          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-            try {
-              const json = JSON.parse(line.slice(6));
-              const content = json.choices?.[0]?.delta?.content;
-              if (content) {
-                fullContent += content;
-                setStreamedContent(fullContent);
-              }
-            } catch {}
+          if (line.startsWith(':')) continue; // Skip SSE comments
+          if (!line.startsWith('data: ')) continue;
+          
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') continue;
+
+          try {
+            const json = JSON.parse(data);
+            const content = json.choices?.[0]?.delta?.content;
+            if (content) {
+              fullContent += content;
+              setStreamedContent(fullContent);
+            }
+          } catch {
+            // Incomplete JSON, skip
           }
         }
       }
 
-      // Parse the final JSON
-      const jsonMatch = fullContent.match(/\{[\s\S]*\}/);
+      // Clean markdown code blocks and parse JSON
+      let cleanContent = fullContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+      const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const data = JSON.parse(jsonMatch[0]);
         setAIData(data);
-        toast.success('Product analyzed successfully!');
+        toast.success('วิเคราะห์สินค้าสำเร็จ!');
+      } else {
+        throw new Error('ไม่สามารถแปลงผลลัพธ์ AI ได้');
       }
     } catch (error) {
       setAnalysisError(error instanceof Error ? error.message : 'Analysis failed');
