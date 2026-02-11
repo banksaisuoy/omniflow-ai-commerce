@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +27,14 @@ import { CategoryChart } from '@/components/admin/charts/CategoryChart';
 import { AIForecastPanel } from '@/components/admin/AIForecastPanel';
 import { RecentOrdersTable } from '@/components/admin/RecentOrdersTable';
 import { LowStockAlert } from '@/components/admin/LowStockAlert';
+import AdminProducts from './AdminProducts';
+import AdminOrders from './AdminOrders';
+import AdminCustomers from './AdminCustomers';
+import AdminReviews from './AdminReviews';
+import AdminReports from './AdminReports';
+import AdminAIInsights from './AdminAIInsights';
+import AdminSettings from './AdminSettings';
+import AdminUpload from './AdminUpload';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -41,6 +49,8 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
     totalOrders: 0,
@@ -218,6 +228,22 @@ export default function AdminDashboard() {
       bgColor: 'bg-info/10',
     },
   ];
+
+  const renderSubPage = () => {
+    if (currentPath === '/admin/products') return <AdminProducts />;
+    if (currentPath === '/admin/upload') return <AdminUpload />;
+    if (currentPath === '/admin/orders') return <AdminOrders />;
+    if (currentPath === '/admin/customers') return <AdminCustomers />;
+    if (currentPath === '/admin/reviews') return <AdminReviews />;
+    if (currentPath === '/admin/reports') return <AdminReports />;
+    if (currentPath === '/admin/ai-insights') return <AdminAIInsights />;
+    if (currentPath === '/admin/settings') return <AdminSettings />;
+    return null;
+  };
+
+  if (currentPath !== '/admin') {
+    return <AdminLayout>{renderSubPage()}</AdminLayout>;
+  }
 
   return (
     <AdminLayout>
