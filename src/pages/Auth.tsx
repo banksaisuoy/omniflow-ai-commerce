@@ -20,15 +20,14 @@ export default function Auth() {
   const { signIn, signUp, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [signupData, setSignupData] = useState({ email: '', password: '', fullName: '' });
 
   // Redirect if already logged in
   if (user) {
     navigate('/');
     return null;
   }
-
-  const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [signupData, setSignupData] = useState({ email: '', password: '', fullName: '' });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
