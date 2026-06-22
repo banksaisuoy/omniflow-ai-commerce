@@ -26,63 +26,67 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-18 md:h-20 items-center justify-between py-3">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">OF</span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="h-11 w-11 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-soft group-hover:scale-105 transition-transform">
+              <span className="font-display text-primary-foreground text-xl">ข</span>
             </div>
-            <span className="font-bold text-xl hidden sm:block">OmniFlow</span>
+            <div className="leading-tight">
+              <div className="font-display text-2xl text-foreground">Khanom House</div>
+              <div className="text-[10px] text-muted-foreground tracking-widest uppercase">ขนมไทยโฮมเมด</div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+          <div className="hidden md:flex items-center gap-8">
+            <Link to="/" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               หน้าแรก
             </Link>
-            <Link to="/products" className="text-muted-foreground hover:text-foreground transition-colors">
-              สินค้า
+            <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              เมนูขนม
+            </Link>
+            <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              เซ็ตของขวัญ
             </Link>
             {isAdmin && (
-              <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/admin" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
                 จัดการร้าน
               </Link>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
-            {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative" asChild>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="relative rounded-full" asChild>
               <Link to="/cart">
                 <ShoppingCart className="h-5 w-5" />
                 {getTotalItems() > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  <Badge className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary">
                     {getTotalItems()}
                   </Badge>
                 )}
               </Link>
             </Button>
 
-            {/* User Menu */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="rounded-full">
                     <User className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="text-muted-foreground">
+                <DropdownMenuContent align="end" className="rounded-2xl">
+                  <DropdownMenuItem className="text-muted-foreground text-xs">
                     {user.email}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {isAdmin && (
                     <DropdownMenuItem onClick={() => navigate('/admin')}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Admin Dashboard
+                      จัดการร้าน
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={handleSignOut}>
@@ -92,16 +96,15 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="default" size="sm" asChild>
+              <Button size="sm" asChild className="rounded-full px-5 ml-2 shadow-soft">
                 <Link to="/auth">เข้าสู่ระบบ</Link>
               </Button>
             )}
 
-            {/* Mobile Menu Toggle */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden rounded-full"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -109,35 +112,26 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div className={cn(
-          "md:hidden overflow-hidden transition-all duration-300",
-          mobileMenuOpen ? "max-h-48 pb-4" : "max-h-0"
+          'md:hidden overflow-hidden transition-all duration-300',
+          mobileMenuOpen ? 'max-h-60 pb-4' : 'max-h-0'
         )}>
-          <div className="flex flex-col gap-2 pt-2">
-            <Link 
-              to="/" 
-              className="px-4 py-2 rounded-md hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              หน้าแรก
-            </Link>
-            <Link 
-              to="/products" 
-              className="px-4 py-2 rounded-md hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              สินค้า
-            </Link>
-            {isAdmin && (
-              <Link 
-                to="/admin" 
-                className="px-4 py-2 rounded-md hover:bg-muted transition-colors"
+          <div className="flex flex-col gap-1 pt-2">
+            {[
+              { to: '/', label: 'หน้าแรก' },
+              { to: '/products', label: 'เมนูขนม' },
+              { to: '/products', label: 'เซ็ตของขวัญ' },
+              ...(isAdmin ? [{ to: '/admin', label: 'จัดการร้าน' }] : []),
+            ].map((it) => (
+              <Link
+                key={it.label}
+                to={it.to}
+                className="px-4 py-3 rounded-xl hover:bg-muted transition-colors text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                จัดการร้าน
+                {it.label}
               </Link>
-            )}
+            ))}
           </div>
         </div>
       </div>
