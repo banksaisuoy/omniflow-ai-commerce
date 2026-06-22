@@ -1,76 +1,63 @@
-## แผนทำระบบให้สมบูรณ์ (ต่อจากของเดิม)
+## รีดีไซน์: ร้านขนมไทย "OmniFlow → Khanom House" โทนสว่าง
 
-จะทำตามแผน 7 เฟสที่วางไว้ก่อนหน้า + เพิ่ม Google Sign-in ที่ทำไปแล้ว ให้ครบทุกอย่าง
+ปรับ Design System ทั้งหมดเป็น **light mode** สำหรับร้านขายขนมไทย โดยคงทุกฟีเจอร์เดิม (Cart, Auth, Admin, AI ฯลฯ) ไว้ครบ — เปลี่ยนเฉพาะ visual layer
 
-### Phase 1: ระบบ Admin ปลอดภัย (RBAC)
-- Migration: สร้าง `app_role` enum, `user_roles` table, `has_role()` security definer function
-- อัปเดต RLS policies ทุกตารางที่เช็ค admin ให้ใช้ `has_role()` แทน profiles.role
-- Edge Function `create-admin`: รับ invite code (เก็บใน secret `ADMIN_INVITE_CODE`) → grant admin role
-- หน้า `/admin/setup` สำหรับสมัครแอดมินคนแรกด้วย invite code
-- อัปเดต `useAuth.tsx` ให้ดึง role จาก `user_roles`
+### Design Brief
 
-### Phase 2: เพิ่มสินค้าตัวอย่าง
-- Insert 10 รายการ (เสื้อผ้า, อิเล็กทรอนิกส์, เครื่องใช้) ผ่าน insert tool พร้อม inventory + รูป unsplash
+**สี (Cherry Blossom + Thai pastel)**
+- `--background`: `#fef9f5` (ครีมอ่อนนุ่ม)
+- `--foreground`: `#3d1f2a` (น้ำตาลม่วงเข้ม)
+- `--primary`: `#c45c7c` (ชมพูกุหลาบ — สีกุหลาบมอญ/ดอกอัญชัน-กลีบกุหลาบ)
+- `--primary-foreground`: `#fef0f5`
+- `--secondary`: `#f8c8d8` (ชมพูพาสเทล)
+- `--accent`: `#e88aab` (ชมพูสด)
+- `--muted`: `#fef0f5`
+- `--card`: `#ffffff` กับเงานุ่มสีชมพู
+- เพิ่ม supporting tones: เขียวใบเตย `#9bbf8a`, ทองอ่อน `#e8b84a` (สำหรับ badge/highlight)
+- Gradients: `linear-gradient(135deg, #fef0f5, #f8c8d8)` สำหรับ hero
+- Shadows: ใช้ `hsl(340 60% 70% / 0.15)` (เงาชมพูนุ่ม) แทน shadow ดำ
 
-### Phase 3: AI Chat Assistant (Floating Widget)
-- Migration: `chat_messages` (user_id, role, content, conversation_id)
-- Edge Function `ai-chat` ใช้ Lovable AI Gateway (`google/gemini-3-flash-preview`) + context สินค้าในร้าน + streaming
-- `AIChatWidget.tsx`: floating button มุมขวาล่าง, ใช้ AI SDK `useChat`, render markdown
+**ฟอนต์**
+- Heading: **DM Serif Display** (หรู โค้งมน เหมือนป้ายร้านขนมโบราณ)
+- Body: **Fira Sans** (อ่านง่าย โมเดิร์น)
+- ติดตั้งผ่าน `@fontsource/dm-serif-display` + `@fontsource/fira-sans`, import ใน `main.tsx`, ตั้งใน `tailwind.config.ts`
 
-### Phase 4: Wishlist
-- Migration: `wishlists` (user_id, product_id, unique)
-- `WishlistButton.tsx` (ปุ่มหัวใจ) บน ProductCard + ProductDetail
-- หน้า `/wishlist` + ลิงก์ใน Navbar
+**เลย์เอาต์ (Bento Grid)**
+- หน้า Home: hero bento ที่ผสม tile ขนาดต่างกัน — tile ใหญ่โชว์รูปขนมเด่น, tile เล็กโชว์ "เมนูแนะนำ/โปรโมชั่น/หมวดหมู่/รีวิว"
+- Products: card grid ปุ่มมุมมน 24px, shadow ชมพูนุ่ม
+- ProductCard: bg ขาว, border `secondary/40`, hover ยก 4px + glow ชมพู
 
-### Phase 5: คูปอง/ส่วนลด
-- Migration: `coupons` (code, discount_type, discount_value, min_purchase, max_uses, used_count, expires_at, is_active)
-- ช่องกรอกคูปองในหน้า Checkout + คำนวณส่วนลด
-- หน้า `AdminCoupons.tsx` CRUD คูปอง + เพิ่มเมนูใน AdminLayout
+**Animation/Motion**
+- Fade-up นุ่มๆ (duration 0.6s, ease-out)
+- Hover scale 1.02 + shadow ขยาย
+- Floating animation เบาๆ บน hero illustration
 
-### Phase 6: หน้าโปรไฟล์ลูกค้า
-- หน้า `/profile`: ข้อมูลส่วนตัว (แก้ไขได้), ประวัติคำสั่งซื้อ, จำนวน wishlist
-- ลิงก์ใน Navbar dropdown
+### ขอบเขตงาน
 
-### Phase 7: UI/UX
-- `Footer.tsx` (ลิงก์, social, copyright)
-- Navbar: avatar + dropdown menu (Profile/Wishlist/Orders/Logout)
-- Home: Featured Products + New Arrivals sections
-- ProductDetail: breadcrumb + `ReviewSection.tsx` (เขียน/อ่านรีวิว)
-- Loading skeletons สวยขึ้น
-
-### Technical Details
-
-**ไฟล์ใหม่**
+**ไฟล์ที่จะแก้**
 ```text
-supabase/migrations/<timestamp>_rbac_features.sql
-supabase/functions/ai-chat/index.ts
-supabase/functions/create-admin/index.ts
-src/components/chat/AIChatWidget.tsx
-src/components/layout/Footer.tsx
-src/components/products/WishlistButton.tsx
-src/components/products/ReviewSection.tsx
-src/pages/Profile.tsx
-src/pages/Wishlist.tsx
-src/pages/AdminSetup.tsx
-src/pages/admin/AdminCoupons.tsx
+src/index.css                       (เปลี่ยน CSS tokens ทั้งหมดเป็น light mode pastel)
+tailwind.config.ts                  (เพิ่ม font family DM Serif + Fira Sans)
+src/main.tsx                        (import @fontsource)
+src/pages/Home.tsx                  (รีดีไซน์เป็น Bento Grid + เปลี่ยนข้อความเป็นร้านขนมไทย)
+src/components/layout/Navbar.tsx    (โลโก้ใหม่ "Khanom House" + สีพาสเทล)
+src/components/products/ProductCard.tsx (ปรับ shadow/border ให้นุ่ม)
+src/components/admin/AdminLayout.tsx (sidebar light theme)
+package.json                        (เพิ่ม fontsource deps ผ่าน bun add)
 ```
 
-**ไฟล์แก้ไข**
-```text
-src/hooks/useAuth.tsx (ดึง role จาก user_roles)
-src/components/layout/Navbar.tsx (avatar dropdown + wishlist link)
-src/components/layout/Layout.tsx (Footer + ChatWidget)
-src/components/admin/AdminLayout.tsx (เมนู Coupons)
-src/pages/admin/AdminDashboard.tsx (route coupons)
-src/pages/Home.tsx (Featured/New Arrivals)
-src/pages/ProductDetail.tsx (breadcrumb + reviews + wishlist)
-src/pages/Checkout.tsx (coupon input)
-src/pages/Cart.tsx (wishlist button)
-src/components/products/ProductCard.tsx (wishlist button)
-src/App.tsx (routes ใหม่)
-supabase/config.toml (functions ใหม่)
-```
+**Dependencies ใหม่**
+- `@fontsource/dm-serif-display`
+- `@fontsource/fira-sans`
 
-**Secrets ที่จะขอ**: `ADMIN_INVITE_CODE` (สำหรับสมัครแอดมินครั้งแรก) — จะตั้งให้เป็น `OMNIFLOW2026` ตามคำขอ "เพิ่มรหัสแอดมินเพื่อทดสอบ"
+**สิ่งที่ยังไม่แตะ (คงไว้ตามเดิม)**
+- Business logic / Routes / Stores / Supabase / Edge functions
+- ฟีเจอร์ Admin, Cart, Checkout, Auth, AI ทั้งหมด
+- ฟีเจอร์ที่วางแผนไว้ (RBAC, Wishlist, Coupons, Chat) — รอ database กลับมาทำงานก่อนค่อยทำต่อ
 
-หลังเสร็จจะบอกวิธีทดสอบ: เข้า `/admin/setup` → กรอกรหัส `OMNIFLOW2026` → ได้สิทธิ์แอดมิน
+### Copy เปลี่ยนแนว
+- ชื่อร้าน: "OmniFlow" → "Khanom House" (หรือชื่อที่คุณอยากใช้)
+- Hero copy: "ขนมไทยโฮมเมด สูตรต้นตำรับ ส่งตรงถึงบ้านคุณ"
+- หมวดหมู่: ขนมหวาน, ขนมเปียก, ขนมแห้ง, เครื่องดื่ม
+
+> หมายเหตุ: ขณะนี้ฐานข้อมูล Lovable Cloud ยัง connection refused อยู่ การรีดีไซน์ครั้งนี้เป็นงาน frontend อย่างเดียว ทำได้เลยไม่ต้องรอ database
