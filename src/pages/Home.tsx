@@ -1,97 +1,248 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Sparkles, Truck, Shield } from 'lucide-react';
+import { ShoppingBag, Sparkles, Truck, Heart, Star, ArrowRight, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Layout } from '@/components/layout/Layout';
+import heroImg from '@/assets/hero-thai-desserts.jpg';
+import khanomChan from '@/assets/feature-khanom-chan.jpg';
+import mangoSticky from '@/assets/feature-mango-sticky.jpg';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-50px' },
+  transition: { duration: 0.6, ease: 'easeOut' as const },
+};
 
 export default function Home() {
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
-        <div className="container mx-auto px-4 py-20 md:py-32 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">AI-Powered Shopping Experience</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              ค้นพบสินค้าที่ใช่<br />สำหรับคุณ
-            </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              ร้านค้าออนไลน์อัจฉริยะที่ใช้ AI ช่วยคุณค้นหาสินค้าที่ต้องการ 
-              พร้อมระบบจัดการสินค้าและออเดอร์แบบ Real-time
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link to="/products">
-                  <ShoppingBag className="mr-2 h-5 w-5" />
-                  เริ่มช้อปปิ้ง
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/admin">
-                  จัดการร้านค้า
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
+      {/* Hero — Bento Grid */}
+      <section className="relative overflow-hidden bg-gradient-hero">
+        <div className="container mx-auto px-4 py-12 md:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-5 auto-rows-[minmax(140px,auto)]">
+            {/* Big headline tile */}
+            <motion.div
+              {...fadeUp}
+              className="md:col-span-4 md:row-span-2 bento-tile p-8 md:p-12 flex flex-col justify-between bg-gradient-warm relative overflow-hidden"
+            >
+              <div className="relative z-10">
+                <Badge className="bg-white/70 text-primary border-0 mb-6 backdrop-blur">
+                  <Sparkles className="h-3 w-3 mr-1.5" />
+                  สูตรต้นตำรับ โฮมเมดทุกชิ้น
+                </Badge>
+                <h1 className="font-display text-5xl md:text-7xl leading-[1.05] mb-6 text-foreground">
+                  ขนมไทย<br />
+                  <span className="gradient-text italic">หวานละมุน</span><br />
+                  ส่งตรงถึงบ้าน
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-md mb-8">
+                  คัดสรรขนมไทยโบราณกว่า 50 ชนิด ทำสดใหม่ทุกวัน
+                  จากร้านขนมเล็กๆ ที่อยากให้คุณได้ลิ้มรสความหวานในแบบไทยแท้
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button size="lg" asChild className="rounded-full px-7 shadow-soft">
+                    <Link to="/products">
+                      <ShoppingBag className="mr-2 h-5 w-5" />
+                      เลือกซื้อขนม
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="rounded-full px-7 bg-white/60 backdrop-blur border-primary/20">
+                    <Link to="/products">
+                      ดูเมนูทั้งหมด
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              {/* Decorative dots */}
+              <div className="absolute -bottom-8 -right-8 w-48 h-48 rounded-full bg-primary/10 blur-3xl" />
+              <div className="absolute top-4 right-8 w-32 h-32 rounded-full bg-mango/20 blur-2xl" />
+            </motion.div>
+
+            {/* Hero image tile */}
+            <motion.div
+              {...fadeUp}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="md:col-span-2 md:row-span-2 bento-tile overflow-hidden relative group"
+            >
+              <img
+                src={heroImg}
+                alt="ขนมไทยหลากชนิด"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                width={1536}
+                height={1024}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <Badge className="bg-white/90 text-foreground border-0">
+                  <Heart className="h-3 w-3 mr-1 text-primary fill-primary" />
+                  ขายดีอันดับ 1
+                </Badge>
+              </div>
+            </motion.div>
+
+            {/* Stat tile */}
+            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.15 }} className="md:col-span-2 bento-tile p-6 flex flex-col justify-center bg-white">
+              <div className="font-display text-5xl gradient-text mb-1">10K+</div>
+              <p className="text-sm text-muted-foreground">ลูกค้าประจำที่หลงรักรสชาติเรา</p>
+              <div className="flex gap-0.5 mt-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-mango text-mango" />
+                ))}
+                <span className="text-sm text-muted-foreground ml-2">4.9 จาก 2,341 รีวิว</span>
+              </div>
+            </motion.div>
+
+            {/* Free delivery tile */}
+            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.2 }} className="md:col-span-2 bento-tile p-6 bg-secondary/40 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center shadow-soft">
+                <Truck className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">ส่งฟรี</p>
+                <p className="text-xs text-muted-foreground">เมื่อซื้อครบ 500 บาท ทั่วกรุงเทพฯ</p>
+              </div>
+            </motion.div>
+
+            {/* Natural tile */}
+            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.25 }} className="md:col-span-2 bento-tile p-6 bg-pandan/15 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center shadow-soft">
+                <Leaf className="h-6 w-6 text-pandan" />
+              </div>
+              <div>
+                <p className="font-semibold">ไร้สีสังเคราะห์</p>
+                <p className="text-xs text-muted-foreground">ใช้สีธรรมชาติจากใบเตย ดอกอัญชัน</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 border-t border-border/40">
+      {/* Featured Dessert Bento */}
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-center p-6"
-            >
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="h-6 w-6 text-primary" />
+          <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-12">
+            <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 mb-4">
+              เมนูแนะนำ
+            </Badge>
+            <h2 className="font-display text-4xl md:text-5xl mb-4">
+              ขนมไทยสุดคลาสสิก <span className="italic gradient-text">ที่ต้องลอง</span>
+            </h2>
+            <p className="text-muted-foreground">
+              คัดเลือกจากเมนูที่ขายดีและได้รับความนิยมมากที่สุด ทำสดวันต่อวัน
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-5 auto-rows-[minmax(220px,auto)]">
+            {/* Khanom Chan - big tile */}
+            <motion.div {...fadeUp} className="md:col-span-4 md:row-span-2 bento-tile overflow-hidden group relative">
+              <img
+                src={khanomChan}
+                alt="ขนมชั้น"
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                width={768}
+                height={768}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <Badge className="bg-primary/90 border-0 mb-3">เมนูคลาสสิก</Badge>
+                <h3 className="font-display text-3xl md:text-4xl mb-2">ขนมชั้นใบเตย</h3>
+                <p className="text-white/90 max-w-md mb-4">9 ชั้นแห่งความหอมใบเตยแท้ๆ เนื้อนุ่ม เหนียว หวานกำลังดี</p>
+                <Button asChild size="sm" variant="secondary" className="rounded-full">
+                  <Link to="/products">ดูรายละเอียด <ArrowRight className="ml-1.5 h-3.5 w-3.5" /></Link>
+                </Button>
               </div>
-              <h3 className="font-semibold text-lg mb-2">AI Product Analysis</h3>
-              <p className="text-muted-foreground text-sm">
-                อัปโหลดรูปสินค้า AI จะวิเคราะห์และสร้างรายละเอียดให้อัตโนมัติ
-              </p>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-center p-6"
-            >
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Truck className="h-6 w-6 text-primary" />
+
+            {/* Mango sticky */}
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.1 }} className="md:col-span-2 bento-tile overflow-hidden group relative">
+              <img
+                src={mangoSticky}
+                alt="ข้าวเหนียวมะม่วง"
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                width={768}
+                height={768}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <h3 className="font-display text-xl">ข้าวเหนียวมะม่วง</h3>
+                <p className="text-xs text-white/80">฿120</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Real-time Tracking</h3>
-              <p className="text-muted-foreground text-sm">
-                ติดตามออเดอร์และสต็อกสินค้าแบบ Real-time
-              </p>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-center p-6"
-            >
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-6 w-6 text-primary" />
+
+            {/* Category tile */}
+            <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.15 }} className="md:col-span-2 bento-tile p-6 bg-gradient-warm flex flex-col justify-between">
+              <div>
+                <Badge className="bg-white/70 text-primary border-0 mb-3">โปรโมชั่น</Badge>
+                <h3 className="font-display text-2xl leading-tight">ลด 20%<br />ทุกวันพุธ</h3>
+                <p className="text-sm text-muted-foreground mt-2">ใช้โค้ด <span className="font-mono font-semibold text-primary">OMNI20</span></p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Secure Checkout</h3>
-              <p className="text-muted-foreground text-sm">
-                ระบบชำระเงินที่ปลอดภัยและรวดเร็ว
-              </p>
+              <Button asChild variant="ghost" className="self-start rounded-full text-primary hover:bg-white/50 -ml-2">
+                <Link to="/products">ดูเลย <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link>
+              </Button>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="py-16 md:py-20 bg-gradient-soft">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="font-display text-3xl md:text-4xl mb-3">เลือกตามหมวดหมู่</h2>
+            <p className="text-muted-foreground">ขนมไทยทุกประเภทที่คุณรัก</p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: 'ขนมหวาน', emoji: '🍡', color: 'bg-secondary/40' },
+              { label: 'ขนมเปียก', emoji: '🥥', color: 'bg-pandan/15' },
+              { label: 'ขนมแห้ง', emoji: '🍪', color: 'bg-mango/20' },
+              { label: 'เครื่องดื่ม', emoji: '🧊', color: 'bg-butterfly/20' },
+            ].map((cat, i) => (
+              <motion.div
+                key={cat.label}
+                {...fadeUp}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+              >
+                <Link
+                  to="/products"
+                  className={`bento-tile p-6 md:p-8 flex flex-col items-center justify-center text-center h-full ${cat.color}`}
+                >
+                  <div className="text-5xl mb-3">{cat.emoji}</div>
+                  <h3 className="font-display text-xl">{cat.label}</h3>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <motion.div
+            {...fadeUp}
+            className="bento-tile bg-gradient-primary p-10 md:p-16 text-center relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,white,transparent_60%)] opacity-60" />
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <Sparkles className="h-8 w-8 mx-auto mb-4 text-primary" />
+              <h2 className="font-display text-3xl md:text-5xl mb-4 text-foreground">
+                สั่งขนมล่วงหน้า <span className="italic">เพื่องานพิเศษ</span>
+              </h2>
+              <p className="text-foreground/80 mb-8">
+                จัดเบรกประชุม งานบุญ งานแต่ง — เรามีเซ็ตขนมไทยพร้อมเสิร์ฟกว่า 30 รูปแบบ
+              </p>
+              <Button size="lg" asChild className="rounded-full px-8 shadow-soft bg-white text-primary hover:bg-white/90">
+                <Link to="/products">ติดต่อสั่งเซ็ตพิเศษ</Link>
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
     </Layout>

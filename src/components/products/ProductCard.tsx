@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,40 +87,37 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
 
   return (
     <Link to={`/product/${product.slug}`}>
-      <Card className="overflow-hidden group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+      <Card className="overflow-hidden group rounded-3xl border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 shadow-soft hover:shadow-elegant">
         <div className="relative aspect-square bg-muted overflow-hidden">
           {product.thumbnail_url ? (
             <img
               src={product.thumbnail_url}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-gradient-warm">
               No Image
             </div>
           )}
           {discount && (
-            <Badge className="absolute top-2 left-2 bg-destructive">
+            <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground border-0 rounded-full px-3">
               -{discount}%
             </Badge>
           )}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-            <Button size="sm" variant="secondary" onClick={handleAddToCart}>
+          <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart}>
               <ShoppingCart className="h-4 w-4" />
-            </Button>
-            <Button size="sm" variant="secondary">
-              <Eye className="h-4 w-4" />
             </Button>
           </div>
         </div>
-        <CardContent className="p-4">
+        <CardContent className="p-5">
           {product.category && (
-            <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
+            <p className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wider">{product.category}</p>
           )}
-          <h3 className="font-semibold mb-2 line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-primary">฿{product.price.toLocaleString()}</span>
+          <h3 className="font-display text-lg mb-2 line-clamp-2 min-h-[3rem] leading-snug">{product.name}</h3>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-xl text-primary">฿{product.price.toLocaleString()}</span>
             {product.compare_at_price && (
               <span className="text-sm text-muted-foreground line-through">
                 ฿{product.compare_at_price.toLocaleString()}
