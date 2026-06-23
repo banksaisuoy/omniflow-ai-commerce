@@ -59,8 +59,8 @@ export default function Products() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">สินค้าทั้งหมด</h1>
-          <p className="text-muted-foreground">ค้นหาสินค้าที่คุณต้องการ</p>
+          <h1 className="font-serif text-4xl md:text-5xl text-foreground mb-2">เมนูขนมไทยทั้งหมด</h1>
+          <p className="text-muted-foreground">เลือกขนมโปรดของคุณจากครัวของเรา</p>
         </div>
 
         {/* Search and Filters */}
