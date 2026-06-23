@@ -101,23 +101,23 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-muted flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20">
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="font-bold text-2xl">OmniFlow</span>
+          <span className="font-serif text-3xl text-foreground">Khanom House</span>
         </Link>
 
-        <Card>
+        <Card className="rounded-3xl border-secondary/40 shadow-xl shadow-primary/10">
           <CardHeader className="text-center">
-            <CardTitle>ยินดีต้อนรับ</CardTitle>
-            <CardDescription>เข้าสู่ระบบหรือสมัครสมาชิกเพื่อเริ่มช้อปปิ้ง</CardDescription>
+            <CardTitle className="font-serif text-2xl">ยินดีต้อนรับ</CardTitle>
+            <CardDescription>เข้าสู่ระบบหรือสมัครสมาชิกเพื่อสั่งขนมไทยแสนอร่อย</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
