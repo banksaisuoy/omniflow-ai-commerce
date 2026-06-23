@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 export function MagicProductUploader() {
   const [isSaving, setIsSaving] = useState(false);
   const {
+    selectedImage,
     imagePreview,
     isAnalyzing,
     aiData,
