@@ -1,0 +1,11 @@
+# Khanom House
+
+> ร้านขนมไทยออนไลน์ — Authentic Thai desserts crafted fresh and delivered to your door.
+
+Khanom House is an e-commerce storefront for traditional Thai sweets such as khanom chan, mango sticky rice, and other handcrafted desserts. Browse the menu, add items to the cart, and check out securely.
+
+## Pages
+
+- [Home](/): Featured Thai desserts and seasonal highlights.
+- [Menu](/products): Full catalog of Thai dessert offerings.
+- [Cart](/cart): Review selected items before checkout.
