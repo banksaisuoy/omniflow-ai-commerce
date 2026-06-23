@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 export default function AdminSettings() {
   const { user } = useAuth();
-  const [storeName, setStoreName] = useState('OmniFlow Store');
+  const [storeName, setStoreName] = useState('Khanom House');
   const [storeEmail, setStoreEmail] = useState(user?.email || '');
   const [notifications, setNotifications] = useState(true);
   const [autoApproveReviews, setAutoApproveReviews] = useState(false);
