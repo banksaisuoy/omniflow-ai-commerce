@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 export function MagicProductUploader() {
   const [isSaving, setIsSaving] = useState(false);
   const {
+    selectedImage,
     imagePreview,
     isAnalyzing,
     aiData,
@@ -96,35 +97,71 @@ export function MagicProductUploader() {
   };
 
   const saveProduct = async () => {
-    if (!editedData || !imagePreview) return;
+    if (!editedData || !selectedImage) {
+      toast.error('กรุณาเลือกรูปสินค้าและวิเคราะห์ก่อน');
+      return;
+    }
 
     setIsSaving(true);
     try {
-      const slug = editedData.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'product';
-      
-      const { error } = await supabase.from('products').insert({
+      // 1) Ensure user is signed in (Storage RLS requires authenticated role)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('กรุณาเข้าสู่ระบบก่อนบันทึกสินค้า');
+        setIsSaving(false);
+        return;
+      }
+
+      // 2) Upload original file to Storage bucket "product-images"
+      const ext = (selectedImage.name.split('.').pop() || 'jpg').toLowerCase();
+      const slugBase = editedData.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'product';
+      const storagePath = `${user.id}/${Date.now()}-${slugBase}.${ext}`;
+
+      const { error: uploadError } = await supabase
+        .storage
+        .from('product-images')
+        .upload(storagePath, selectedImage, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: selectedImage.type || `image/${ext}`,
+        });
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('product-images')
+        .getPublicUrl(storagePath);
+      const publicUrl = publicUrlData.publicUrl;
+
+      // 3) Insert product row referencing the storage URL (not base64)
+      const { error: insertError } = await supabase.from('products').insert({
         name: editedData.name,
-        slug: `${slug}-${Date.now()}`,
+        slug: `${slugBase}-${Date.now()}`,
         description: editedData.description_html?.replace(/<[^>]*>/g, ''),
         description_html: editedData.description_html,
         price: editedData.price_range?.suggested || 0,
         category: editedData.category,
         subcategory: editedData.subcategory,
         tags: editedData.tags,
-        images: [imagePreview],
-        thumbnail_url: imagePreview,
+        images: [publicUrl],
+        thumbnail_url: publicUrl,
         seo_title: editedData.seo_title,
         seo_description: editedData.seo_description,
         ai_generated_data: editedData,
         status: 'draft',
       });
 
-      if (error) throw error;
+      if (insertError) {
+        // Roll back the uploaded file so we don't leave orphans
+        await supabase.storage.from('product-images').remove([storagePath]);
+        throw insertError;
+      }
 
-      toast.success('Product saved as draft!');
+      toast.success('บันทึกสินค้าเป็นแบบร่างเรียบร้อย!');
       reset();
     } catch (error) {
-      toast.error('Failed to save product');
+      console.error('saveProduct error:', error);
+      toast.error(error instanceof Error ? error.message : 'บันทึกสินค้าไม่สำเร็จ');
     } finally {
       setIsSaving(false);
     }
