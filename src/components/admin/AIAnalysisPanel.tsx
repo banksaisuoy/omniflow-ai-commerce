@@ -143,7 +143,7 @@ export function AIAnalysisPanel() {
               <Label>AI-Generated Description</Label>
               <div 
                 className="mt-1 p-3 bg-muted/50 rounded-lg text-sm prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: editedData.description_html || '' }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(editedData.description_html || '') }}
               />
             </div>
           </div>
