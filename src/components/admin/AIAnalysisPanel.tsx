@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
 import { Sparkles, Check, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
