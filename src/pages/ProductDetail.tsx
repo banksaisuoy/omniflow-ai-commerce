@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -131,7 +132,7 @@ export default function ProductDetail() {
             {product.description_html ? (
               <div
                 className="prose prose-sm max-w-none text-muted-foreground"
-                dangerouslySetInnerHTML={{ __html: product.description_html }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description_html) }}
               />
             ) : product.description ? (
               <p className="text-muted-foreground">{product.description}</p>
