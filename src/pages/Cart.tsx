@@ -32,7 +32,7 @@ export default function Cart() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">ตะกร้าสินค้า</h1>
+        <h1 className="font-serif text-4xl md:text-5xl mb-8">ตะกร้าขนม</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
