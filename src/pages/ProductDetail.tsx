@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
