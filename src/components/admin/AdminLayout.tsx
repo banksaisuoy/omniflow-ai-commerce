@@ -17,7 +17,9 @@ import {
   Upload,
   MessageSquare,
   Star,
-  Brain
+  Brain,
+  Receipt,
+  ClipboardList
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +29,9 @@ interface AdminLayoutProps {
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+  { icon: Receipt, label: 'POS หน้าร้าน', path: '/admin/pos' },
+  { icon: ClipboardList, label: 'จัดการกะ', path: '/admin/pos/shift' },
+  { icon: Receipt, label: 'บิล POS', path: '/admin/pos/transactions' },
   { icon: Package, label: 'สินค้า', path: '/admin/products' },
   { icon: Upload, label: 'อัปโหลด AI', path: '/admin/upload' },
   { icon: ShoppingCart, label: 'คำสั่งซื้อ', path: '/admin/orders' },

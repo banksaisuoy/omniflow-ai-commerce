@@ -35,6 +35,9 @@ import AdminReports from './AdminReports';
 import AdminAIInsights from './AdminAIInsights';
 import AdminSettings from './AdminSettings';
 import AdminUpload from './AdminUpload';
+import POS from './pos/POS';
+import ShiftManager from './pos/ShiftManager';
+import POSTransactions from './pos/POSTransactions';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -230,6 +233,9 @@ export default function AdminDashboard() {
   ];
 
   const renderSubPage = () => {
+    if (currentPath === '/admin/pos') return <POS />;
+    if (currentPath === '/admin/pos/shift') return <ShiftManager />;
+    if (currentPath === '/admin/pos/transactions') return <POSTransactions />;
     if (currentPath === '/admin/products') return <AdminProducts />;
     if (currentPath === '/admin/upload') return <AdminUpload />;
     if (currentPath === '/admin/orders') return <AdminOrders />;
