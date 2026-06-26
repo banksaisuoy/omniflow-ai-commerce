@@ -1,63 +1,71 @@
-## รีดีไซน์: ร้านขนมไทย "OmniFlow → Khanom House" โทนสว่าง
 
-ปรับ Design System ทั้งหมดเป็น **light mode** สำหรับร้านขายขนมไทย โดยคงทุกฟีเจอร์เดิม (Cart, Auth, Admin, AI ฯลฯ) ไว้ครบ — เปลี่ยนเฉพาะ visual layer
+# Thai Dessert POS + Cashier + Shift Management
 
-### Design Brief
+ทำต่อบน Stack ปัจจุบัน (React + Vite + Tailwind + shadcn + Lovable Cloud/Supabase) โดยเพิ่ม Module หลังร้านสำหรับขาย หน้าร้าน + จัดการกะ + แคชเชียร์ ไม่รื้อโครงเดิม
 
-**สี (Cherry Blossom + Thai pastel)**
-- `--background`: `#fef9f5` (ครีมอ่อนนุ่ม)
-- `--foreground`: `#3d1f2a` (น้ำตาลม่วงเข้ม)
-- `--primary`: `#c45c7c` (ชมพูกุหลาบ — สีกุหลาบมอญ/ดอกอัญชัน-กลีบกุหลาบ)
-- `--primary-foreground`: `#fef0f5`
-- `--secondary`: `#f8c8d8` (ชมพูพาสเทล)
-- `--accent`: `#e88aab` (ชมพูสด)
-- `--muted`: `#fef0f5`
-- `--card`: `#ffffff` กับเงานุ่มสีชมพู
-- เพิ่ม supporting tones: เขียวใบเตย `#9bbf8a`, ทองอ่อน `#e8b84a` (สำหรับ badge/highlight)
-- Gradients: `linear-gradient(135deg, #fef0f5, #f8c8d8)` สำหรับ hero
-- Shadows: ใช้ `hsl(340 60% 70% / 0.15)` (เงาชมพูนุ่ม) แทน shadow ดำ
+## ขอบเขตเฟสนี้
+โฟกัสเฉพาะ **POS + Cashier + Shift** ตามที่เลือก ส่วน Kitchen / Inventory / Catering / CRM จะแยกเป็นเฟสถัดไป
 
-**ฟอนต์**
-- Heading: **DM Serif Display** (หรู โค้งมน เหมือนป้ายร้านขนมโบราณ)
-- Body: **Fira Sans** (อ่านง่าย โมเดิร์น)
-- ติดตั้งผ่าน `@fontsource/dm-serif-display` + `@fontsource/fira-sans`, import ใน `main.tsx`, ตั้งใน `tailwind.config.ts`
-
-**เลย์เอาต์ (Bento Grid)**
-- หน้า Home: hero bento ที่ผสม tile ขนาดต่างกัน — tile ใหญ่โชว์รูปขนมเด่น, tile เล็กโชว์ "เมนูแนะนำ/โปรโมชั่น/หมวดหมู่/รีวิว"
-- Products: card grid ปุ่มมุมมน 24px, shadow ชมพูนุ่ม
-- ProductCard: bg ขาว, border `secondary/40`, hover ยก 4px + glow ชมพู
-
-**Animation/Motion**
-- Fade-up นุ่มๆ (duration 0.6s, ease-out)
-- Hover scale 1.02 + shadow ขยาย
-- Floating animation เบาๆ บน hero illustration
-
-### ขอบเขตงาน
-
-**ไฟล์ที่จะแก้**
-```text
-src/index.css                       (เปลี่ยน CSS tokens ทั้งหมดเป็น light mode pastel)
-tailwind.config.ts                  (เพิ่ม font family DM Serif + Fira Sans)
-src/main.tsx                        (import @fontsource)
-src/pages/Home.tsx                  (รีดีไซน์เป็น Bento Grid + เปลี่ยนข้อความเป็นร้านขนมไทย)
-src/components/layout/Navbar.tsx    (โลโก้ใหม่ "Khanom House" + สีพาสเทล)
-src/components/products/ProductCard.tsx (ปรับ shadow/border ให้นุ่ม)
-src/components/admin/AdminLayout.tsx (sidebar light theme)
-package.json                        (เพิ่ม fontsource deps ผ่าน bun add)
+## โครงสร้างหน้าใหม่ (Admin Layout เดิม)
+```
+/admin/pos              หน้าจอขายแบบ Touch-friendly (Tablet)
+/admin/pos/shift        เปิด/ปิดกะ + เงินสดในลิ้นชัก
+/admin/pos/sessions     ประวัติกะที่ผ่านมา + Z-Report
+/admin/pos/transactions รายการบิลทั้งหมด + ค้นหา/รีพรินต์/คืนเงิน
 ```
 
-**Dependencies ใหม่**
-- `@fontsource/dm-serif-display`
-- `@fontsource/fira-sans`
+## หน้าจอ POS (Touch Layout)
+```text
+┌─────────────────────────────┬──────────────────────┐
+│  Category tabs              │  Cart                │
+│  [ขนมสด][ขนมแห้ง][เครื่องดื่ม]  │  - รายการ + qty +/-  │
+│                             │  - ส่วนลด/คูปอง       │
+│  Product Grid (รูป+ราคา)     │  - VAT 7%             │
+│  ปุ่มใหญ่ ๆ กดง่าย             │  - Subtotal/Total    │
+│  ค้นหา / สแกนบาร์โค้ด          │                      │
+│                             │  [Charge] ปุ่มใหญ่    │
+└─────────────────────────────┴──────────────────────┘
+```
+- Payment Dialog: เงินสด (คำนวณเงินทอน), PromptPay QR (แสดง QR static + ยืนยันรับเงิน), บัตรเครดิต, E-Wallet, แยกชำระ (Split)
+- ใบเสร็จพิมพ์ผ่าน `window.print()` ด้วย CSS print stylesheet ขนาด 80mm
+- Offline-safe: ใช้ Zustand persist เก็บตะกร้า/บิลค้างไว้ใน localStorage กันรีเฟรชหาย (Full offline sync จะทำเฟสถัดไป)
 
-**สิ่งที่ยังไม่แตะ (คงไว้ตามเดิม)**
-- Business logic / Routes / Stores / Supabase / Edge functions
-- ฟีเจอร์ Admin, Cart, Checkout, Auth, AI ทั้งหมด
-- ฟีเจอร์ที่วางแผนไว้ (RBAC, Wishlist, Coupons, Chat) — รอ database กลับมาทำงานก่อนค่อยทำต่อ
+## Shift Management
+- เปิดกะ: ระบุยอดเงินสดเริ่มต้นในลิ้นชัก, ผูก cashier_id = `auth.uid()`
+- ระหว่างกะ: ทุกบิลถูกผูก `shift_id` อัตโนมัติ, รองรับ Cash In/Out (เบิก/ฝาก)
+- ปิดกะ: นับเงินสดจริง → ระบบคำนวณ Expected vs Actual + Variance → ออก Z-Report (ยอดขายแยกช่องทางชำระ, จำนวนบิล, ส่วนลด, VAT, Void, Refund)
+- บล็อกการขายถ้าไม่มีกะเปิดอยู่
 
-### Copy เปลี่ยนแนว
-- ชื่อร้าน: "OmniFlow" → "Khanom House" (หรือชื่อที่คุณอยากใช้)
-- Hero copy: "ขนมไทยโฮมเมด สูตรต้นตำรับ ส่งตรงถึงบ้านคุณ"
-- หมวดหมู่: ขนมหวาน, ขนมเปียก, ขนมแห้ง, เครื่องดื่ม
+## ฐานข้อมูล (Migration ใหม่)
+ใช้ตาราง `products` เดิม เพิ่มตารางใหม่:
 
-> หมายเหตุ: ขณะนี้ฐานข้อมูล Lovable Cloud ยัง connection refused อยู่ การรีดีไซน์ครั้งนี้เป็นงาน frontend อย่างเดียว ทำได้เลยไม่ต้องรอ database
+- `pos_shifts` — cashier_id, branch_id (nullable เผื่ออนาคต multi-branch), opened_at, closed_at, opening_cash, closing_cash_expected, closing_cash_actual, variance, status (open/closed), notes
+- `pos_cash_movements` — shift_id, type (in/out), amount, reason, created_by
+- `pos_transactions` — receipt_no (auto: POS-YYYYMMDD-####), shift_id, cashier_id, subtotal, discount_total, vat_amount, total, status (paid/voided/refunded), customer_id (nullable), notes
+- `pos_transaction_items` — transaction_id, product_id, name_snapshot, unit_price, qty, line_discount, line_total
+- `pos_payments` — transaction_id, method (cash/promptpay/card/ewallet), amount, ref_no, change_amount
+- `pos_refunds` — transaction_id (ต้นทาง), refund_no, amount, reason, approved_by
+
+RLS:
+- ทุกตารางเปิด RLS, อ่าน/เขียนเฉพาะ `authenticated` ที่มี role `admin` หรือ `cashier` (เพิ่ม role ใหม่ใน `app_role` enum)
+- Cashier เห็นเฉพาะกะของตัวเอง, Admin เห็นทั้งหมด
+- ใช้ `has_role()` security definer ที่มีอยู่แล้ว
+- GRANT ให้ `authenticated` + `service_role` ตามมาตรฐาน
+- Trigger: ตอน insert `pos_transactions` ตัดสต็อก `inventory` ของ product ที่ขายอัตโนมัติ (transaction-safe ด้วย FOR UPDATE)
+
+## State Management
+- `src/stores/posStore.ts` (Zustand + persist) — cart, activeShift, draft transactions
+- `src/hooks/usePosShift.ts` — เปิด/ปิดกะ + subscribe realtime shift status
+- `src/hooks/usePosCheckout.ts` — สร้าง transaction + payments แบบ atomic (เรียก edge function `pos-checkout`)
+
+## Edge Function
+- `pos-checkout` — รับ cart + payments → validate shift open + stock พอ → insert transaction/items/payments + ตัดสต็อก ใน RPC เดียว (SECURITY DEFINER), คืน receipt_no
+- ใช้ JWT verify + role check `cashier`/`admin`
+
+## ดีไซน์
+- ใช้ design tokens เดิม (Dark Mode Command Center: cyan/purple)
+- ปุ่มใหญ่ขั้นต่ำ 64px สำหรับนิ้วโป้ง, grid responsive ปรับตาม Tablet landscape (1024px+) เป็นหลัก
+- ใบเสร็จใช้สีขาว/ดำล้วน (print friendly)
+
+## Out of scope เฟสนี้ (จะตามมา)
+Kitchen Display, BOM/Recipe, Multi-warehouse Inventory, Catering/Event, Rider, Accounting Report, OCR, Voice Command, PWA offline sync เต็มรูปแบบ
