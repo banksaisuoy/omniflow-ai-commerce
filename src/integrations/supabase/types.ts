@@ -279,6 +279,282 @@ export type Database = {
           },
         ]
       }
+      pos_cash_movements: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          id: string
+          movement_type: string
+          reason: string | null
+          shift_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          id?: string
+          movement_type: string
+          reason?: string | null
+          shift_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          movement_type?: string
+          reason?: string | null
+          shift_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_cash_movements_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "pos_shifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_payments: {
+        Row: {
+          amount: number
+          change_amount: number
+          created_at: string
+          id: string
+          method: string
+          ref_no: string | null
+          transaction_id: string
+        }
+        Insert: {
+          amount: number
+          change_amount?: number
+          created_at?: string
+          id?: string
+          method: string
+          ref_no?: string | null
+          transaction_id: string
+        }
+        Update: {
+          amount?: number
+          change_amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          ref_no?: string | null
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_payments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "pos_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_refunds: {
+        Row: {
+          amount: number
+          approved_by: string
+          created_at: string
+          id: string
+          reason: string | null
+          refund_no: string
+          transaction_id: string
+        }
+        Insert: {
+          amount: number
+          approved_by: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          refund_no: string
+          transaction_id: string
+        }
+        Update: {
+          amount?: number
+          approved_by?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          refund_no?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_refunds_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "pos_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_shifts: {
+        Row: {
+          branch_id: string | null
+          cashier_id: string
+          closed_at: string | null
+          closing_cash_actual: number | null
+          closing_cash_expected: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          opened_at: string
+          opening_cash: number
+          status: string
+          updated_at: string
+          variance: number | null
+        }
+        Insert: {
+          branch_id?: string | null
+          cashier_id: string
+          closed_at?: string | null
+          closing_cash_actual?: number | null
+          closing_cash_expected?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_cash?: number
+          status?: string
+          updated_at?: string
+          variance?: number | null
+        }
+        Update: {
+          branch_id?: string | null
+          cashier_id?: string
+          closed_at?: string | null
+          closing_cash_actual?: number | null
+          closing_cash_expected?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_cash?: number
+          status?: string
+          updated_at?: string
+          variance?: number | null
+        }
+        Relationships: []
+      }
+      pos_transaction_items: {
+        Row: {
+          created_at: string
+          id: string
+          line_discount: number
+          line_total: number
+          name_snapshot: string
+          product_id: string | null
+          qty: number
+          transaction_id: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_discount?: number
+          line_total: number
+          name_snapshot: string
+          product_id?: string | null
+          qty: number
+          transaction_id: string
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_discount?: number
+          line_total?: number
+          name_snapshot?: string
+          product_id?: string | null
+          qty?: number
+          transaction_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_transaction_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pos_transaction_items_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "pos_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_transactions: {
+        Row: {
+          cashier_id: string
+          created_at: string
+          customer_id: string | null
+          discount_total: number
+          id: string
+          notes: string | null
+          receipt_no: string
+          shift_id: string
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          vat_amount: number
+        }
+        Insert: {
+          cashier_id: string
+          created_at?: string
+          customer_id?: string | null
+          discount_total?: number
+          id?: string
+          notes?: string | null
+          receipt_no: string
+          shift_id: string
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_amount?: number
+        }
+        Update: {
+          cashier_id?: string
+          created_at?: string
+          customer_id?: string | null
+          discount_total?: number
+          id?: string
+          notes?: string | null
+          receipt_no?: string
+          shift_id?: string
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pos_transactions_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "pos_shifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           ai_generated_data: Json | null
@@ -537,6 +813,23 @@ export type Database = {
         Returns: number
       }
       generate_order_number: { Args: never; Returns: string }
+      generate_pos_receipt_no: { Args: never; Returns: string }
+      is_pos_staff: { Args: { _user_id: string }; Returns: boolean }
+      pos_checkout: {
+        Args: {
+          _customer_id?: string
+          _discount_total?: number
+          _items: Json
+          _notes?: string
+          _payments: Json
+          _vat_rate?: number
+        }
+        Returns: Json
+      }
+      pos_close_shift: {
+        Args: { _actual_cash: number; _notes?: string; _shift_id: string }
+        Returns: Json
+      }
       search_products_by_embedding: {
         Args: {
           match_count?: number
