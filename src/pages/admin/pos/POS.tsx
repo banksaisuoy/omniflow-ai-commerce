@@ -41,13 +41,13 @@ export default function POS() {
 
   useEffect(() => {
     (async () => {
-      const { data: prods } = await supabase
+      const { data: prods } = await (supabase as any)
         .from('products')
         .select('id,name,price,thumbnail_url,category_id,sku')
         .eq('status', 'active')
         .order('name');
       setProducts((prods as any) ?? []);
-      const { data: cats } = await supabase.from('categories').select('id,name').order('name');
+      const { data: cats } = await (supabase as any).from('categories').select('id,name').order('name');
       setCategories((cats as any) ?? []);
     })();
   }, []);
