@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CreditCard, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
+import { CreditCard, MapPin, Phone, Mail, CheckCircle, QrCode, Building, Upload } from 'lucide-react';
 import { z } from 'zod';
 import { Layout } from '@/components/layout/Layout';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,7 @@ export default function Checkout() {
   const { user } = useAuth();
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'promptpay' | 'bank_transfer'>('promptpay');
   const [formData, setFormData] = useState({
     fullName: '',
     email: user?.email || '',
@@ -184,13 +186,72 @@ export default function Checkout() {
                     วิธีการชำระเงิน
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="p-4 rounded-lg border border-primary bg-primary/5">
-                    <p className="font-medium">ชำระเงินปลายทาง (COD)</p>
-                    <p className="text-sm text-muted-foreground">ชำระเงินเมื่อได้รับสินค้า</p>
+                <CardContent className="space-y-6">
+                  <RadioGroup defaultValue="promptpay" onValueChange={(v) => setPaymentMethod(v as any)}>
+                    <div className="flex items-center space-x-2 border p-4 rounded-lg mb-2">
+                      <RadioGroupItem value="promptpay" id="promptpay" />
+                      <Label htmlFor="promptpay" className="flex items-center gap-2 cursor-pointer w-full">
+                        <QrCode className="h-5 w-5 text-primary" />
+                        สแกน QR Code (PromptPay)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2 border p-4 rounded-lg">
+                      <RadioGroupItem value="bank_transfer" id="bank_transfer" />
+                      <Label htmlFor="bank_transfer" className="flex items-center gap-2 cursor-pointer w-full">
+                        <Building className="h-5 w-5 text-primary" />
+                        โอนเงินผ่านธนาคาร
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {paymentMethod === 'promptpay' && (
+                    <div className="bg-muted p-6 rounded-lg text-center space-y-4 animate-in fade-in">
+                      <p className="font-medium">สแกนเพื่อชำระเงิน</p>
+                      <div className="w-48 h-48 bg-white mx-auto p-2 rounded-xl shadow-sm border border-border flex items-center justify-center">
+                        {/* Mock QR Code representation */}
+                        <div className="w-full h-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center flex-col gap-2 text-muted-foreground">
+                           <QrCode className="w-12 h-12" />
+                           <span className="text-xs">Mock QR Code</span>
+                        </div>
+                      </div>
+                      <p className="text-xl font-bold text-primary">฿{getTotalPrice().toLocaleString()}</p>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'bank_transfer' && (
+                    <div className="bg-muted p-6 rounded-lg space-y-4 animate-in fade-in">
+                      <p className="font-medium text-center border-b pb-4">โอนเงินเข้าบัญชี</p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">ธนาคาร:</span>
+                          <span className="font-medium">กสิกรไทย (KBANK)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">ชื่อบัญชี:</span>
+                          <span className="font-medium">บจก. ขนมเฮาส์</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">เลขที่บัญชี:</span>
+                          <span className="font-medium font-mono">123-4-56789-0</span>
+                        </div>
+                        <div className="flex justify-between pt-2 border-t mt-2">
+                          <span className="text-muted-foreground">ยอดที่ต้องโอน:</span>
+                          <span className="font-bold text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2 pt-4 border-t">
+                     <Label>อัปโหลดสลิปโอนเงิน (จำลอง)</Label>
+                     <div className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-not-allowed bg-muted/50">
+                        <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">คลิกเพื่ออัปโหลด (ระบบจำลอง - ไม่ต้องอัปโหลดจริง)</p>
+                     </div>
                   </div>
+
                   <Button type="submit" className="w-full mt-6" size="lg" disabled={isSubmitting}>
-                    {isSubmitting ? 'กำลังดำเนินการ...' : 'ยืนยันคำสั่งซื้อ'}
+                    {isSubmitting ? 'กำลังดำเนินการ...' : 'แจ้งชำระเงินและยืนยันคำสั่งซื้อ'}
                   </Button>
                 </CardContent>
               </Card>
