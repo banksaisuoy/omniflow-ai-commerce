@@ -79,7 +79,7 @@ export function MagicProductUploader() {
       }
 
       // Clean markdown code blocks and parse JSON
-      let cleanContent = fullContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+      const cleanContent = fullContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
       const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const data = JSON.parse(jsonMatch[0]);
