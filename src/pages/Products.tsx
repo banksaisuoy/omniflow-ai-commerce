@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState('newest');
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', selectedCategory],
@@ -52,7 +54,15 @@ export default function Products() {
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => {
+    if (sortBy === 'price_asc') {
+      return a.price - b.price;
+    }
+    if (sortBy === 'price_desc') {
+      return b.price - a.price;
+    }
+    return 0; // newest is default from supabase query ordering
+  });
 
   return (
     <Layout>
@@ -75,6 +85,17 @@ export default function Products() {
             />
           </div>
           <div className="flex gap-2">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="เรียงตาม" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">สินค้าใหม่ล่าสุด</SelectItem>
+                <SelectItem value="price_asc">ราคา: ต่ำไปสูง</SelectItem>
+                <SelectItem value="price_desc">ราคา: สูงไปต่ำ</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="icon"
