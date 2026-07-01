@@ -55,13 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAdminRole = async (userId: string) => {
     const { data } = await supabase
-      .from('profiles')
+      .from('user_roles')
       .select('role')
-      .eq('id', userId)
+      .eq('user_id', userId)
+      .eq('role', 'admin')
       .maybeSingle();
-    
-    setIsAdmin(data?.role === 'admin');
+    setIsAdmin(!!data);
   };
+
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     const redirectUrl = `${window.location.origin}/`;
