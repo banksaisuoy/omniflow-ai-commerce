@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     ordersChange: 0,
     customersChange: 0,
   });
-  const [salesData, setSalesData] = useState<any[]>([]);
+  const [salesData, setSalesData] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -106,11 +106,24 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Fetch orders
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+      // Fetch orders (only last 60 days) and total orders count in parallel
+      const [
+        { data: orders },
+        { count: totalOrdersCount }
+      ] = await Promise.all([
+        supabase
+          .from('orders')
+          .select('*')
+          .gte('created_at', sixtyDaysAgo.toISOString())
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('orders')
+          .select('*', { count: 'exact', head: true })
+      ]);
 
       // Fetch products
       const { data: products } = await supabase
@@ -124,10 +137,6 @@ export default function AdminDashboard() {
         .eq('role', 'customer');
 
       // Calculate stats
-      const now = new Date();
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-
       const recentOrders = orders?.filter(o => new Date(o.created_at) >= thirtyDaysAgo) || [];
       const previousOrders = orders?.filter(o => 
         new Date(o.created_at) >= sixtyDaysAgo && new Date(o.created_at) < thirtyDaysAgo
@@ -146,7 +155,7 @@ export default function AdminDashboard() {
 
       setStats({
         totalRevenue,
-        totalOrders: orders?.length || 0,
+        totalOrders: totalOrdersCount || 0,
         totalCustomers: customers?.length || 0,
         totalProducts: products?.length || 0,
         revenueChange,
