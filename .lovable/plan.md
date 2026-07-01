@@ -1,71 +1,102 @@
 
-# Thai Dessert POS + Cashier + Shift Management
+# Khanom House → Enterprise Platform Upgrade
 
-ทำต่อบน Stack ปัจจุบัน (React + Vite + Tailwind + shadcn + Lovable Cloud/Supabase) โดยเพิ่ม Module หลังร้านสำหรับขาย หน้าร้าน + จัดการกะ + แคชเชียร์ ไม่รื้อโครงเดิม
+รวมฟีเจอร์ที่เว็บใหญ่ระดับ Shopee / Lazada / Grab / Starbucks / Amazon มี แล้วเลือกที่เหมาะกับร้านขนมไทย + ERP/POS เดิม จัดเป็น 8 เฟส ทำต่อเนื่องได้
 
-## ขอบเขตเฟสนี้
-โฟกัสเฉพาะ **POS + Cashier + Shift** ตามที่เลือก ส่วน Kitchen / Inventory / Catering / CRM จะแยกเป็นเฟสถัดไป
+---
 
-## โครงสร้างหน้าใหม่ (Admin Layout เดิม)
-```
-/admin/pos              หน้าจอขายแบบ Touch-friendly (Tablet)
-/admin/pos/shift        เปิด/ปิดกะ + เงินสดในลิ้นชัก
-/admin/pos/sessions     ประวัติกะที่ผ่านมา + Z-Report
-/admin/pos/transactions รายการบิลทั้งหมด + ค้นหา/รีพรินต์/คืนเงิน
-```
+## Phase 1 — Customer Experience ระดับ Marketplace
+- **Loyalty & Rewards**: ระบบแต้ม (1 บาท = 1 แต้ม), tier Bronze/Silver/Gold/VIP, แลกส่วนลด/ของแถม, birthday bonus
+- **Referral Program**: โค้ดชวนเพื่อน, tracking, ให้ทั้งสองฝ่าย
+- **Flash Sale + Countdown Timer**: สินค้าลดราคาแบบจำกัดเวลา + stock bar real-time
+- **Bundle & Combo Builder**: ซื้อ 3 ชิ้น 100฿, "จัดกล่องของขวัญเอง"
+- **Gift Card / e-Voucher**: ซื้อบัตรของขวัญ ส่งให้เพื่อนผ่านลิงก์/QR
+- **Wishlist + Price Drop Alert**: แจ้งเตือนเมื่อของในลิสต์ลดราคา
 
-## หน้าจอ POS (Touch Layout)
-```text
-┌─────────────────────────────┬──────────────────────┐
-│  Category tabs              │  Cart                │
-│  [ขนมสด][ขนมแห้ง][เครื่องดื่ม]  │  - รายการ + qty +/-  │
-│                             │  - ส่วนลด/คูปอง       │
-│  Product Grid (รูป+ราคา)     │  - VAT 7%             │
-│  ปุ่มใหญ่ ๆ กดง่าย             │  - Subtotal/Total    │
-│  ค้นหา / สแกนบาร์โค้ด          │                      │
-│                             │  [Charge] ปุ่มใหญ่    │
-└─────────────────────────────┴──────────────────────┘
-```
-- Payment Dialog: เงินสด (คำนวณเงินทอน), PromptPay QR (แสดง QR static + ยืนยันรับเงิน), บัตรเครดิต, E-Wallet, แยกชำระ (Split)
-- ใบเสร็จพิมพ์ผ่าน `window.print()` ด้วย CSS print stylesheet ขนาด 80mm
-- Offline-safe: ใช้ Zustand persist เก็บตะกร้า/บิลค้างไว้ใน localStorage กันรีเฟรชหาย (Full offline sync จะทำเฟสถัดไป)
+## Phase 2 — AI & Personalization ขั้นสูง
+- **Recommendation Engine**: "คนที่ซื้อสิ่งนี้มักจะซื้อ...", "For You" feed ตามพฤติกรรม (pgvector + embedding)
+- **AI Concierge Chatbot**: ตอบคำถาม แนะนำเมนู สั่งของผ่านแชท (Gemini + function calling)
+- **Visual Search**: อัปโหลดรูปขนม → หาสินค้าคล้ายในร้าน
+- **Voice Ordering** (ภาษาไทย): กดพูดสั่งของ → AI แปลงเป็น cart
+- **Dynamic Pricing Suggestion** (Admin): AI แนะนำราคาตามคู่แข่ง/ดีมานด์
+- **AI Review Summary**: สรุปรีวิวเป็น pros/cons ต่อสินค้า
+- **Smart Reorder**: "ครบ 30 วันแล้ว สั่งเหมือนเดิมไหม?"
 
-## Shift Management
-- เปิดกะ: ระบุยอดเงินสดเริ่มต้นในลิ้นชัก, ผูก cashier_id = `auth.uid()`
-- ระหว่างกะ: ทุกบิลถูกผูก `shift_id` อัตโนมัติ, รองรับ Cash In/Out (เบิก/ฝาก)
-- ปิดกะ: นับเงินสดจริง → ระบบคำนวณ Expected vs Actual + Variance → ออก Z-Report (ยอดขายแยกช่องทางชำระ, จำนวนบิล, ส่วนลด, VAT, Void, Refund)
-- บล็อกการขายถ้าไม่มีกะเปิดอยู่
+## Phase 3 — Checkout & Payment ครบวงจร
+- **Payment Gateway จริง**: Omise / Stripe (บัตรเครดิต), PromptPay QR แบบ dynamic, TrueMoney, ShopeePay
+- **Buy Now Pay Later**: ผ่อน 0% (integrate SCB / Kbank)
+- **Multi-currency + Tax Rules**: THB/USD, VAT 7%, invoice/receipt PDF
+- **Address Book + Google Maps Autocomplete**: หลายที่อยู่, pin location
+- **Delivery Options**: จัดส่งด่วน / นัดวัน / รับหน้าร้าน / Lalamove-Grab API
+- **Shipping Rate Calculator**: คำนวณตามน้ำหนัก + ระยะทาง
+- **Guest Checkout** + email receipt
 
-## ฐานข้อมูล (Migration ใหม่)
-ใช้ตาราง `products` เดิม เพิ่มตารางใหม่:
+## Phase 4 — Order Lifecycle & Logistics
+- **Order Tracking Real-time**: timeline (รับออเดอร์ → กำลังทำ → ออกจากร้าน → ถึงมือ)
+- **Rider/Driver Dispatch**: assign พนักงานส่ง, GPS live map
+- **Push Notifications** (Web Push + LINE Notify): อัปเดตทุก step
+- **Auto-refund + Return Flow**: กดคืนของ ถ่ายรูป → อนุมัติ → refund
+- **Subscription Box**: สมัครรับขนมรายเดือน auto-charge
 
-- `pos_shifts` — cashier_id, branch_id (nullable เผื่ออนาคต multi-branch), opened_at, closed_at, opening_cash, closing_cash_expected, closing_cash_actual, variance, status (open/closed), notes
-- `pos_cash_movements` — shift_id, type (in/out), amount, reason, created_by
-- `pos_transactions` — receipt_no (auto: POS-YYYYMMDD-####), shift_id, cashier_id, subtotal, discount_total, vat_amount, total, status (paid/voided/refunded), customer_id (nullable), notes
-- `pos_transaction_items` — transaction_id, product_id, name_snapshot, unit_price, qty, line_discount, line_total
-- `pos_payments` — transaction_id, method (cash/promptpay/card/ewallet), amount, ref_no, change_amount
-- `pos_refunds` — transaction_id (ต้นทาง), refund_no, amount, reason, approved_by
+## Phase 5 — Community & Content
+- **Blog / Recipe CMS**: บทความ, สูตร, SEO-optimized
+- **User-Generated Content**: อัปรูปกินขนม tag ร้าน แสดงหน้า home
+- **Live Shopping**: streaming ขายสด + comment ซื้อทันที
+- **Q&A Section** ต่อสินค้า + AI reply แบบ auto-draft
+- **Social Share + OG Preview** ทุกหน้าสินค้า
 
-RLS:
-- ทุกตารางเปิด RLS, อ่าน/เขียนเฉพาะ `authenticated` ที่มี role `admin` หรือ `cashier` (เพิ่ม role ใหม่ใน `app_role` enum)
-- Cashier เห็นเฉพาะกะของตัวเอง, Admin เห็นทั้งหมด
-- ใช้ `has_role()` security definer ที่มีอยู่แล้ว
-- GRANT ให้ `authenticated` + `service_role` ตามมาตรฐาน
-- Trigger: ตอน insert `pos_transactions` ตัดสต็อก `inventory` ของ product ที่ขายอัตโนมัติ (transaction-safe ด้วย FOR UPDATE)
+## Phase 6 — ERP / Back-office ระดับ Enterprise
+- **Multi-branch / Multi-warehouse**: สต็อกแยกสาขา, โอนสินค้าระหว่างสาขา
+- **Purchase Order & Suppliers**: PO, GRN, ต้นทุนเฉลี่ย
+- **BOM / Recipe Costing**: คำนวณต้นทุนขนมจากวัตถุดิบ
+- **HR-lite**: พนักงาน, กะทำงาน, payroll สรุป
+- **Accounting Export**: PEAK / FlowAccount / Xero CSV
+- **E-Tax Invoice** (RD format)
+- **Audit Log**: ใครแก้อะไรเมื่อไหร่ทุก action
 
-## State Management
-- `src/stores/posStore.ts` (Zustand + persist) — cart, activeShift, draft transactions
-- `src/hooks/usePosShift.ts` — เปิด/ปิดกะ + subscribe realtime shift status
-- `src/hooks/usePosCheckout.ts` — สร้าง transaction + payments แบบ atomic (เรียก edge function `pos-checkout`)
+## Phase 7 — Growth, Marketing & SEO
+- **Coupon Engine ขั้นสูง**: %, fixed, BOGO, ขั้นต่ำ, จำกัดครั้ง/คน, first-order-only
+- **Email/SMS Automation**: cart abandonment, win-back, post-purchase (Resend + Twilio)
+- **A/B Testing**: hero banner / CTA
+- **Analytics ครบ**: GA4, Meta Pixel, TikTok Pixel, Google Merchant Center feed
+- **SEO ขั้นสูง**: schema.org Product/Review/BreadcrumbList, hreflang, PWA + offline
+- **Affiliate Program**: influencer ได้ค่าคอมต่อยอดขาย
 
-## Edge Function
-- `pos-checkout` — รับ cart + payments → validate shift open + stock พอ → insert transaction/items/payments + ตัดสต็อก ใน RPC เดียว (SECURITY DEFINER), คืน receipt_no
-- ใช้ JWT verify + role check `cashier`/`admin`
+## Phase 8 — Trust, Security, Ops
+- **2FA** (TOTP), session manager, device list
+- **GDPR/PDPA**: export data, delete account, consent banner
+- **Rate Limiting + Bot Protection** ที่ edge function
+- **Backup & Disaster Recovery**: daily snapshot report
+- **Feature Flags**: เปิด/ปิดฟีเจอร์ต่อ tier ลูกค้าโดยไม่ deploy
+- **Status Page** (uptime) + Sentry error monitoring
+- **i18n**: ไทย / EN / 中文
 
-## ดีไซน์
-- ใช้ design tokens เดิม (Dark Mode Command Center: cyan/purple)
-- ปุ่มใหญ่ขั้นต่ำ 64px สำหรับนิ้วโป้ง, grid responsive ปรับตาม Tablet landscape (1024px+) เป็นหลัก
-- ใบเสร็จใช้สีขาว/ดำล้วน (print friendly)
+---
 
-## Out of scope เฟสนี้ (จะตามมา)
-Kitchen Display, BOM/Recipe, Multi-warehouse Inventory, Catering/Event, Rider, Accounting Report, OCR, Voice Command, PWA offline sync เต็มรูปแบบ
+## แนวเทคนิคหลัก (สรุป)
+- **DB**: เพิ่ม ~25 ตาราง (loyalty_points, referrals, gift_cards, subscriptions, addresses, shipments, warehouses, purchase_orders, recipes, audit_logs, coupons, email_campaigns, feature_flags, translations ฯลฯ) พร้อม RLS + GRANT ครบ
+- **Edge Functions ใหม่**: payment-webhook, ai-recommend, ai-concierge, visual-search, voice-to-cart, dispatch-rider, email-automation, tax-invoice-pdf, currency-rates
+- **Realtime**: order status, live shopping chat, flash sale stock
+- **Storage buckets**: gift-cards, user-content, tax-invoices, recipe-images
+- **Frontend**: routes ใหม่ ~30 หน้า (loyalty, gift-cards, subscriptions, blog, live, tracking, referral, address-book, rider-app, branch-manager, feature-flags ฯลฯ)
+- **State**: ต่อยอด Zustand + React Query สำหรับ optimistic UI ทุกส่วน
+
+---
+
+## ควรทำก่อน (แนะนำลำดับ)
+เพราะทำครบทั้งหมดจะใหญ่มาก (หลายสัปดาห์งาน) แนะนำเริ่มจาก **impact สูง + ต่อยอดง่าย**:
+
+1. **Phase 1** (Loyalty + Flash Sale + Wishlist + Gift Card) — ดึงลูกค้ากลับมาซื้อซ้ำทันที
+2. **Phase 3** (Payment จริง + Delivery + Tracking) — ปิดการขายได้จริง
+3. **Phase 2** (Recommendation + AI Concierge) — โชว์ความล้ำ
+4. ที่เหลือค่อยไล่ทำ
+
+---
+
+## คำถามก่อนลุย
+กรุณาเลือก 1 ข้อ:
+- **A) จัดเต็มทุก Phase** — ผมจะทยอยทำเป็นชุด ๆ (เริ่ม Phase 1 ก่อนในรอบนี้)
+- **B) เริ่ม Phase 1 + 3 + 2** ตามลำดับแนะนำ (impact สูงสุด)
+- **C) เลือกเฉพาะฟีเจอร์ที่ชอบ** — บอกมาว่าอยากได้อันไหนบ้าง (เช่น "Loyalty + Flash Sale + Payment + Tracking")
+
+รอคำตอบก่อนเริ่มลงมือ
