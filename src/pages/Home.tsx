@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Sparkles, Truck, Heart, Star, ArrowRight, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useActiveFlashSale, useCountdown } from '@/hooks/useFlashSales';
+import { ProductCard } from '@/components/products/ProductCard';
+import { Clock, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Layout } from '@/components/layout/Layout';
 import { FlashSaleBanner } from '@/components/marketing/FlashSaleBanner';
@@ -18,6 +21,8 @@ const fadeUp = {
 };
 
 export default function Home() {
+  const { data: flashSale } = useActiveFlashSale();
+  const flashSaleCountdown = useCountdown(flashSale?.ends_at);
   return (
     <Layout>
       <FlashSaleBanner />
@@ -123,6 +128,45 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+
+      {/* Flash Sale Banner */}
+      {flashSale && flashSale.items && flashSale.items.length > 0 && (
+        <section className="py-8 bg-destructive/5 border-y border-destructive/10">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-destructive fill-destructive" />
+                </div>
+                <div>
+                  <h2 className="font-display text-2xl text-destructive">{flashSale.name}</h2>
+                  <p className="text-sm text-muted-foreground">{flashSale.description}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-4 md:mt-0 bg-white px-4 py-2 rounded-full shadow-sm border border-destructive/20">
+                <Clock className="h-4 w-4 text-destructive" />
+                <span className="font-mono font-bold text-destructive">จบใน {flashSaleCountdown}</span>
+              </div>
+            </div>
+
+            <div className="flex overflow-x-auto pb-6 -mx-4 px-4 snap-x gap-4 md:gap-6 no-scrollbar">
+              {flashSale.items.map((item: any) => (
+                <div key={item.id} className="min-w-[280px] md:min-w-[320px] snap-start">
+                  <ProductCard
+                    product={item.product}
+                    flashSaleData={{
+                      sale_price: item.sale_price,
+                      stock_limit: item.stock_limit,
+                      sold_count: item.sold_count
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Dessert Bento */}
       <section className="py-16 md:py-24">

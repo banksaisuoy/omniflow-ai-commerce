@@ -5,10 +5,13 @@ import { Navigate, Link } from 'react-router-dom';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Bell } from 'lucide-react';
 
 export default function Wishlist() {
   const { user, loading } = useAuth();
-  const { items, isLoading } = useWishlist();
+  const { items, isLoading, updateSettings } = useWishlist();
 
   if (!loading && !user) return <Navigate to="/auth" replace />;
 
@@ -30,7 +33,22 @@ export default function Wishlist() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {items.map((it: any) => it.product && <ProductCard key={it.id} product={it.product} />)}
+            {items.map((it: any) => it.product && (
+              <div key={it.id} className="flex flex-col gap-3">
+                <ProductCard product={it.product} />
+                <div className="flex items-center justify-between px-2 bg-muted/30 p-2 rounded-xl border">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor={`notify-${it.id}`} className="text-xs cursor-pointer text-muted-foreground">แจ้งเตือนราคาลด</Label>
+                  </div>
+                  <Switch
+                    id={`notify-${it.id}`}
+                    checked={!!it.notify_on_price_drop}
+                    onCheckedChange={(checked) => updateSettings({ productId: it.product_id, notify_on_price_drop: checked })}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

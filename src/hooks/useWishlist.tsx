@@ -41,5 +41,24 @@ export function useWishlist() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  return { items, isLoading, productIds, toggle: toggle.mutate, isToggling: toggle.isPending };
+
+  const updateSettings = useMutation({
+    mutationFn: async ({ productId, notify_on_price_drop }: { productId: string, notify_on_price_drop: boolean }) => {
+      if (!user) throw new Error('กรุณาเข้าสู่ระบบก่อน');
+      const { error } = await supabase
+        .from('wishlists')
+        .update({ notify_on_price_drop })
+        .eq('user_id', user.id)
+        .eq('product_id', productId);
+      if (error) throw error;
+      return { productId, notify_on_price_drop };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['wishlist'] });
+      toast.success('อัปเดตการแจ้งเตือนแล้ว');
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { items, isLoading, productIds, toggle: toggle.mutate, isToggling: toggle.isPending, updateSettings: updateSettings.mutate, isUpdatingSettings: updateSettings.isPending };
 }
