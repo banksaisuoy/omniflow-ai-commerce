@@ -113,14 +113,14 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
 
       // Fetch products
-      const { data: products } = await supabase
+      const { count: productsCount } = await supabase
         .from('products')
-        .select('*');
+        .select('*', { count: 'exact', head: true });
 
       // Fetch customers
-      const { data: customers } = await supabase
+      const { count: customersCount } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*', { count: 'exact', head: true })
         .eq('role', 'customer');
 
       // Calculate stats
@@ -147,8 +147,8 @@ export default function AdminDashboard() {
       setStats({
         totalRevenue,
         totalOrders: orders?.length || 0,
-        totalCustomers: customers?.length || 0,
-        totalProducts: products?.length || 0,
+        totalCustomers: customersCount || 0,
+        totalProducts: productsCount || 0,
         revenueChange,
         ordersChange,
         customersChange: 12.5, // Placeholder
