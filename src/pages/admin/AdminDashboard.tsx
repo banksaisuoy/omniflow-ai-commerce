@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     ordersChange: 0,
     customersChange: 0,
   });
-  const [salesData, setSalesData] = useState<any[]>([]);
+  const [salesData, setSalesData] = useState<{ date: string; revenue: number; orders: number; displayDate: string; }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -75,33 +75,30 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (user && isAdmin) {
       fetchDashboardData();
-      setupRealtimeSubscription();
+
+      const channel = supabase
+        .channel('dashboard-updates')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'orders' },
+          () => {
+            fetchDashboardData();
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'order_items' },
+          () => {
+            fetchDashboardData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, isAdmin]);
-
-  const setupRealtimeSubscription = () => {
-    const channel = supabase
-      .channel('dashboard-updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        () => {
-          fetchDashboardData();
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'order_items' },
-        () => {
-          fetchDashboardData();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -113,14 +110,14 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
 
       // Fetch products
-      const { data: products } = await supabase
+      const { count: productsCount } = await supabase
         .from('products')
-        .select('*');
+        .select('*', { count: 'exact', head: true });
 
       // Fetch customers
-      const { data: customers } = await supabase
+      const { count: customersCount } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*', { count: 'exact', head: true })
         .eq('role', 'customer');
 
       // Calculate stats
@@ -147,8 +144,8 @@ export default function AdminDashboard() {
       setStats({
         totalRevenue,
         totalOrders: orders?.length || 0,
-        totalCustomers: customers?.length || 0,
-        totalProducts: products?.length || 0,
+        totalCustomers: customersCount || 0,
+        totalProducts: productsCount || 0,
         revenueChange,
         ordersChange,
         customersChange: 12.5, // Placeholder
