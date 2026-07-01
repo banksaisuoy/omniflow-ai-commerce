@@ -11,8 +11,13 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Auth from "./pages/Auth";
+import Loyalty from "./pages/Loyalty";
+import Wishlist from "./pages/Wishlist";
+import GiftCards from "./pages/GiftCards";
+import Referral from "./pages/Referral";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
+
 
 const queryClient = new QueryClient();
 
@@ -31,9 +36,14 @@ const App = () => (
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success/:orderId" element={<OrderSuccess />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/loyalty" element={<Loyalty />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/gift-cards" element={<GiftCards />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
+
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

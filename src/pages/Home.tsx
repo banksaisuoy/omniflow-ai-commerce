@@ -4,9 +4,11 @@ import { ShoppingBag, Sparkles, Truck, Heart, Star, ArrowRight, Leaf } from 'luc
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Layout } from '@/components/layout/Layout';
+import { FlashSaleBanner } from '@/components/marketing/FlashSaleBanner';
 import heroImg from '@/assets/hero-thai-desserts.jpg';
 import khanomChan from '@/assets/feature-khanom-chan.jpg';
 import mangoSticky from '@/assets/feature-mango-sticky.jpg';
+
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -18,7 +20,9 @@ const fadeUp = {
 export default function Home() {
   return (
     <Layout>
+      <FlashSaleBanner />
       {/* Hero — Bento Grid */}
+
       <section className="relative overflow-hidden bg-gradient-hero">
         <div className="container mx-auto px-4 py-12 md:py-20">
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-5 auto-rows-[minmax(140px,auto)]">
