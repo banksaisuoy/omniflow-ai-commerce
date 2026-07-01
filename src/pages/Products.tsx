@@ -37,15 +37,11 @@ export default function Products() {
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('category')
-        .eq('status', 'active')
-        .not('category', 'is', null);
+      const { data, error } = await supabase.rpc('get_unique_categories');
 
       if (error) throw error;
-      const uniqueCategories = [...new Set(data.map(p => p.category))].filter(Boolean);
-      return uniqueCategories as string[];
+      // data should be an array of objects like { category: "..." }
+      return data.map((row: { category: string }) => row.category) as string[];
     },
   });
 
