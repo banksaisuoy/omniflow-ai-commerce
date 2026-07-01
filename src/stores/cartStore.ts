@@ -7,6 +7,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   thumbnail_url: string | null;
+  isBundle?: boolean;
 }
 
 interface CartState {

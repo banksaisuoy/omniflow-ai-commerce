@@ -49,6 +49,9 @@ export function Navbar() {
             <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               เมนูขนม
             </Link>
+            <Link to="/bundles" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              เซ็ตของขวัญ
+            </Link>
             <Link to="/gift-cards" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               บัตรของขวัญ
             </Link>
@@ -136,7 +139,7 @@ export function Navbar() {
             {[
               { to: '/', label: 'หน้าแรก' },
               { to: '/products', label: 'เมนูขนม' },
-              { to: '/products', label: 'เซ็ตของขวัญ' },
+              { to: '/bundles', label: 'เซ็ตของขวัญ' },
               ...(isAdmin ? [{ to: '/admin', label: 'จัดการร้าน' }] : []),
             ].map((it) => (
               <Link

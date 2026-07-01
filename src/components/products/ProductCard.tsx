@@ -8,6 +8,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { WishlistButton } from '@/components/products/WishlistButton';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
 
 
 interface Product {
@@ -21,12 +22,19 @@ interface Product {
   slug: string;
 }
 
+export interface FlashSaleItemData {
+  sale_price: number;
+  stock_limit: number;
+  sold_count: number;
+}
+
 interface ProductCardProps {
   product: Product;
   viewMode?: 'grid' | 'list';
+  flashSaleData?: FlashSaleItemData;
 }
 
-export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
+export function ProductCard({ product, viewMode = 'grid', flashSaleData }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -35,7 +43,7 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
     addItem({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: flashSaleData ? flashSaleData.sale_price : product.price,
       thumbnail_url: product.thumbnail_url,
     });
     toast.success('เพิ่มลงตะกร้าแล้ว');
@@ -69,18 +77,39 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
                 {product.description}
               </p>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-primary">฿{product.price.toLocaleString()}</span>
-                {product.compare_at_price && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    ฿{product.compare_at_price.toLocaleString()}
-                  </span>
+                {flashSaleData ? (
+                  <>
+                    <span className="font-bold text-destructive">฿{flashSaleData.sale_price.toLocaleString()}</span>
+                    <span className="text-sm text-muted-foreground line-through">
+                      ฿{product.price.toLocaleString()}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold text-primary">฿{product.price.toLocaleString()}</span>
+                    {product.compare_at_price && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        ฿{product.compare_at_price.toLocaleString()}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
-            <Button onClick={handleAddToCart}>
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              เพิ่มลงตะกร้า
-            </Button>
+            <div className="flex flex-col items-end gap-2">
+              <Button onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                {flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
+              </Button>
+              {flashSaleData && flashSaleData.stock_limit > 0 && (
+                <div className="w-full max-w-[120px] text-right">
+                  <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                    <span>ขายแล้ว {flashSaleData.sold_count}</span>
+                  </div>
+                  <Progress value={Math.min(100, (flashSaleData.sold_count / flashSaleData.stock_limit) * 100)} className="h-1.5" />
+                </div>
+              )}
+            </div>
           </CardContent>
         </Link>
       </Card>
@@ -102,14 +131,18 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
               No Image
             </div>
           )}
-          {discount && (
+          {flashSaleData ? (
+            <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground border-0 rounded-full px-3 animate-pulse">
+              Flash Sale
+            </Badge>
+          ) : discount ? (
             <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground border-0 rounded-full px-3">
               -{discount}%
             </Badge>
-          )}
+          ) : null}
           <WishlistButton productId={product.id} className="absolute top-3 right-3" />
           <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart}>
+            <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
               <ShoppingCart className="h-4 w-4" />
             </Button>
           </div>
@@ -121,13 +154,33 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
           )}
           <h3 className="font-display text-lg mb-2 line-clamp-2 min-h-[3rem] leading-snug">{product.name}</h3>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-xl text-primary">฿{product.price.toLocaleString()}</span>
-            {product.compare_at_price && (
-              <span className="text-sm text-muted-foreground line-through">
-                ฿{product.compare_at_price.toLocaleString()}
-              </span>
+            {flashSaleData ? (
+              <>
+                <span className="font-display text-xl text-destructive">฿{flashSaleData.sale_price.toLocaleString()}</span>
+                <span className="text-sm text-muted-foreground line-through">
+                  ฿{product.price.toLocaleString()}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-display text-xl text-primary">฿{product.price.toLocaleString()}</span>
+                {product.compare_at_price && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    ฿{product.compare_at_price.toLocaleString()}
+                  </span>
+                )}
+              </>
             )}
           </div>
+          {flashSaleData && flashSaleData.stock_limit > 0 && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>ขายแล้ว {flashSaleData.sold_count} ชิ้น</span>
+                <span>เหลือ {Math.max(0, flashSaleData.stock_limit - flashSaleData.sold_count)}</span>
+              </div>
+              <Progress value={Math.min(100, (flashSaleData.sold_count / flashSaleData.stock_limit) * 100)} className="h-1.5" />
+            </div>
+          )}
         </CardContent>
       </Card>
     </Link>
