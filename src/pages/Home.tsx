@@ -11,6 +11,8 @@ import { FlashSaleBanner } from '@/components/marketing/FlashSaleBanner';
 import heroImg from '@/assets/hero-thai-desserts.jpg';
 import khanomChan from '@/assets/feature-khanom-chan.jpg';
 import mangoSticky from '@/assets/feature-mango-sticky.jpg';
+import { ForYouFeed } from '@/components/recommendations/ForYouFeed';
+import { SmartReorder } from '@/components/recommendations/SmartReorder';
 
 
 const fadeUp = {
@@ -236,6 +238,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Smart Reorder */}
+      <SmartReorder />
+
+      {/* For You Feed */}
+      <ForYouFeed />
 
       {/* Categories */}
       <section className="py-16 md:py-20 bg-gradient-soft">

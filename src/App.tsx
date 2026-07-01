@@ -16,6 +16,7 @@ import Wishlist from "./pages/Wishlist";
 import GiftCards from "./pages/GiftCards";
 import BundleBuilder from "./pages/BundleBuilder";
 import Referral from "./pages/Referral";
+import AiConcierge from "./pages/AiConcierge";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/gift-cards" element={<GiftCards />} />
             <Route path="/bundles" element={<BundleBuilder />} />
             <Route path="/referral" element={<Referral />} />
+            <Route path="/concierge" element={<AiConcierge />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
