@@ -1,0 +1,4 @@
+## 2024-05-18 - [Security] Prevent XSS in Chart component styles
+**Vulnerability:** The ChartStyle component used `dangerouslySetInnerHTML` to inject CSS dynamically, relying on user-provided config options without sanitization. If a user provided a malicious `color` config like `</style><script>alert(1)</script>`, it would execute arbitrary javascript breaking out of the style block.
+**Learning:** React native `children` mapping is inherently secure against XSS for script injection, as it automatically escapes tags and content according to proper data flow, meaning raw html string tags will not be parsed by the browser if injected this way.
+**Prevention:** Rather than using `dangerouslySetInnerHTML` for basic dynamic injection of configs, you can just render the raw template literals as direct `children` of a tag (e.g. `<style>{cssString}</style>`).
