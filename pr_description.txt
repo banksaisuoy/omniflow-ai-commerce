@@ -1,0 +1,8 @@
+1. 🚀 New Feature
+🧪 Added error path tests for signup validation
+
+2. ✅ Why it helps
+Ensure that the error toasts are correctly displayed when user enters invalid email or short password in the signup form.
+
+3. 🛠 Implementation
+Added test file `src/pages/Auth.test.tsx` containing tests using React Testing Library to simulate form submission with invalid data and verify the error toast appears. Installed required packages for testing and configured `vite.config.ts`.

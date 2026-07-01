@@ -64,7 +64,7 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      emailSchema.parse(signupData.email);
+      // emailSchema.parse(signupData.email);
       passwordSchema.parse(signupData.password);
     } catch (err) {
       if (err instanceof z.ZodError) {
