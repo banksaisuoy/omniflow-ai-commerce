@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogOut, LayoutDashboard, Menu, X, Heart, Sparkles, Gift, Users } from 'lucide-react';
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,9 +49,13 @@ export function Navbar() {
             <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               เมนูขนม
             </Link>
-            <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              เซ็ตของขวัญ
+            <Link to="/gift-cards" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              บัตรของขวัญ
             </Link>
+            <Link to="/loyalty" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              Rewards
+            </Link>
+
             {isAdmin && (
               <Link to="/admin" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
                 จัดการร้าน
@@ -60,6 +65,11 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-1">
+            {user && (
+              <Button variant="ghost" size="icon" className="rounded-full hidden md:inline-flex" asChild>
+                <Link to="/wishlist"><Heart className="h-5 w-5" /></Link>
+              </Button>
+            )}
             <Button variant="ghost" size="icon" className="relative rounded-full" asChild>
               <Link to="/cart">
                 <ShoppingCart className="h-5 w-5" />
@@ -70,6 +80,7 @@ export function Navbar() {
                 )}
               </Link>
             </Button>
+
 
             {user ? (
               <DropdownMenu>
@@ -83,6 +94,10 @@ export function Navbar() {
                     {user.email}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/loyalty')}><Sparkles className="mr-2 h-4 w-4" />Rewards</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/wishlist')}><Heart className="mr-2 h-4 w-4" />รายการโปรด</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/referral')}><Users className="mr-2 h-4 w-4" />ชวนเพื่อน</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/gift-cards')}><Gift className="mr-2 h-4 w-4" />บัตรของขวัญ</DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem onClick={() => navigate('/admin')}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -94,6 +109,7 @@ export function Navbar() {
                     ออกจากระบบ
                   </DropdownMenuItem>
                 </DropdownMenuContent>
+
               </DropdownMenu>
             ) : (
               <Button size="sm" asChild className="rounded-full px-5 ml-2 shadow-soft">

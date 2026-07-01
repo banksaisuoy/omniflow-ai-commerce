@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      bundle_items: {
+        Row: {
+          bundle_id: string
+          id: string
+          product_id: string
+          quantity: number
+        }
+        Insert: {
+          bundle_id: string
+          id?: string
+          product_id: string
+          quantity?: number
+        }
+        Update: {
+          bundle_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bundle_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bundles: {
+        Row: {
+          bundle_price: number
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bundle_price: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bundle_price?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -95,6 +164,170 @@ export type Database = {
         }
         Relationships: []
       }
+      flash_sale_items: {
+        Row: {
+          created_at: string
+          flash_sale_id: string
+          id: string
+          product_id: string
+          sale_price: number
+          sold_count: number
+          stock_limit: number
+        }
+        Insert: {
+          created_at?: string
+          flash_sale_id: string
+          id?: string
+          product_id: string
+          sale_price: number
+          sold_count?: number
+          stock_limit?: number
+        }
+        Update: {
+          created_at?: string
+          flash_sale_id?: string
+          id?: string
+          product_id?: string
+          sale_price?: number
+          sold_count?: number
+          stock_limit?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sale_items_flash_sale_id_fkey"
+            columns: ["flash_sale_id"]
+            isOneToOne: false
+            referencedRelation: "flash_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_sales: {
+        Row: {
+          banner_url: string | null
+          created_at: string
+          description: string | null
+          ends_at: string
+          id: string
+          is_active: boolean
+          name: string
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          id?: string
+          is_active?: boolean
+          name: string
+          starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gift_card_redemptions: {
+        Row: {
+          amount_used: number
+          created_at: string
+          gift_card_id: string
+          id: string
+          order_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_used: number
+          created_at?: string
+          gift_card_id: string
+          id?: string
+          order_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_used?: number
+          created_at?: string
+          gift_card_id?: string
+          id?: string
+          order_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_card_redemptions_gift_card_id_fkey"
+            columns: ["gift_card_id"]
+            isOneToOne: false
+            referencedRelation: "gift_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_cards: {
+        Row: {
+          balance: number
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          initial_amount: number
+          message: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          sender_email: string | null
+          sender_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          balance: number
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount: number
+          message?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          sender_email?: string | null
+          sender_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount?: number
+          message?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          sender_email?: string | null
+          sender_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory: {
         Row: {
           created_at: string
@@ -150,6 +383,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      loyalty_accounts: {
+        Row: {
+          birthday: string | null
+          created_at: string
+          id: string
+          lifetime_points: number
+          points_balance: number
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birthday?: string | null
+          created_at?: string
+          id?: string
+          lifetime_points?: number
+          points_balance?: number
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birthday?: string | null
+          created_at?: string
+          id?: string
+          lifetime_points?: number
+          points_balance?: number
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loyalty_transactions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          points: number
+          reference_id: string | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          points: number
+          reference_id?: string | null
+          source: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          points?: number
+          reference_id?: string | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -678,6 +974,39 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          code: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          referred_user_id: string | null
+          referrer_id: string
+          reward_points: number
+          status: string
+        }
+        Insert: {
+          code: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string | null
+          referrer_id: string
+          reward_points?: number
+          status?: string
+        }
+        Update: {
+          code?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string | null
+          referrer_id?: string
+          reward_points?: number
+          status?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           ai_auto_reply: string | null
@@ -753,6 +1082,62 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          notify_on_price_drop: boolean
+          notify_on_restock: boolean
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notify_on_price_drop?: boolean
+          notify_on_restock?: boolean
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notify_on_price_drop?: boolean
+          notify_on_restock?: boolean
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_reviews: {
@@ -814,6 +1199,13 @@ export type Database = {
       }
       generate_order_number: { Args: never; Returns: string }
       generate_pos_receipt_no: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_pos_staff: { Args: { _user_id: string }; Returns: boolean }
       pos_checkout: {
         Args: {
@@ -850,7 +1242,7 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "cashier" | "customer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -977,6 +1369,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "cashier", "customer"],
+    },
   },
 } as const

@@ -5,8 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/stores/cartStore';
+import { WishlistButton } from '@/components/products/WishlistButton';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
 
 interface Product {
   id: string;
@@ -105,12 +107,14 @@ export function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
               -{discount}%
             </Badge>
           )}
+          <WishlistButton productId={product.id} className="absolute top-3 right-3" />
           <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart}>
               <ShoppingCart className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
         <CardContent className="p-5">
           {product.category && (
             <p className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wider">{product.category}</p>
