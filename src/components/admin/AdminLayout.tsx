@@ -19,7 +19,8 @@ import {
   Star,
   Brain,
   Receipt,
-  ClipboardList
+  ClipboardList,
+  Cloud
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -39,6 +40,7 @@ const sidebarItems = [
   { icon: Star, label: 'รีวิว', path: '/admin/reviews' },
   { icon: BarChart3, label: 'รายงาน', path: '/admin/reports' },
   { icon: Brain, label: 'AI Insights', path: '/admin/ai-insights' },
+  { icon: Cloud, label: 'Google Drive', path: '/admin/gdrive' },
   { icon: Settings, label: 'ตั้งค่า', path: '/admin/settings' },
 ];
 

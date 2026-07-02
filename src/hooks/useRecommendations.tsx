@@ -41,7 +41,7 @@ export function useForYou(limit = 8) {
         return data || [];
       }
       const { data: orders } = await supabase
-        .from("orders").select("id").eq("user_id", user.user.id).limit(10);
+        .from("orders").select("id").eq("customer_id", user.user.id).limit(10);
       const orderIds = (orders || []).map((o) => o.id);
       if (orderIds.length === 0) {
         const { data } = await supabase.from("products").select("*").eq("status", "active").limit(limit);
