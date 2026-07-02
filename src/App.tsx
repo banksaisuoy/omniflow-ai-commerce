@@ -19,6 +19,7 @@ import Referral from "./pages/Referral";
 import AiConcierge from "./pages/AiConcierge";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import { AIChatWidget } from "./components/chat/AIChatWidget";
 
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
 
           </Routes>
+          <AIChatWidget />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
