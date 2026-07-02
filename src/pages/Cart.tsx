@@ -4,10 +4,21 @@ import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useCartStore } from '@/stores/cartStore';
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems } = useCartStore();
 
   if (items.length === 0) {
     return (
@@ -103,9 +114,27 @@ export default function Cart() {
                 </Card>
               </motion.div>
             ))}
-            <Button variant="outline" onClick={clearCart}>
-              ล้างตะกร้า
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">
+                  ล้างตะกร้า
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>ยืนยันการล้างตะกร้า?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    การกระทำนี้จะลบสินค้าทั้งหมดออกจากตะกร้าของคุณและไม่สามารถย้อนกลับได้
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                  <AlertDialogAction onClick={clearCart} className="bg-destructive hover:bg-destructive/90">
+                    ล้างตะกร้า
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           {/* Order Summary */}
@@ -115,7 +144,7 @@ export default function Cart() {
                 <h2 className="text-xl font-bold mb-4">สรุปคำสั่งซื้อ</h2>
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">ยอดรวมสินค้า</span>
+                    <span className="text-muted-foreground">ยอดรวมสินค้า ({getTotalItems()} ชิ้น)</span>
                     <span>฿{getTotalPrice().toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
