@@ -35,6 +35,7 @@ import AdminReports from './AdminReports';
 import AdminAIInsights from './AdminAIInsights';
 import AdminSettings from './AdminSettings';
 import AdminUpload from './AdminUpload';
+import AdminGDrive from './AdminGDrive';
 import POS from './pos/POS';
 import ShiftManager from './pos/ShiftManager';
 import POSTransactions from './pos/POSTransactions';
@@ -243,6 +244,7 @@ export default function AdminDashboard() {
     if (currentPath === '/admin/reviews') return <AdminReviews />;
     if (currentPath === '/admin/reports') return <AdminReports />;
     if (currentPath === '/admin/ai-insights') return <AdminAIInsights />;
+    if (currentPath === '/admin/gdrive') return <AdminGDrive />;
     if (currentPath === '/admin/settings') return <AdminSettings />;
     return null;
   };
