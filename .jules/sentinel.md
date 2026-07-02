@@ -1,0 +1,4 @@
+## 2024-05-24 - Edge Function JWT Authentication Fix
+**Vulnerability:** Supabase Edge Functions (`ai-forecast`, `analyze-product`, `generate-embedding`) were attempting to validate JWTs using the non-existent `supabase.auth.getClaims` method from `@supabase/supabase-js@2`, leading to unhandled 500 errors or bypassed authentication if error checks were mishandled.
+**Learning:** In the `@supabase/supabase-js` v2 library, JWT validation must be done using `await supabase.auth.getUser(token)`, which correctly verifies the token against the Supabase Auth service and returns the verified user data. Methods like `getClaims` are not valid and fail silently or throw unhandled exceptions.
+**Prevention:** Always use `getUser(token)` for secure server-side JWT verification. Never assume the presence of undocumented auth methods. When accessing the user ID after validation, correctly reference `data.user.id`.
