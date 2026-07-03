@@ -17,6 +17,9 @@ import GiftCards from "./pages/GiftCards";
 import BundleBuilder from "./pages/BundleBuilder";
 import Referral from "./pages/Referral";
 import AiConcierge from "./pages/AiConcierge";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import TrackOrder from "./pages/TrackOrder";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { AIChatWidget } from "./components/chat/AIChatWidget";
@@ -45,6 +48,9 @@ const App = () => (
             <Route path="/bundles" element={<BundleBuilder />} />
             <Route path="/referral" element={<Referral />} />
             <Route path="/concierge" element={<AiConcierge />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/track" element={<TrackOrder />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
