@@ -115,12 +115,14 @@ export default function Checkout() {
           total,
           status: 'pending',
           payment_status: paymentMethod === 'promptpay' ? 'awaiting_payment' : 'pending',
-          payment_method: paymentMethod,
-          coupon_code: appliedCoupon?.code || null,
           shipping_address: {
             name: formData.fullName,
             phone: formData.phone,
             address: formData.address,
+          },
+          metadata: {
+            payment_method: paymentMethod,
+            coupon_code: appliedCoupon?.code || null,
           },
         })
         .select()
