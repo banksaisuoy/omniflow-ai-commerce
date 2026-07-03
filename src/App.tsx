@@ -48,6 +48,9 @@ const App = () => (
             <Route path="/bundles" element={<BundleBuilder />} />
             <Route path="/referral" element={<Referral />} />
             <Route path="/concierge" element={<AiConcierge />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/track" element={<TrackOrder />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
