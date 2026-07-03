@@ -15,12 +15,13 @@ import {
   X,
   Store,
   Upload,
-  MessageSquare,
   Star,
   Brain,
   Receipt,
   ClipboardList,
-  Cloud
+  Cloud,
+  Tag,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +39,8 @@ const sidebarItems = [
   { icon: ShoppingCart, label: 'คำสั่งซื้อ', path: '/admin/orders' },
   { icon: Users, label: 'ลูกค้า', path: '/admin/customers' },
   { icon: Star, label: 'รีวิว', path: '/admin/reviews' },
+  { icon: Tag, label: 'คูปอง', path: '/admin/coupons' },
+  { icon: FileText, label: 'บทความ', path: '/admin/blog' },
   { icon: BarChart3, label: 'รายงาน', path: '/admin/reports' },
   { icon: Brain, label: 'AI Insights', path: '/admin/ai-insights' },
   { icon: Cloud, label: 'Google Drive', path: '/admin/gdrive' },
