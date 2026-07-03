@@ -14,7 +14,11 @@ import { Navigate } from 'react-router-dom';
 const AMOUNTS = [200, 500, 1000, 2000];
 
 function genCode() {
-  return 'GC-' + Array.from({ length: 12 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const randomValues = new Uint32Array(12);
+  crypto.getRandomValues(randomValues);
+
+  return 'GC-' + Array.from({ length: 12 }, (_, i) => chars[randomValues[i] % chars.length]).join('');
 }
 
 export default function GiftCards() {
