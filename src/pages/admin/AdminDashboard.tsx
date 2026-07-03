@@ -247,6 +247,8 @@ export default function AdminDashboard() {
     if (currentPath === '/admin/reports') return <AdminReports />;
     if (currentPath === '/admin/ai-insights') return <AdminAIInsights />;
     if (currentPath === '/admin/gdrive') return <AdminGDrive />;
+    if (currentPath === '/admin/coupons') return <AdminCoupons />;
+    if (currentPath === '/admin/blog') return <AdminBlog />;
     if (currentPath === '/admin/settings') return <AdminSettings />;
     return null;
   };
