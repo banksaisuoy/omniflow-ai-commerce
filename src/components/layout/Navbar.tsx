@@ -58,6 +58,12 @@ export function Navbar() {
             <Link to="/loyalty" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               Rewards
             </Link>
+            <Link to="/blog" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              บทความ
+            </Link>
+            <Link to="/track" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              ติดตามคำสั่งซื้อ
+            </Link>
             <Link to="/concierge" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
               AI แนะนำ
