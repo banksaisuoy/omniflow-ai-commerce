@@ -36,6 +36,8 @@ import AdminAIInsights from './AdminAIInsights';
 import AdminSettings from './AdminSettings';
 import AdminUpload from './AdminUpload';
 import AdminGDrive from './AdminGDrive';
+import AdminCoupons from './AdminCoupons';
+import AdminBlog from './AdminBlog';
 import POS from './pos/POS';
 import ShiftManager from './pos/ShiftManager';
 import POSTransactions from './pos/POSTransactions';
