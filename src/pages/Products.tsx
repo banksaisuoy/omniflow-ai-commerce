@@ -7,6 +7,7 @@ import { Layout } from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -14,18 +15,34 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState('newest');
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products', selectedCategory],
+    queryKey: ['products', selectedCategory, sortBy],
     queryFn: async () => {
       let query = supabase
         .from('products')
         .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .eq('status', 'active');
 
       if (selectedCategory) {
         query = query.eq('category', selectedCategory);
+      }
+
+      switch (sortBy) {
+        case 'price_asc':
+          query = query.order('price', { ascending: true });
+          break;
+        case 'price_desc':
+          query = query.order('price', { ascending: false });
+          break;
+        case 'name_asc':
+          query = query.order('name', { ascending: true });
+          break;
+        case 'newest':
+        default:
+          query = query.order('created_at', { ascending: false });
+          break;
       }
 
       const { data, error } = await query;
@@ -75,6 +92,17 @@ export default function Products() {
             />
           </div>
           <div className="flex gap-2">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="เรียงตาม" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">มาใหม่ล่าสุด</SelectItem>
+                <SelectItem value="price_asc">ราคา: ต่ำไปสูง</SelectItem>
+                <SelectItem value="price_desc">ราคา: สูงไปต่ำ</SelectItem>
+                <SelectItem value="name_asc">ชื่อ: A-Z (ก-ฮ)</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="icon"
