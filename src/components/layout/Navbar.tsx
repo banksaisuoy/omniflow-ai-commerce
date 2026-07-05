@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useCartStore } from '@/stores/cartStore';
 import { cn } from '@/lib/utils';
+import { CartSheet } from '@/components/cart/CartSheet';
 
 export function Navbar() {
   const { user, isAdmin, signOut } = useAuth();
@@ -83,16 +84,16 @@ export function Navbar() {
                 <Link to="/wishlist"><Heart className="h-5 w-5" /></Link>
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="relative rounded-full" asChild>
-              <Link to="/cart">
+            <CartSheet>
+              <Button variant="ghost" size="icon" className="relative rounded-full">
                 <ShoppingCart className="h-5 w-5" />
                 {getTotalItems() > 0 && (
                   <Badge className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary">
                     {getTotalItems()}
                   </Badge>
                 )}
-              </Link>
-            </Button>
+              </Button>
+            </CartSheet>
 
 
             {user ? (
