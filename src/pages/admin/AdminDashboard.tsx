@@ -38,6 +38,8 @@ import AdminUpload from './AdminUpload';
 import AdminGDrive from './AdminGDrive';
 import AdminCoupons from './AdminCoupons';
 import AdminBlog from './AdminBlog';
+import AdminAccounting from './AdminAccounting';
+import AdminSecurity from './AdminSecurity';
 import POS from './pos/POS';
 import ShiftManager from './pos/ShiftManager';
 import POSTransactions from './pos/POSTransactions';
@@ -249,6 +251,8 @@ export default function AdminDashboard() {
     if (currentPath === '/admin/gdrive') return <AdminGDrive />;
     if (currentPath === '/admin/coupons') return <AdminCoupons />;
     if (currentPath === '/admin/blog') return <AdminBlog />;
+    if (currentPath === '/admin/accounting') return <AdminAccounting />;
+    if (currentPath === '/admin/security') return <AdminSecurity />;
     if (currentPath === '/admin/settings') return <AdminSettings />;
     return null;
   };
