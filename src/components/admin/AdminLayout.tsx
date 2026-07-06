@@ -21,7 +21,8 @@ import {
   ClipboardList,
   Cloud,
   Tag,
-  FileText
+  FileText,
+  Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -44,6 +45,8 @@ const sidebarItems = [
   { icon: BarChart3, label: 'รายงาน', path: '/admin/reports' },
   { icon: Brain, label: 'AI Insights', path: '/admin/ai-insights' },
   { icon: Cloud, label: 'Google Drive', path: '/admin/gdrive' },
+  { icon: FileText, label: 'Accounting', path: '/admin/accounting' },
+  { icon: Shield, label: 'Security & PDPA', path: '/admin/security' },
   { icon: Settings, label: 'ตั้งค่า', path: '/admin/settings' },
 ];
 

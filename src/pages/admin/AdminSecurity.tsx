@@ -35,7 +35,7 @@ export default function AdminSecurity() {
       const [{ data: profile }, { data: orders }, { data: reviews }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
         supabase.from('orders').select('*').eq('customer_id', user.id),
-        supabase.from('reviews').select('*').eq('user_id', user.id),
+        supabase.from('reviews').select('*').eq('customer_id', user.id),
       ]);
       const bundle = { profile, orders, reviews, exported_at: new Date().toISOString() };
       const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
