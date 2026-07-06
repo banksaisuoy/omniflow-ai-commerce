@@ -68,7 +68,7 @@ export default function AdminDashboard() {
     ordersChange: 0,
     customersChange: 0,
   });
-  const [salesData, setSalesData] = useState<any[]>([]);
+  const [salesData, setSalesData] = useState<{ date: string; revenue: number; orders: number; displayDate: string; }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -76,13 +76,6 @@ export default function AdminDashboard() {
       navigate('/auth');
     }
   }, [user, isAdmin, loading, navigate]);
-
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchDashboardData();
-      setupRealtimeSubscription();
-    }
-  }, [user, isAdmin]);
 
   const setupRealtimeSubscription = () => {
     const channel = supabase
@@ -107,6 +100,13 @@ export default function AdminDashboard() {
       supabase.removeChannel(channel);
     };
   };
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchDashboardData();
+      setupRealtimeSubscription();
+    }
+  }, [user, isAdmin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -314,9 +314,25 @@ export default function AdminDashboard() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <SalesChart data={salesData} isLoading={isLoading} />
-          <OrdersChart data={salesData} isLoading={isLoading} />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="grid gap-6 mb-6">
+              <SalesChart data={salesData} isLoading={isLoading} />
+              <OrdersChart data={salesData} isLoading={isLoading} />
+            </div>
+          </div>
+          <div>
+            <CategoryChart
+              data={[
+                { name: 'สกินแคร์', value: 45, color: '' },
+                { name: 'เมคอัพ', value: 25, color: '' },
+                { name: 'น้ำหอม', value: 15, color: '' },
+                { name: 'ดูแลเส้นผม', value: 10, color: '' },
+                { name: 'อื่นๆ', value: 5, color: '' },
+              ]}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
 
         {/* AI Forecast Section */}
