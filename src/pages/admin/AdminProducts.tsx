@@ -84,13 +84,18 @@ export default function AdminProducts() {
 
       <Card className="glass border-border/50">
         <CardHeader className="pb-3">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="ค้นหาสินค้า..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+          <div className="flex flex-col sm:flex-row gap-4 bg-background/50 p-4 rounded-xl border border-border/50 shadow-sm backdrop-blur-md transition-all">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="ค้นหาสินค้า..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-10 bg-background/80 border-border/50 focus:border-primary/50 transition-all shadow-none"
+              />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px] bg-background/80 border-border/50 focus:border-primary/50 transition-all shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
