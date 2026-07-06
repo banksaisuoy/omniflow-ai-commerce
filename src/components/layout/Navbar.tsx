@@ -15,6 +15,20 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCartStore } from '@/stores/cartStore';
 import { cn } from '@/lib/utils';
 import { CartSheet } from '@/components/cart/CartSheet';
+import { useI18n } from '@/stores/i18nStore';
+
+function LangToggle() {
+  const { lang, setLang } = useI18n();
+  return (
+    <button
+      onClick={() => setLang(lang === 'th' ? 'en' : 'th')}
+      className="px-2 py-1 text-xs font-semibold rounded-full border border-border hover:bg-accent transition"
+      aria-label="Toggle language"
+    >
+      {lang.toUpperCase()}
+    </button>
+  );
+}
 
 export function Navbar() {
   const { user, isAdmin, signOut } = useAuth();
@@ -79,6 +93,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-1">
+            <LangToggle />
             {user && (
               <Button variant="ghost" size="icon" className="rounded-full hidden md:inline-flex" asChild>
                 <Link to="/wishlist"><Heart className="h-5 w-5" /></Link>
