@@ -59,30 +59,30 @@ export default function Checkout() {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
-    const { data, error } = await supabase
-      .from('coupons')
-      .select('*')
-      .eq('code', couponCode.toUpperCase().trim())
-      .eq('active', true)
-      .maybeSingle();
-    if (error || !data) {
-      toast.error('ไม่พบคูปองนี้');
+    const { data, error } = await supabase.rpc('validate_coupon', {
+      _code: couponCode.trim(),
+      _subtotal: subtotal,
+    });
+    if (error) {
+      toast.error('ไม่สามารถตรวจสอบคูปองได้');
       return;
     }
-    if (data.expires_at && new Date(data.expires_at) < new Date()) {
-      toast.error('คูปองหมดอายุแล้ว');
+    const result = data as any;
+    if (!result?.valid) {
+      const reason = result?.reason;
+      if (reason === 'expired') toast.error('คูปองหมดอายุแล้ว');
+      else if (reason === 'exhausted') toast.error('คูปองถูกใช้ครบจำนวนแล้ว');
+      else if (reason === 'min_order') toast.error(`ยอดขั้นต่ำ ฿${result.min_order}`);
+      else toast.error('ไม่พบคูปองนี้');
       return;
     }
-    if (data.max_uses && data.used_count >= data.max_uses) {
-      toast.error('คูปองถูกใช้ครบจำนวนแล้ว');
-      return;
-    }
-    if (subtotal < Number(data.min_order || 0)) {
-      toast.error(`ยอดขั้นต่ำ ฿${data.min_order}`);
-      return;
-    }
-    setAppliedCoupon(data);
-    toast.success(`ใช้คูปอง ${data.code} สำเร็จ!`);
+    setAppliedCoupon({
+      code: result.code,
+      discount_type: result.discount_type,
+      discount_value: result.discount_value,
+      discount: result.discount,
+    });
+    toast.success(`ใช้คูปอง ${result.code} สำเร็จ!`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,55 +100,23 @@ export default function Checkout() {
     }
 
     try {
-      const { data: orderNumberData } = await supabase.rpc('generate_order_number');
-      const orderNumber = orderNumberData || `OMN-${Date.now()}`;
-
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          order_number: orderNumber,
-          customer_id: user?.id || null,
-          customer_name: formData.fullName,
-          customer_email: formData.email,
-          subtotal,
-          discount_amount: discount,
-          total,
-          status: 'pending',
-          payment_status: paymentMethod === 'promptpay' ? 'awaiting_payment' : 'pending',
-          shipping_address: {
-            name: formData.fullName,
-            phone: formData.phone,
-            address: formData.address,
-          },
-          metadata: {
-            payment_method: paymentMethod,
-            coupon_code: appliedCoupon?.code || null,
-          },
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.id,
-        product_name: item.name,
-        product_image: item.thumbnail_url,
-        quantity: item.quantity,
-        unit_price: item.price,
-        total_price: item.price * item.quantity,
-      }));
-
-      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-      if (itemsError) throw itemsError;
-
-      if (appliedCoupon) {
-        await supabase.from('coupons').update({ used_count: appliedCoupon.used_count + 1 }).eq('id', appliedCoupon.id);
-      }
+      const { data, error } = await supabase.rpc('create_order', {
+        _items: items.map((it) => ({ product_id: it.id, quantity: it.quantity })),
+        _customer_name: formData.fullName,
+        _customer_email: formData.email,
+        _shipping_address: {
+          name: formData.fullName,
+          phone: formData.phone,
+          address: formData.address,
+        },
+        _payment_method: paymentMethod,
+        _coupon_code: appliedCoupon?.code || null,
+      });
+      if (error) throw error;
+      const order = data as any;
 
       if (paymentMethod === 'promptpay') {
-        const dataUrl = await generatePromptPayQR(total);
+        const dataUrl = await generatePromptPayQR(Number(order.total));
         setQrDataUrl(dataUrl);
         setPendingOrderId(order.id);
         setQrOpen(true);
@@ -159,7 +127,13 @@ export default function Checkout() {
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
-      toast.error(error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+      const msg = error?.message || '';
+      if (msg.includes('invalid_product')) toast.error('สินค้าบางรายการไม่พร้อมจำหน่าย');
+      else if (msg.includes('coupon_expired')) toast.error('คูปองหมดอายุแล้ว');
+      else if (msg.includes('coupon_exhausted')) toast.error('คูปองถูกใช้ครบจำนวนแล้ว');
+      else if (msg.includes('coupon_min_order')) toast.error('ยอดคำสั่งซื้อไม่ถึงขั้นต่ำของคูปอง');
+      else if (msg.includes('invalid_coupon')) toast.error('คูปองไม่ถูกต้อง');
+      else toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
     } finally {
       setIsSubmitting(false);
     }

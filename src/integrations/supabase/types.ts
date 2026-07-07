@@ -1472,9 +1472,86 @@ export type Database = {
       }
     }
     Functions: {
+      admin_create_gift_card: {
+        Args: {
+          _amount: number
+          _message?: string
+          _recipient_email?: string
+          _recipient_name: string
+        }
+        Returns: {
+          balance: number
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          initial_amount: number
+          message: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          sender_email: string | null
+          sender_id: string | null
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gift_cards"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_get_product: {
+        Args: { _id: string }
+        Returns: {
+          ai_generated_data: Json | null
+          barcode: string | null
+          brand: string | null
+          category: string | null
+          compare_at_price: number | null
+          cost_price: number | null
+          created_at: string
+          description: string | null
+          description_html: string | null
+          embedding: string | null
+          id: string
+          images: Json | null
+          is_featured: boolean | null
+          name: string
+          price: number
+          seo_description: string | null
+          seo_title: string | null
+          sku: string | null
+          slug: string
+          status: string
+          subcategory: string | null
+          tags: Json | null
+          thumbnail_url: string | null
+          updated_at: string
+          weight: number | null
+          weight_unit: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       calculate_sales_velocity: {
         Args: { p_product_id: string }
         Returns: number
+      }
+      create_order: {
+        Args: {
+          _coupon_code?: string
+          _customer_email: string
+          _customer_name: string
+          _items: Json
+          _payment_method: string
+          _shipping_address: Json
+        }
+        Returns: Json
       }
       generate_order_number: { Args: never; Returns: string }
       generate_pos_receipt_no: { Args: never; Returns: string }
@@ -1519,6 +1596,10 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      validate_coupon: {
+        Args: { _code: string; _subtotal: number }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "cashier" | "customer"

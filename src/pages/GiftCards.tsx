@@ -33,19 +33,21 @@ export default function GiftCards() {
 
   const handleCreate = async () => {
     setBusy(true);
-    const code = genCode();
-    const { data, error } = await supabase.from('gift_cards').insert({
-      code,
-      initial_amount: amount,
-      balance: amount,
-      sender_id: user!.id,
-      sender_email: user!.email,
-      recipient_name: recipient.name,
-      recipient_email: recipient.email,
-      message: recipient.message,
-    }).select().single();
+    const { data, error } = await supabase.rpc('admin_create_gift_card', {
+      _amount: amount,
+      _recipient_name: recipient.name,
+      _recipient_email: recipient.email || null,
+      _message: recipient.message || null,
+    });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      if (error.message?.includes('forbidden')) {
+        toast.error('ขณะนี้การซื้อบัตรของขวัญยังไม่เปิดให้ลูกค้าทั่วไป (รอระบบชำระเงิน)');
+      } else {
+        toast.error(error.message);
+      }
+      return;
+    }
     setCreated(data);
     toast.success('🎁 สร้างบัตรของขวัญเรียบร้อย!');
   };
