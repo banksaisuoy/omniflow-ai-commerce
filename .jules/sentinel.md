@@ -12,3 +12,8 @@
 **Vulnerability:** The `MagicProductUploader.tsx` frontend component was sending the Supabase Publishable Key (`VITE_SUPABASE_PUBLISHABLE_KEY`) as a Bearer token to the `analyze-product` Edge Function.
 **Learning:** Sending a publishable key as an authentication token compromises security and breaks Edge Functions that strictly expect a valid user session JWT.
 **Prevention:** Always verify that API requests to authenticated endpoints include the correct user session token retrieved via `supabase.auth.getSession()` or similar methods, not environment variables.
+
+## 2024-05-25 - IDOR in Edge Functions using Service Role
+**Vulnerability:** The `ai-chat` Edge Function accepted a `session_id` directly from the user and used the Supabase `admin` client (Service Role key) to insert chat messages. Because the admin client bypasses Row Level Security (RLS), an attacker could provide another user's `session_id` and inject messages into their chat session (Insecure Direct Object Reference).
+**Learning:** Edge Functions that use the Service Role key must manually enforce authorization logic for any operations involving user-supplied IDs, since RLS is bypassed. RLS only protects operations performed by the standard authenticated client.
+**Prevention:** Always programmatically verify resource ownership (e.g., `session.user_id === userData.user.id`) before using a user-supplied ID in a Service Role client operation. Alternatively, use the standard authenticated client to rely on database RLS.

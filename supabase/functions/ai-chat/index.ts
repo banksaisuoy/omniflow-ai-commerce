@@ -61,10 +61,22 @@ ${catalog}`;
 
     // persist
     let sid = session_id;
-    if (!sid) {
+    if (sid) {
+      // Security: Verify session ownership before using it (IDOR protection)
+      const { data: sessionData } = await admin
+        .from("ai_chat_sessions")
+        .select("user_id")
+        .eq("id", sid)
+        .maybeSingle();
+
+      if (!sessionData || sessionData.user_id !== userData.user.id) {
+        return new Response(JSON.stringify({ error: "forbidden: invalid session" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    } else {
       const { data: s } = await admin.from("ai_chat_sessions").insert({ user_id: userData.user.id }).select("id").single();
       sid = s?.id;
     }
+
     if (sid) {
       const last = messages[messages.length - 1];
       await admin.from("ai_chat_messages").insert([
