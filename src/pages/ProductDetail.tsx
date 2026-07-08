@@ -2,20 +2,23 @@ import DOMPurify from 'dompurify';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Minus, Plus, Star, Truck, Shield, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { ShoppingCart, Minus, Plus, Star, Truck, Shield, RotateCcw, Share2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCartStore } from '@/stores/cartStore';
+import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
+import { ProductCard } from '@/components/products/ProductCard';
 import { toast } from 'sonner';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
+  const { products: recentlyViewedProducts, addProduct: addRecentlyViewedProduct } = useRecentlyViewedStore();
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', slug],
@@ -32,6 +35,21 @@ export default function ProductDetail() {
     },
     enabled: !!slug,
   });
+
+  useEffect(() => {
+    if (product) {
+      addRecentlyViewedProduct({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        compare_at_price: product.compare_at_price,
+        thumbnail_url: product.thumbnail_url,
+        category: product.category,
+        slug: product.slug,
+        description: product.description,
+      });
+    }
+  }, [product, addRecentlyViewedProduct]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -170,6 +188,17 @@ export default function ProductDetail() {
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 เพิ่มลงตะกร้า
               </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 shrink-0"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success('คัดลอกลิงก์สำเร็จ');
+                }}
+              >
+                <Share2 className="h-5 w-5" />
+              </Button>
             </div>
 
             {/* Features */}
@@ -189,6 +218,21 @@ export default function ProductDetail() {
             </div>
           </div>
         </motion.div>
+
+        {/* Recently Viewed */}
+        {recentlyViewedProducts.filter(p => p.id !== product?.id).length > 0 && (
+          <div className="mt-16 pt-16 border-t border-border">
+            <h2 className="text-2xl font-bold mb-8">สินค้าที่ดูล่าสุด</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {recentlyViewedProducts
+                .filter(p => p.id !== product?.id)
+                .slice(0, 4)
+                .map((p) => (
+                  <ProductCard key={p.id} product={p as any} />
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
