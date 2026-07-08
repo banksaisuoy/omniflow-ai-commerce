@@ -26,8 +26,8 @@ async function requireAdmin(req: Request): Promise<Response | null> {
     });
   }
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data: profile } = await admin.from("profiles").select("role").eq("id", data.user.id).maybeSingle();
-  if (!profile || profile.role !== "admin") {
+  const { data: role } = await admin.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+  if (!role) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
