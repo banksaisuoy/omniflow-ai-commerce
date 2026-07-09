@@ -132,7 +132,7 @@ export default function AdminGDrive() {
                     {new Date(b.created_at).toLocaleString("th-TH")} · {(b.size_bytes / 1024).toFixed(1)} KB · {Object.keys(b.row_counts || {}).length} ตาราง
                   </div>
                 </div>
-                {b.file_url && <a href={b.file_url} target="_blank" rel="noreferrer" className="text-primary flex items-center gap-1 text-sm"><ExternalLink className="h-3 w-3" /> เปิด</a>}
+                {b.file_url && <a href={b.file_url} target="_blank" rel="noopener noreferrer" className="text-primary flex items-center gap-1 text-sm"><ExternalLink className="h-3 w-3" /> เปิด</a>}
               </div>
             ))}
           </div>
