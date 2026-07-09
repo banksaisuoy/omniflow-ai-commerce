@@ -14,6 +14,17 @@ import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 import { ProductCard } from '@/components/products/ProductCard';
 import { toast } from 'sonner';
 
+interface Product {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  compare_at_price: number | null;
+  thumbnail_url: string | null;
+  category: string | null;
+  slug: string;
+}
+
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
@@ -34,6 +45,23 @@ export default function ProductDetail() {
       return data;
     },
     enabled: !!slug,
+  });
+
+  const { data: relatedProducts } = useQuery({
+    queryKey: ['related-products', product?.category, product?.id],
+    queryFn: async () => {
+      if (!product?.category) return [];
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', product.category)
+        .neq('id', product.id)
+        .eq('status', 'active')
+        .limit(4);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.category && !!product?.id,
   });
 
   useEffect(() => {
@@ -219,6 +247,18 @@ export default function ProductDetail() {
           </div>
         </motion.div>
 
+        {/* Related Products */}
+        {relatedProducts && relatedProducts.length > 0 && (
+          <div className="mt-16 pt-16 border-t border-border">
+            <h2 className="text-2xl font-bold mb-8">สินค้าที่เกี่ยวข้อง</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {relatedProducts.map((p) => (
+                <ProductCard key={p.id} product={p as Product} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Recently Viewed */}
         {recentlyViewedProducts.filter(p => p.id !== product?.id).length > 0 && (
           <div className="mt-16 pt-16 border-t border-border">
@@ -228,7 +268,7 @@ export default function ProductDetail() {
                 .filter(p => p.id !== product?.id)
                 .slice(0, 4)
                 .map((p) => (
-                  <ProductCard key={p.id} product={p as any} />
+                  <ProductCard key={p.id} product={p as Product} />
                 ))}
             </div>
           </div>
