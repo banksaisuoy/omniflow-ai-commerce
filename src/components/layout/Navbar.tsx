@@ -79,10 +79,15 @@ export function Navbar() {
             <Link to="/track" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               ติดตามคำสั่งซื้อ
             </Link>
+            <Link to="/visual-search" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              ค้นด้วยรูป
+            </Link>
             <Link to="/concierge" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
               AI แนะนำ
             </Link>
+
 
             {isAdmin && (
               <Link to="/admin" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">

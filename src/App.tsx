@@ -20,7 +20,9 @@ import AiConcierge from "./pages/AiConcierge";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import TrackOrder from "./pages/TrackOrder";
+import VisualSearch from "./pages/VisualSearch";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+
 import NotFound from "./pages/NotFound";
 import { AIChatWidget } from "./components/chat/AIChatWidget";
 
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/track" element={<TrackOrder />} />
+            <Route path="/visual-search" element={<VisualSearch />} />
+
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
