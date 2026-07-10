@@ -3,17 +3,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Lock, FileText, Globe, KeyRound, AlertTriangle } from 'lucide-react';
+import { Lock, FileText, Globe, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
+
 
 export default function AdminSecurity() {
   const { user } = useAuth();
   const [pdpaConsent, setPdpaConsent] = useState(true);
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [rateLimit, setRateLimit] = useState(true);
-  const [twoFA, setTwoFA] = useState(false);
+
 
   useEffect(() => {
     const s = localStorage.getItem('kh_privacy');
@@ -58,33 +60,8 @@ export default function AdminSecurity() {
         <p className="text-muted-foreground mt-1">ความปลอดภัย · PDPA · ความเป็นส่วนตัว</p>
       </div>
 
-      <Card className="glass border-border/50">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <CardTitle>Two-Factor Authentication (2FA)</CardTitle>
-          </div>
-          <CardDescription>ป้องกันบัญชีด้วย OTP นอกเหนือจากรหัสผ่าน</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">เปิดใช้ 2FA (TOTP)</div>
-              <div className="text-sm text-muted-foreground">รองรับ Google Authenticator / Authy</div>
-            </div>
-            <Switch checked={twoFA} onCheckedChange={(v) => { setTwoFA(v); toast.info(v ? 'สแกน QR ใน Authenticator App' : 'ปิด 2FA แล้ว'); }} />
-          </div>
-          {twoFA && (
-            <div className="rounded-xl border p-4 bg-muted/30 flex items-center gap-3">
-              <KeyRound className="h-8 w-8 text-primary" />
-              <div className="text-sm">
-                <div className="font-medium">รหัสสำรอง (Backup Codes)</div>
-                <div className="text-muted-foreground">เก็บรหัสสำรองไว้ในที่ปลอดภัย เพื่อกู้บัญชีในกรณีลืมอุปกรณ์</div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <TwoFactorSetup />
+
 
       <Card className="glass border-border/50">
         <CardHeader>
