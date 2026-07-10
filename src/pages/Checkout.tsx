@@ -42,6 +42,7 @@ export default function Checkout() {
     email: user?.email || '',
     phone: '',
     address: '',
+    orderNotes: '',
   });
 
   if (items.length === 0) {
@@ -111,6 +112,7 @@ export default function Checkout() {
         },
         _payment_method: paymentMethod,
         _coupon_code: appliedCoupon?.code || null,
+        _notes: formData.orderNotes || null,
       });
       if (error) throw error;
       const order = data as any;
@@ -189,6 +191,16 @@ export default function Checkout() {
                     <Input id="address" value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="orderNotes">หมายเหตุเพิ่มเติม (ถ้ามี)</Label>
+                    <textarea
+                      id="orderNotes"
+                      value={formData.orderNotes}
+                      onChange={(e) => setFormData({ ...formData, orderNotes: e.target.value })}
+                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="เช่น ต้องการให้เขียนการ์ดอวยพร, แพ้อาหารบางชนิด, คำแนะนำในการจัดส่ง ฯลฯ"
+                    />
                   </div>
                 </CardContent>
               </Card>
