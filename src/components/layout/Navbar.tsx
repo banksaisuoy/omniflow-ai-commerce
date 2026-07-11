@@ -34,6 +34,7 @@ export function Navbar() {
   const { user, isAdmin, signOut } = useAuth();
   const getTotalItems = useCartStore((state) => state.getTotalItems);
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -52,46 +53,46 @@ export function Navbar() {
             </div>
             <div className="leading-tight">
               <div className="font-display text-2xl text-foreground">Khanom House</div>
-              <div className="text-[10px] text-muted-foreground tracking-widest uppercase">ขนมไทยโฮมเมด</div>
+              <div className="text-[10px] text-muted-foreground tracking-widest uppercase">{t('subtitle')}</div>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              หน้าแรก
+              {t('home')}
             </Link>
             <Link to="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              เมนูขนม
+              {t('products')}
             </Link>
             <Link to="/bundles" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              เซ็ตของขวัญ
+              {t('bundles')}
             </Link>
             <Link to="/gift-cards" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              บัตรของขวัญ
+              {t('gift_cards')}
             </Link>
             <Link to="/loyalty" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              Rewards
+              {t('rewards')}
             </Link>
             <Link to="/blog" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              บทความ
+              {t('blog')}
             </Link>
             <Link to="/track" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              ติดตามคำสั่งซื้อ
+              {t('track')}
             </Link>
             <Link to="/visual-search" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
-              ค้นด้วยรูป
+              {t('visual_search')}
             </Link>
             <Link to="/concierge" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
-              AI แนะนำ
+              {t('ai_concierge')}
             </Link>
 
 
             {isAdmin && (
               <Link to="/admin" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                จัดการร้าน
+                {t('admin')}
               </Link>
             )}
           </div>
@@ -128,26 +129,26 @@ export function Navbar() {
                     {user.email}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/loyalty')}><Sparkles className="mr-2 h-4 w-4" />Rewards</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/wishlist')}><Heart className="mr-2 h-4 w-4" />รายการโปรด</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/referral')}><Users className="mr-2 h-4 w-4" />ชวนเพื่อน</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/gift-cards')}><Gift className="mr-2 h-4 w-4" />บัตรของขวัญ</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/loyalty')}><Sparkles className="mr-2 h-4 w-4" />{t('rewards')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/wishlist')}><Heart className="mr-2 h-4 w-4" />{t('wishlist')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/referral')}><Users className="mr-2 h-4 w-4" />{t('refer_friend_short')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/gift-cards')}><Gift className="mr-2 h-4 w-4" />{t('gift_cards')}</DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem onClick={() => navigate('/admin')}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      จัดการร้าน
+                      {t('admin')}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    ออกจากระบบ
+                    {t('signout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
 
               </DropdownMenu>
             ) : (
               <Button size="sm" asChild className="rounded-full px-5 ml-2 shadow-soft">
-                <Link to="/auth">เข้าสู่ระบบ</Link>
+                <Link to="/auth">{t('signin')}</Link>
               </Button>
             )}
 
@@ -168,11 +169,11 @@ export function Navbar() {
         )}>
           <div className="flex flex-col gap-1 pt-2">
             {[
-              { to: '/', label: 'หน้าแรก' },
-              { to: '/products', label: 'เมนูขนม' },
-              { to: '/bundles', label: 'เซ็ตของขวัญ' },
-              { to: '/concierge', label: 'AI แนะนำ' },
-              ...(isAdmin ? [{ to: '/admin', label: 'จัดการร้าน' }] : []),
+              { to: '/', label: t('home') },
+              { to: '/products', label: t('products') },
+              { to: '/bundles', label: t('bundles') },
+              { to: '/concierge', label: t('ai_concierge') },
+              ...(isAdmin ? [{ to: '/admin', label: t('admin') }] : []),
             ].map((it) => (
               <Link
                 key={it.label}

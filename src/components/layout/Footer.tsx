@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/stores/i18nStore';
 
 export function Footer() {
+  const { t } = useI18n();
   return (
     <footer className="border-t border-border/60 bg-muted/30">
       <div className="container mx-auto px-4 py-12 md:py-16">
@@ -15,11 +17,11 @@ export function Footer() {
               </div>
               <div className="leading-tight">
                 <div className="font-display text-xl text-foreground">Khanom House</div>
-                <div className="text-[9px] text-muted-foreground tracking-widest uppercase">ขนมไทยโฮมเมด</div>
+                <div className="text-[9px] text-muted-foreground tracking-widest uppercase">{t('subtitle')}</div>
               </div>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              สืบสานความอร่อยของขนมไทยโบราณ ด้วยวัตถุดิบคุณภาพและสูตรลับที่ตกทอดจากรุ่นสู่รุ่น
+              {t('footer_desc')}
             </p>
             <div className="flex gap-4">
               <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 hover:bg-primary/10 hover:text-primary">
@@ -38,59 +40,57 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">ช้อปปิ้ง</h3>
+            <h3 className="font-semibold mb-4 text-foreground">{t('shopping')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/products" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  เมนูขนมทั้งหมด
+                  {t('all_products')}
                 </Link>
               </li>
               <li>
                 <Link to="/bundles" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  เซ็ตของขวัญ
+                  {t('bundles')}
                 </Link>
               </li>
               <li>
                 <Link to="/gift-cards" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  บัตรของขวัญ
+                  {t('gift_cards')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">ลูกค้า</h3>
+            <h3 className="font-semibold mb-4 text-foreground">{t('customer')}</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/auth" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  บัญชีของฉัน
+                  {t('my_account')}
                 </Link>
               </li>
               <li>
                 <Link to="/loyalty" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  ระบบสมาชิก
+                  {t('loyalty_system')}
                 </Link>
               </li>
               <li>
                 <Link to="/referral" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  ชวนเพื่อนรับโบนัส
+                  {t('refer_friend')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">ติดต่อเรา</h3>
+            <h3 className="font-semibold mb-4 text-foreground">{t('contact_us')}</h3>
             <ul className="space-y-3">
-              <li className="text-sm text-muted-foreground">
-                123 ซอยขนมหวาน ถนนสุขุมวิท<br />
-                กรุงเทพมหานคร 10110
+              <li className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('address') }}>
               </li>
               <li className="text-sm text-muted-foreground">
-                โทร: 02-123-4567
+                {t('phone')}
               </li>
               <li className="text-sm text-muted-foreground">
-                อีเมล: hello@khanomhouse.com
+                {t('email')}
               </li>
             </ul>
           </div>
@@ -98,14 +98,14 @@ export function Footer() {
 
         <div className="border-t border-border/40 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Khanom House. สงวนลิขสิทธิ์
+            © {new Date().getFullYear()} Khanom House. {t('copyright')}
           </p>
           <div className="flex gap-6">
             <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              นโยบายความเป็นส่วนตัว
+              {t('privacy_policy')}
             </Link>
             <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              เงื่อนไขการให้บริการ
+              {t('terms_of_service')}
             </Link>
           </div>
         </div>
