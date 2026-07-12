@@ -21,3 +21,8 @@
 **Vulnerability:** Supabase Edge Functions (`analyze-product` and `ai-forecast`) were verifying admin privileges by querying the `profiles` table directly, which is vulnerable to user escalation if RLS on `profiles` is misconfigured.
 **Learning:** The application has a dedicated `user_roles` table which is the source of truth for authorization (also used to prevent infinite recursion in RLS policies). Checking `profiles` for roles can lead to inconsistent state or IDOR-like privilege escalation.
 **Prevention:** Always verify roles against the `user_roles` table using the admin (service role) client in Edge Functions: `admin.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin")`.
+
+## 2024-05-26 - Visual Search API CORS Vulnerability
+**Vulnerability:** The visual-search Edge Function used a wildcard (`*`) in its `Access-Control-Allow-Origin` header, allowing requests from any domain.
+**Learning:** This permissive CORS setup bypasses the Same-Origin Policy, meaning any malicious third-party site could make background API calls to this endpoint on behalf of unsuspecting visitors. Since this endpoint uses Lovable API credits to process images and embeddings, an attacker could easily mount a cross-origin denial-of-wallet (DoW) attack or scrape matching product descriptions and internal embeddings.
+**Prevention:** Always restrict `Access-Control-Allow-Origin` to specific trusted domains using environment variables (e.g., `Deno.env.get("CORS_ORIGIN") || "http://localhost:5173"`), explicitly matching the pattern established in other Edge Functions.
