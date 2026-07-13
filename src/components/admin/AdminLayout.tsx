@@ -22,7 +22,10 @@ import {
   Cloud,
   Tag,
   FileText,
-  Shield
+  Shield,
+  Building2,
+  ChefHat,
+  Images
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
