@@ -32,15 +32,27 @@ export default function AdminCoupons() {
 
   const createMut = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('coupons').insert({
-        ...form,
+      let tiers: any = null;
+      if (form.tier_thresholds?.trim()) {
+        try { tiers = JSON.parse(form.tier_thresholds); } catch { throw new Error('tier_thresholds ต้องเป็น JSON'); }
+      }
+      const payload: any = {
         code: form.code.toUpperCase().trim(),
-      });
+        description: form.description,
+        discount_type: form.discount_type,
+        discount_value: form.discount_value,
+        min_order: form.min_order,
+        bogo_buy_qty: form.bogo_buy_qty || null,
+        bogo_get_qty: form.bogo_get_qty || null,
+        bogo_get_discount_percent: form.bogo_get_discount_percent || null,
+        tier_thresholds: tiers,
+      };
+      const { error } = await supabase.from('coupons').insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success('สร้างคูปองสำเร็จ');
-      setForm({ code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0 });
+      setForm({ code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0, bogo_buy_qty: null, bogo_get_qty: null, bogo_get_discount_percent: null, tier_thresholds: '' });
       qc.invalidateQueries({ queryKey: ['admin-coupons'] });
     },
     onError: (e: any) => toast.error(e.message),
