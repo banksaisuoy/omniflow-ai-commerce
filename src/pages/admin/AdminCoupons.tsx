@@ -17,8 +17,9 @@ import { toast } from 'sonner';
 
 export default function AdminCoupons() {
   const qc = useQueryClient();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<any>({
     code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0,
+    bogo_buy_qty: null, bogo_get_qty: null, bogo_get_discount_percent: null, tier_thresholds: '',
   });
 
   const { data: coupons = [] } = useQuery({
@@ -31,15 +32,27 @@ export default function AdminCoupons() {
 
   const createMut = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('coupons').insert({
-        ...form,
+      let tiers: any = null;
+      if (form.tier_thresholds?.trim()) {
+        try { tiers = JSON.parse(form.tier_thresholds); } catch { throw new Error('tier_thresholds ต้องเป็น JSON'); }
+      }
+      const payload: any = {
         code: form.code.toUpperCase().trim(),
-      });
+        description: form.description,
+        discount_type: form.discount_type,
+        discount_value: form.discount_value,
+        min_order: form.min_order,
+        bogo_buy_qty: form.bogo_buy_qty || null,
+        bogo_get_qty: form.bogo_get_qty || null,
+        bogo_get_discount_percent: form.bogo_get_discount_percent || null,
+        tier_thresholds: tiers,
+      };
+      const { error } = await supabase.from('coupons').insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success('สร้างคูปองสำเร็จ');
-      setForm({ code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0 });
+      setForm({ code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0, bogo_buy_qty: null, bogo_get_qty: null, bogo_get_discount_percent: null, tier_thresholds: '' });
       qc.invalidateQueries({ queryKey: ['admin-coupons'] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -102,6 +115,27 @@ export default function AdminCoupons() {
             <div>
               <Label>ยอดขั้นต่ำ</Label>
               <Input type="number" value={form.min_order} onChange={(e) => setForm({ ...form, min_order: +e.target.value })} />
+            </div>
+          </div>
+          <div className="mt-4 p-4 rounded-lg border border-border/50 bg-muted/20 space-y-3">
+            <div className="text-sm font-medium">โปรโมชั่นขั้นสูง (ตัวเลือก)</div>
+            <div className="grid md:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-xs">BOGO: ซื้อจำนวน</Label>
+                <Input type="number" placeholder="เช่น 2" value={form.bogo_buy_qty ?? ''} onChange={(e) => setForm({ ...form, bogo_buy_qty: e.target.value ? +e.target.value : null })} />
+              </div>
+              <div>
+                <Label className="text-xs">BOGO: แถมจำนวน</Label>
+                <Input type="number" placeholder="เช่น 1" value={form.bogo_get_qty ?? ''} onChange={(e) => setForm({ ...form, bogo_get_qty: e.target.value ? +e.target.value : null })} />
+              </div>
+              <div>
+                <Label className="text-xs">BOGO: ส่วนลดชิ้นแถม %</Label>
+                <Input type="number" placeholder="100 = ฟรี" value={form.bogo_get_discount_percent ?? ''} onChange={(e) => setForm({ ...form, bogo_get_discount_percent: e.target.value ? +e.target.value : null })} />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Tier ส่วนลด (JSON)</Label>
+              <Input placeholder='[{"min":500,"discount":50},{"min":1000,"discount":150}]' value={form.tier_thresholds} onChange={(e) => setForm({ ...form, tier_thresholds: e.target.value })} />
             </div>
           </div>
           <Button className="mt-4" onClick={() => createMut.mutate()} disabled={!form.code || createMut.isPending}>

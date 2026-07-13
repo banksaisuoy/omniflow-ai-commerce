@@ -115,6 +115,81 @@ export type Database = {
         }
         Relationships: []
       }
+      branch_inventory: {
+        Row: {
+          branch_id: string
+          id: string
+          product_id: string
+          quantity: number
+          reorder_point: number
+          updated_at: string
+        }
+        Insert: {
+          branch_id: string
+          id?: string
+          product_id: string
+          quantity?: number
+          reorder_point?: number
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          reorder_point?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branch_inventory_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "branch_inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branches: {
+        Row: {
+          active: boolean
+          address: string | null
+          code: string
+          created_at: string
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bundle_items: {
         Row: {
           bundle_id: string
@@ -232,6 +307,9 @@ export type Database = {
       coupons: {
         Row: {
           active: boolean
+          bogo_buy_qty: number | null
+          bogo_get_discount_percent: number | null
+          bogo_get_qty: number | null
           code: string
           created_at: string
           description: string | null
@@ -241,11 +319,15 @@ export type Database = {
           id: string
           max_uses: number | null
           min_order: number
+          tier_thresholds: Json | null
           updated_at: string
           used_count: number
         }
         Insert: {
           active?: boolean
+          bogo_buy_qty?: number | null
+          bogo_get_discount_percent?: number | null
+          bogo_get_qty?: number | null
           code: string
           created_at?: string
           description?: string | null
@@ -255,11 +337,15 @@ export type Database = {
           id?: string
           max_uses?: number | null
           min_order?: number
+          tier_thresholds?: Json | null
           updated_at?: string
           used_count?: number
         }
         Update: {
           active?: boolean
+          bogo_buy_qty?: number | null
+          bogo_get_discount_percent?: number | null
+          bogo_get_qty?: number | null
           code?: string
           created_at?: string
           description?: string | null
@@ -269,6 +355,7 @@ export type Database = {
           id?: string
           max_uses?: number | null
           min_order?: number
+          tier_thresholds?: Json | null
           updated_at?: string
           used_count?: number
         }
@@ -1253,6 +1340,82 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_items: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_name: string
+          quantity: number
+          recipe_id: string
+          unit: string
+          unit_cost: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_name: string
+          quantity?: number
+          recipe_id: string
+          unit?: string
+          unit_cost?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_name?: string
+          quantity?: number
+          recipe_id?: string
+          unit?: string
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_items_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recipes: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          product_id: string
+          updated_at: string
+          yield_qty: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          product_id: string
+          updated_at?: string
+          yield_qty?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          product_id?: string
+          updated_at?: string
+          yield_qty?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           code: string
@@ -1354,6 +1517,47 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ugc_posts: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          image_url: string
+          product_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ugc_posts_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
