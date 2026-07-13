@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/stores/i18nStore';
+import DOMPurify from 'dompurify';
 
 export function Footer() {
   const { t } = useI18n();
@@ -84,7 +85,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">{t('contact_us')}</h3>
             <ul className="space-y-3">
-              <li className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('address') }}>
+              <li className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('address')) }}>
               </li>
               <li className="text-sm text-muted-foreground">
                 {t('phone')}
