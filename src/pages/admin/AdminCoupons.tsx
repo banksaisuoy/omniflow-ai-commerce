@@ -117,6 +117,27 @@ export default function AdminCoupons() {
               <Input type="number" value={form.min_order} onChange={(e) => setForm({ ...form, min_order: +e.target.value })} />
             </div>
           </div>
+          <div className="mt-4 p-4 rounded-lg border border-border/50 bg-muted/20 space-y-3">
+            <div className="text-sm font-medium">โปรโมชั่นขั้นสูง (ตัวเลือก)</div>
+            <div className="grid md:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-xs">BOGO: ซื้อจำนวน</Label>
+                <Input type="number" placeholder="เช่น 2" value={form.bogo_buy_qty ?? ''} onChange={(e) => setForm({ ...form, bogo_buy_qty: e.target.value ? +e.target.value : null })} />
+              </div>
+              <div>
+                <Label className="text-xs">BOGO: แถมจำนวน</Label>
+                <Input type="number" placeholder="เช่น 1" value={form.bogo_get_qty ?? ''} onChange={(e) => setForm({ ...form, bogo_get_qty: e.target.value ? +e.target.value : null })} />
+              </div>
+              <div>
+                <Label className="text-xs">BOGO: ส่วนลดชิ้นแถม %</Label>
+                <Input type="number" placeholder="100 = ฟรี" value={form.bogo_get_discount_percent ?? ''} onChange={(e) => setForm({ ...form, bogo_get_discount_percent: e.target.value ? +e.target.value : null })} />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Tier ส่วนลด (JSON)</Label>
+              <Input placeholder='[{"min":500,"discount":50},{"min":1000,"discount":150}]' value={form.tier_thresholds} onChange={(e) => setForm({ ...form, tier_thresholds: e.target.value })} />
+            </div>
+          </div>
           <Button className="mt-4" onClick={() => createMut.mutate()} disabled={!form.code || createMut.isPending}>
             <Plus className="h-4 w-4 mr-2" />สร้างคูปอง
           </Button>
