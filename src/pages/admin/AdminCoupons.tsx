@@ -17,8 +17,9 @@ import { toast } from 'sonner';
 
 export default function AdminCoupons() {
   const qc = useQueryClient();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<any>({
     code: '', description: '', discount_type: 'percent', discount_value: 10, min_order: 0,
+    bogo_buy_qty: null, bogo_get_qty: null, bogo_get_discount_percent: null, tier_thresholds: '',
   });
 
   const { data: coupons = [] } = useQuery({
