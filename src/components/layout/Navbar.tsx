@@ -16,6 +16,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { cn } from '@/lib/utils';
 import { CartSheet } from '@/components/cart/CartSheet';
 import { useI18n } from '@/stores/i18nStore';
+import { ThemeToggle } from './ThemeToggle';
 
 function LangToggle() {
   const { lang, setLang } = useI18n();
@@ -99,6 +100,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-1">
+            <ThemeToggle />
             <LangToggle />
             {user && (
               <Button variant="ghost" size="icon" className="rounded-full hidden md:inline-flex" asChild>

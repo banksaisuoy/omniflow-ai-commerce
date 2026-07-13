@@ -25,6 +25,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 
 import NotFound from "./pages/NotFound";
 import { AIChatWidget } from "./components/chat/AIChatWidget";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -63,6 +65,7 @@ const App = () => (
           <AIChatWidget />
         </BrowserRouter>
       </TooltipProvider>
+      </ThemeProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
