@@ -256,6 +256,9 @@ export default function AdminDashboard() {
     if (currentPath === '/admin/blog') return <AdminBlog />;
     if (currentPath === '/admin/accounting') return <AdminAccounting />;
     if (currentPath === '/admin/security') return <AdminSecurity />;
+    if (currentPath === '/admin/branches') return <AdminBranches />;
+    if (currentPath === '/admin/recipes') return <AdminRecipes />;
+    if (currentPath === '/admin/ugc') return <AdminUGC />;
     if (currentPath === '/admin/settings') return <AdminSettings />;
     return null;
   };
