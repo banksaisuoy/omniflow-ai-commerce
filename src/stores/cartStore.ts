@@ -12,10 +12,12 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  orderNote: string;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  setOrderNote: (note: string) => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
@@ -24,6 +26,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      orderNote: '',
       
       addItem: (item) => set((state) => {
         const existingItem = state.items.find((i) => i.id === item.id);
@@ -47,7 +50,9 @@ export const useCartStore = create<CartState>()(
           : state.items.filter((i) => i.id !== id),
       })),
       
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], orderNote: '' }),
+
+      setOrderNote: (note) => set({ orderNote: note }),
       
       getTotalItems: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
       
