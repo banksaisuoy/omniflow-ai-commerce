@@ -4,6 +4,7 @@ import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,14 +17,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useCartStore } from '@/stores/cartStore';
+import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
+import { ProductCard } from '@/components/products/ProductCard';
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems, orderNote, setOrderNote } = useCartStore();
+  const { products: recentlyViewedProducts } = useRecentlyViewedStore();
 
   if (items.length === 0) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
+        <div className="container mx-auto px-4 py-16 text-center min-h-[50vh] flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -36,6 +40,17 @@ export default function Cart() {
             </Button>
           </motion.div>
         </div>
+
+        {recentlyViewedProducts.length > 0 && (
+          <div className="container mx-auto px-4 pb-16">
+            <h2 className="text-2xl font-bold mb-6 text-center">สินค้าที่คุณอาจสนใจ</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {recentlyViewedProducts.slice(0, 4).map((p) => (
+                <ProductCard key={p.id} product={p as any} />
+              ))}
+            </div>
+          </div>
+        )}
       </Layout>
     );
   }
@@ -156,6 +171,18 @@ export default function Cart() {
                     <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
                   </div>
                 </div>
+
+                <div className="mb-6 space-y-2">
+                  <label htmlFor="order-note" className="text-sm font-medium">หมายเหตุคำสั่งซื้อ</label>
+                  <Textarea
+                    id="order-note"
+                    placeholder="เช่น ระบุความหวาน, การแพ็คของขวัญ..."
+                    value={orderNote}
+                    onChange={(e) => setOrderNote(e.target.value)}
+                    className="resize-none h-20 text-sm"
+                  />
+                </div>
+
                 <Button className="w-full" size="lg" asChild>
                   <Link to="/checkout">
                     ดำเนินการสั่งซื้อ
