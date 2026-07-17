@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { WishlistButton } from '@/components/products/WishlistButton';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { QuickViewModal } from './QuickViewModal';
 
 
 interface Product {
@@ -36,6 +38,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, viewMode = 'grid', flashSaleData }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,9 +58,10 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
 
   if (viewMode === 'list') {
     return (
-      <Card className="overflow-hidden hover:border-primary/50 transition-colors">
-        <Link to={`/product/${product.slug}`} className="flex">
-          <div className="w-32 h-32 flex-shrink-0 bg-muted">
+      <>
+        <Card className="overflow-hidden hover:border-primary/50 transition-colors">
+          <Link to={`/product/${product.slug}`} className="flex">
+            <div className="w-32 h-32 flex-shrink-0 bg-muted">
             {product.thumbnail_url ? (
               <img
                 src={product.thumbnail_url}
@@ -109,17 +113,24 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
                   <Progress value={Math.min(100, (flashSaleData.sold_count / flashSaleData.stock_limit) * 100)} className="h-1.5" />
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Link>
-      </Card>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+        <QuickViewModal
+          product={product}
+          open={quickViewOpen}
+          onOpenChange={setQuickViewOpen}
+        />
+      </>
     );
   }
 
   return (
-    <Link to={`/product/${product.slug}`}>
-      <Card className="overflow-hidden group rounded-3xl border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 shadow-soft hover:shadow-elegant">
-        <div className="relative aspect-square bg-muted overflow-hidden">
+    <>
+      <Link to={`/product/${product.slug}`}>
+        <Card className="overflow-hidden group rounded-3xl border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 shadow-soft hover:shadow-elegant">
+          <div className="relative aspect-square bg-muted overflow-hidden">
           {product.thumbnail_url ? (
             <img
               src={product.thumbnail_url}
@@ -141,14 +152,27 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
             </Badge>
           ) : null}
           <WishlistButton productId={product.id} className="absolute top-3 right-3" />
-          <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
+            <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                size="icon"
+                variant="secondary"
+                className="rounded-full shadow-soft h-9 w-9 bg-background/90 hover:bg-background"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setQuickViewOpen(true);
+                }}
+                title="ดูแบบรวดเร็ว"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <CardContent className="p-5">
+          <CardContent className="p-5">
           {product.category && (
             <p className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wider">{product.category}</p>
           )}
@@ -180,9 +204,15 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
               </div>
               <Progress value={Math.min(100, (flashSaleData.sold_count / flashSaleData.stock_limit) * 100)} className="h-1.5" />
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </Link>
+            )}
+          </CardContent>
+        </Card>
+      </Link>
+      <QuickViewModal
+        product={product}
+        open={quickViewOpen}
+        onOpenChange={setQuickViewOpen}
+      />
+    </>
   );
 }
