@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Minus, Plus, Star, Truck, Shield, RotateCcw, Share2 } from 'lucide-react';
@@ -34,6 +34,7 @@ interface Product {
 }
 
 export default function ProductDetail() {
+  const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
@@ -86,6 +87,19 @@ export default function ProductDetail() {
       });
     }
   }, [product, addRecentlyViewedProduct]);
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        thumbnail_url: product.thumbnail_url,
+      });
+    }
+    navigate('/checkout');
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -234,38 +248,45 @@ export default function ProductDetail() {
             )}
 
             {/* Quantity & Add to Cart */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border border-border rounded-lg">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  <Minus className="h-4 w-4" />
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-border rounded-lg h-11">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-full"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-full"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button size="lg" variant="outline" className="flex-1 h-11 border-primary text-primary hover:bg-primary/10" onClick={handleAddToCart}>
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  เพิ่มลงตะกร้า
                 </Button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
-                  onClick={() => setQuantity(quantity + 1)}
+                  className="h-11 w-11 shrink-0"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success('คัดลอกลิงก์สำเร็จ');
+                  }}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Share2 className="h-5 w-5" />
                 </Button>
               </div>
-              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                เพิ่มลงตะกร้า
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-11 w-11 shrink-0"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('คัดลอกลิงก์สำเร็จ');
-                }}
-              >
-                <Share2 className="h-5 w-5" />
+              <Button size="lg" className="w-full h-11" onClick={handleBuyNow}>
+                ซื้อเลย (Buy Now)
               </Button>
             </div>
 
