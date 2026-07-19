@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,17 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
       thumbnail_url: product.thumbnail_url,
     });
     toast.success('เพิ่มลงตะกร้าแล้ว');
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/product/${product.slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success('คัดลอกลิงก์สำเร็จ');
+    }).catch(() => {
+      toast.error('ไม่สามารถคัดลอกลิงก์ได้');
+    });
   };
 
   const discount = product.compare_at_price
@@ -142,6 +153,9 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
           ) : null}
           <WishlistButton productId={product.id} className="absolute top-3 right-3" />
           <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button size="icon" variant="secondary" className="rounded-full shadow-soft h-9 w-9 bg-white/90 hover:bg-white" onClick={handleShare}>
+              <Share2 className="h-4 w-4 text-foreground" />
+            </Button>
             <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
               <ShoppingCart className="h-4 w-4" />
             </Button>
