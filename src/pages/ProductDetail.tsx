@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Minus, Plus, Star, Truck, Shield, RotateCcw, Share2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { WishlistButton } from '@/components/products/WishlistButton';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -193,6 +194,7 @@ export default function ProductDetail() {
                 -{discount}%
               </Badge>
             )}
+            <WishlistButton productId={product.id} className="absolute top-4 right-4" />
           </div>
 
           {/* Product Info */}
