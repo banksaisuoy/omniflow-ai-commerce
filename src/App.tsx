@@ -26,7 +26,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { AIChatWidget } from "./components/chat/AIChatWidget";
 import { ThemeProvider } from "./components/ThemeProvider";
-
+import { ScrollRestoration } from "./components/layout/ScrollRestoration";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +38,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollRestoration />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
