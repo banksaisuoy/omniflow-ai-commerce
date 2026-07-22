@@ -12,9 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCartStore } from '@/stores/cartStore';
+import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+  const { products: recentlyViewed } = useRecentlyViewedStore();
 
   return (
     <Sheet>
@@ -43,6 +45,29 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                     <Link to="/products">เริ่มช้อปปิ้ง</Link>
                   </Button>
                 </SheetClose>
+
+                {recentlyViewed.length > 0 && (
+                  <div className="w-full mt-12 pt-8 border-t border-border">
+                    <h3 className="text-sm font-medium text-foreground mb-4 text-center">คุณอาจสนใจ</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {recentlyViewed.slice(0, 4).map(p => (
+                        <SheetClose asChild key={p.id}>
+                          <Link to={`/product/${p.slug}`} className="group relative block overflow-hidden rounded-xl border border-border/50 bg-card p-2 hover:border-primary/50 transition">
+                            <div className="aspect-square bg-muted rounded-lg mb-2 overflow-hidden">
+                              {p.thumbnail_url ? (
+                                <img src={p.thumbnail_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-secondary text-[10px]">No Image</div>
+                              )}
+                            </div>
+                            <p className="text-xs font-medium line-clamp-1 text-foreground">{p.name}</p>
+                            <p className="text-xs text-primary font-semibold mt-1">฿{p.price.toLocaleString()}</p>
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-6">
