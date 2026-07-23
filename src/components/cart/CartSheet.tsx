@@ -12,11 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCartStore } from '@/stores/cartStore';
-import { useI18n } from '@/stores/i18nStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore();
-  const { t } = useI18n();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
 
   return (
     <Sheet>
@@ -24,20 +22,14 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
         {children}
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col h-full">
-        <SheetHeader className="pb-4 border-b border-border/50 flex flex-row items-center justify-between">
-          <SheetTitle className="flex items-center gap-2 m-0">
+        <SheetHeader className="pb-4 border-b border-border/50">
+          <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            {t('cart')}
+            ตะกร้าของฉัน
             <Badge variant="secondary" className="ml-2 rounded-full">
               {getTotalItems()}
             </Badge>
           </SheetTitle>
-          {items.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearCart} className="text-muted-foreground hover:text-destructive h-8 px-2 text-xs">
-              <Trash2 className="h-3.5 w-3.5 mr-1" />
-              {t('clear_cart')}
-            </Button>
-          )}
         </SheetHeader>
 
         <div className="flex-1 overflow-hidden relative">
