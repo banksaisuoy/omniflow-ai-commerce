@@ -38,11 +38,18 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground py-12 space-y-4">
                 <ShoppingCart className="h-12 w-12 opacity-20" />
                 <p>ยังไม่มีสินค้าในตะกร้า</p>
-                <SheetClose asChild>
-                  <Button variant="outline" asChild>
-                    <Link to="/products">เริ่มช้อปปิ้ง</Link>
-                  </Button>
-                </SheetClose>
+                <div className="flex flex-col gap-2 w-full max-w-[200px]">
+                  <SheetClose asChild>
+                    <Button variant="default" asChild>
+                      <Link to="/products">เริ่มช้อปปิ้ง</Link>
+                    </Button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Button variant="outline" asChild>
+                      <Link to="/bundles">ดูเซ็ตของขวัญ</Link>
+                    </Button>
+                  </SheetClose>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">

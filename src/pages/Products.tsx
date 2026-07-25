@@ -69,6 +69,13 @@ export default function Products() {
     },
   });
 
+  const categoryCounts = products?.reduce((acc: Record<string, number>, product) => {
+    if (product.category) {
+      acc[product.category] = (acc[product.category] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.description?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -138,7 +145,7 @@ export default function Products() {
               className="cursor-pointer"
               onClick={() => setSelectedCategory(null)}
             >
-              ทั้งหมด
+              ทั้งหมด {products && `(${products.length})`}
             </Badge>
             {categories.map((category) => (
               <Badge
@@ -147,7 +154,7 @@ export default function Products() {
                 className="cursor-pointer"
                 onClick={() => setSelectedCategory(category)}
               >
-                {category}
+                {category} {categoryCounts && categoryCounts[category] !== undefined ? `(${categoryCounts[category]})` : ''}
               </Badge>
             ))}
           </div>
