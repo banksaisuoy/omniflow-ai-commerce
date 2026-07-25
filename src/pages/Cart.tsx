@@ -35,9 +35,14 @@ export default function Cart() {
             <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h1 className="text-2xl font-bold mb-2">ตะกร้าว่างเปล่า</h1>
             <p className="text-muted-foreground mb-6">ยังไม่มีสินค้าในตะกร้า</p>
-            <Button asChild>
-              <Link to="/products">เริ่มช้อปปิ้ง</Link>
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button asChild>
+                <Link to="/products">เริ่มช้อปปิ้ง</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/bundles">ดูเซ็ตของขวัญ</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
 
