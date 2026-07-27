@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Filter, Grid, List, Camera } from 'lucide-react';
+import { Search, Filter, Grid, List, Camera, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VoiceSearchButton } from '@/components/products/VoiceSearchButton';
 
@@ -92,8 +92,17 @@ export default function Products() {
                 placeholder="ค้นหาสินค้า..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 pr-10"
               />
+              {searchQuery && (
+                <button
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
             <VoiceSearchButton onTranscript={(t) => setSearchQuery(t)} />
             <Button variant="outline" asChild>
