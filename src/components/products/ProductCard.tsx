@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useCartStore } from '@/stores/cartStore';
 import { WishlistButton } from '@/components/products/WishlistButton';
 import { toast } from 'sonner';
@@ -36,6 +38,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, viewMode = 'grid', flashSaleData }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -47,6 +50,12 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
       thumbnail_url: product.thumbnail_url,
     });
     toast.success('เพิ่มลงตะกร้าแล้ว');
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsQuickViewOpen(true);
   };
 
   const discount = product.compare_at_price
@@ -117,6 +126,7 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
   }
 
   return (
+    <>
     <Link to={`/product/${product.slug}`}>
       <Card className="overflow-hidden group rounded-3xl border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 shadow-soft hover:shadow-elegant">
         <div className="relative aspect-square bg-muted overflow-hidden">
@@ -142,6 +152,9 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
           ) : null}
           <WishlistButton productId={product.id} className="absolute top-3 right-3" />
           <div className="absolute inset-x-3 bottom-3 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button size="icon" variant="secondary" className="rounded-full shadow-soft h-9 w-9 bg-background/90 hover:bg-background" onClick={handleQuickView}>
+              <Eye className="h-4 w-4" />
+            </Button>
             <Button size="icon" className="rounded-full shadow-soft h-9 w-9" onClick={handleAddToCart} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
               <ShoppingCart className="h-4 w-4" />
             </Button>
@@ -184,5 +197,48 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
         </CardContent>
       </Card>
     </Link>
+
+    <Dialog open={isQuickViewOpen} onOpenChange={setIsQuickViewOpen}>
+      <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="grid md:grid-cols-2">
+          <div className="relative aspect-square md:aspect-auto bg-muted">
+            {product.thumbnail_url ? (
+              <img src={product.thumbnail_url} alt={product.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-gradient-warm">
+                No Image
+              </div>
+            )}
+          </div>
+          <div className="p-6 md:p-8 flex flex-col justify-center">
+            <DialogTitle className="font-display text-2xl mb-2">{product.name}</DialogTitle>
+            <DialogDescription className="text-muted-foreground mb-4 line-clamp-3">
+              {product.description || 'ไม่มีรายละเอียดสินค้า'}
+            </DialogDescription>
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="font-display text-2xl text-primary">฿{flashSaleData ? flashSaleData.sale_price.toLocaleString() : product.price.toLocaleString()}</span>
+              {(product.compare_at_price || flashSaleData) && (
+                <span className="text-sm text-muted-foreground line-through">
+                  ฿{product.price.toLocaleString()}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-3">
+              <Button size="lg" className="w-full" onClick={(e) => {
+                handleAddToCart(e);
+                setIsQuickViewOpen(false);
+              }} disabled={flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit}>
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                {flashSaleData && flashSaleData.stock_limit > 0 && flashSaleData.sold_count >= flashSaleData.stock_limit ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
+              </Button>
+              <Button size="lg" variant="outline" className="w-full" asChild onClick={() => setIsQuickViewOpen(false)}>
+                <Link to={`/product/${product.slug}`}>ดูรายละเอียดเต็ม</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
