@@ -1,0 +1,6 @@
+{
+  "branch_name": "feat/recommendation-carousel",
+  "commit_message": "feat: add recommendation carousel to product and checkout pages",
+  "title": "Add recommendation carousel",
+  "description": "Add recommendation carousel component and mocked API, integrate into product and checkout pages."
+}
