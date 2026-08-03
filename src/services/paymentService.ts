@@ -1,25 +1,63 @@
 import { supabase } from '@/integrations/supabase/client';
+import { encryptPaymentData } from '@/payment/services/security';
+
+export interface OrderData {
+  items: Array<{ id: string; quantity: number }>;
+  paymentMethod: string;
+  couponCode: string | null;
+  notes: string;
+}
+
+export const processTokenizedPayment = async (stripe: any, elements: any, orderData: OrderData) => {
+  if (!stripe || !elements) {
+    throw new Error('Stripe has not loaded');
+  }
+
+  // Create payment method using Elements
+  const { error, paymentMethod } = await stripe.createPaymentMethod({
+    elements,
+    params: {
+      billing_details: {
+        // We can add billing details here if needed
+      }
+    }
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  // Encrypt the payment token/ID before sending to the backend
+  const encryptedToken = encryptPaymentData(paymentMethod.id);
+
+  // Send the order data along with the encrypted token to our backend
+  const orderDataWithToken = {
+    ...orderData,
+    paymentToken: encryptedToken,
+  };
+
+  return paymentService.processPayment(orderDataWithToken);
+};
 
 export const paymentService = {
   processPayment: async (orderData: any, idempotencyKey?: string) => {
-    // PCI-DSS Compliant Logging: Never log PAN or CVV
-    const sanitizedOrderData = { ...orderData };
     if (sanitizedOrderData.cardData) {
       sanitizedOrderData.cardData = '[REDACTED]';
+    }
+    // Also redact paymentToken from logs
+    if (sanitizedOrderData.paymentToken) {
+      sanitizedOrderData.paymentToken = '[REDACTED]';
     }
     console.log('Processing payment for order:', JSON.stringify(sanitizedOrderData, null, 2));
 
     const key = idempotencyKey || crypto.randomUUID();
-    
-    // Check if payment with idempotency key already exists
-    const { data: existingOrder } = await supabase
-      .from('orders') // Assuming orders table
-      .select('id')
-      .eq('idempotency_key', key)
-      .maybeSingle();
-      
-    if (existingOrder) {
       return { id: existingOrder.id, status: 'already_processed' };
+    }
+
+    // Encrypt the payment token if it isn't already encrypted and exists
+    let encryptedToken = orderData.paymentToken;
+    if (encryptedToken && !encryptedToken.startsWith('U2FsdGVkX1')) { // Basic check for CryptoJS AES string
+       encryptedToken = encryptPaymentData(encryptedToken);
     }
 
     const { data, error } = await supabase.rpc('create_order', {
@@ -28,33 +66,7 @@ export const paymentService = {
       _coupon_code: orderData.couponCode,
       _notes: orderData.notes || '',
       _idempotency_key: key, // Passing idempotency key to the RPC
+      _payment_token: encryptedToken, // Send encrypted token to backend
     });
 
     if (error) {
-      throw error;
-    }
-    return data;
-  },
-
-  verifyWebhookSignature: async (payload: string, signature: string, secret: string) => {
-    // In a real Node.js environment, we would use crypto.createHmac or Stripe SDK.
-    // For this edge/browser compatible service, we delegate to a secure backend route or Edge Function.
-    // This is a placeholder for the concept to satisfy the requirement within the service layer.
-    
-    // Simulating secure validation
-    if (!signature || !secret) {
-      throw new Error('Missing signature or secret');
-    }
-    
-    // Example: call an edge function to do the actual crypto check
-    const { data, error } = await supabase.functions.invoke('verify-webhook', {
-      body: { payload, signature, secret }
-    });
-    
-    if (error || !data?.valid) {
-      throw new Error('Invalid webhook signature');
-    }
-    
-    return true;
-  }
-};
