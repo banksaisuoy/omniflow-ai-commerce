@@ -25,6 +25,10 @@ export function AIChatWidget() {
   const send = async () => {
     const text = input.trim();
     if (!text || loading) return;
+    if (text.length > 500) {
+      setMessages(m => [...m, { role: "assistant", content: "ข้อความยาวเกินไป กรุณาส่งข้อความที่ไม่เกิน 500 ตัวอักษรค่ะ" }]);
+      return;
+    }
     if (!user) { setMessages(m => [...m, { role: "assistant", content: "กรุณา[เข้าสู่ระบบ](/auth)ก่อนใช้แชทค่ะ" }]); return; }
     const next = [...messages, { role: "user" as const, content: text }];
     setMessages(next); setInput(""); setLoading(true);
@@ -78,8 +82,8 @@ export function AIChatWidget() {
             <div ref={bottomRef} />
           </div>
           <div className="p-3 border-t flex gap-2">
-            <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="พิมพ์ข้อความ..." disabled={loading} />
-            <Button size="icon" onClick={send} disabled={loading || !input.trim()}><Send className="h-4 w-4" /></Button>
+            <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="พิมพ์ข้อความ..." disabled={loading} maxLength={500} />
+            <Button size="icon" onClick={send} disabled={loading || !input.trim() || input.length > 500}><Send className="h-4 w-4" /></Button>
           </div>
         </div>
       )}
