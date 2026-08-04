@@ -10,7 +10,11 @@
 
 มีไฟล์สำรอง `src/pages/Checkout.tsx.orig` (254 บรรทัด) ที่เนื้อหาครบ ใช้เป็นฐานในการกู้ได้
 
+นอกจากนี้ dev server ยังสตาร์ทไม่ขึ้นเพราะ dependencies ในเครื่องหาย (`@vitejs/plugin-react-swc`, `tailwindcss` โหลดไม่เจอ)
+
 ## แผนงาน
+
+0. **ติดตั้ง dependencies ใหม่** ให้ dev server กลับมารันได้ก่อน
 
 1. **กู้ `paymentService.ts`** — เขียนหัวไฟล์ใหม่ (imports + `interface OrderData`) และคงตรรกะ `paymentService.processPayment` เดิมไว้ทั้งหมด
 2. **กู้ `Checkout.tsx`** — สร้างใหม่จาก `.orig` ให้ครบทั้งไฟล์ (form + สรุปยอด + คูปอง + PromptPay QR + COD) พร้อม `catch/finally` ที่หายไป
