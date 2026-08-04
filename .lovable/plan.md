@@ -1,59 +1,30 @@
-# แผนงาน: 8 Phases + Google Drive Sync
+# กู้ระบบให้กลับมาใช้งานได้ (Repair & Ship)
 
-ขอบเขตใหญ่มาก จะทยอยส่งเป็นชุด ๆ โดยรอบนี้เริ่มจาก **Google Drive Integration** (ตามที่เน้น) + **Phase 2 (AI Personalization)** ก่อน ที่เหลือทำต่อในรอบถัดไป
+ตอนนี้แอปคอมไพล์ไม่ผ่าน — มี 3 ไฟล์ที่เนื้อหาขาดหายกลางไฟล์ (ถูกตัดจากการแก้ไขครั้งก่อน) ทำให้หน้า Products และ Checkout พังทั้งหน้า ต้องซ่อมก่อนแล้วค่อยตรวจการใช้งานจริงทั้งระบบ
 
-## รอบที่ 1 (ส่งในเทิร์นนี้)
+## ปัญหาที่ยืนยันแล้ว (จากการรัน typecheck)
 
-### A. Google Drive Integration
-- **Edge Function `gdrive-import`** — รับ `folder_id` → เรียก Google Drive API ผ่าน connector gateway → list ไฟล์รูป → บันทึก URL/สร้าง product draft
-- **Edge Function `gdrive-backup`** — export ทุกตารางหลัก (products, orders, customers, loyalty, pos_transactions) → JSON.gz → upload ขึ้น GDrive folder `KhanomHouse-Backups/YYYY-MM-DD.json.gz`
-- **Cron schedule** — pg_cron รัน backup ทุกวัน 03:00
-- **Admin page `/admin/gdrive`** — ปุ่ม "Import from Drive", "Backup now", ตารางประวัติ backup, ตั้งค่า Folder ID
-- ตาราง `gdrive_settings` (folder ids), `gdrive_backups` (history)
+- `src/pages/Checkout.tsx` — เหลือ 97 บรรทัด, import ขาด (`useState`, `useForm`, `z`, cart store), `try` ไม่มี `catch`, JSX ไม่ปิด
+- `src/pages/Products.tsx` — เหลือ 35 บรรทัด, ไม่มี import เลย, JSX ไม่ปิด, query ไม่มี `queryFn`
+- `src/services/paymentService.ts` — หัวไฟล์หาย (ไม่มี import / ไม่มีหัว interface `OrderData`), `processTokenizedPayment` เป็นฟังก์ชันว่าง
 
-### B. Phase 2 — AI Personalization
-- **Recommendation Engine**: `useRecommendations` hook + view `product_recommendations` ใช้ pgvector similarity ที่มีอยู่แล้ว
-- **AI Chat Widget** (floating): edge function `ai-chat` (Gemini) + `AIChatWidget.tsx` แสดงทุกหน้า
-- **Visual Search**: อัปโหลดรูป → Gemini Vision → semantic embedding → match products
-- **Voice Search**: Web Speech API → query semantic search ที่มีอยู่
+มีไฟล์สำรอง `src/pages/Checkout.tsx.orig` (254 บรรทัด) ที่เนื้อหาครบ ใช้เป็นฐานในการกู้ได้
 
-## รอบที่ 2 (เทิร์นถัดไป — ตอบ "ต่อรอบ 2")
+นอกจากนี้ dev server ยังสตาร์ทไม่ขึ้นเพราะ dependencies ในเครื่องหาย (`@vitejs/plugin-react-swc`, `tailwindcss` โหลดไม่เจอ)
 
-### Phase 3 — Checkout & Payments
-- Stripe/Omise integration (Thai payment)
-- BNPL, Tax rules, Shipping calculator, Address autocomplete
+## แผนงาน
 
-### Phase 4 — Logistics & Lifecycle
-- Order tracking timeline, Rider dispatch, Web Push notifications, Email receipts
+0. **ติดตั้ง dependencies ใหม่** ให้ dev server กลับมารันได้ก่อน
 
-## รอบที่ 3
+1. **กู้ `paymentService.ts`** — เขียนหัวไฟล์ใหม่ (imports + `interface OrderData`) และคงตรรกะ `paymentService.processPayment` เดิมไว้ทั้งหมด
+2. **กู้ `Checkout.tsx`** — สร้างใหม่จาก `.orig` ให้ครบทั้งไฟล์ (form + สรุปยอด + คูปอง + PromptPay QR + COD) พร้อม `catch/finally` ที่หายไป
+3. **กู้ `Products.tsx`** — เขียนไฟล์ให้สมบูรณ์: imports, `queryFn` ดึงสินค้าจากฐานข้อมูล, ตัวกรองหมวด/ราคา/เรียงลำดับ, grid/list, Voice Search ที่มีอยู่แล้ว
+4. **ช่องทางชำระเงิน** — ตัดตัวเลือก "บัตรเครดิต" ออกจากหน้า Checkout ชั่วคราว (เหลือ COD + PromptPay ที่ใช้งานได้จริง) เพราะ Stripe ยังไม่ได้เชื่อม key จริง ฝั่ง `CheckoutForm`/Stripe Elements คงไฟล์ไว้ ไม่ลบ พร้อมเปิดใช้ทันทีที่เชื่อม Stripe
+5. **ลบไฟล์ขยะ** — `fix-checkout.mjs`, `fix-checkout2.mjs`, `Checkout.tsx.orig` หลังกู้เสร็จ
+6. **ตรวจสอบจริง** — รัน typecheck ให้ผ่าน 0 error แล้วเปิดเบราว์เซอร์ทดสอบ: หน้าแรก → รายการสินค้า → เพิ่มลงตะกร้า → Checkout (COD และ PromptPay) → หน้าสำเร็จ พร้อมเก็บ screenshot และเช็ค console error
+7. **เช็คหน้า Admin** — ไล่เปิด `/admin` และหน้าย่อยหลัก (POS, สินค้า, ออเดอร์, คูปอง, สาขา, สูตร, UGC) ดูว่าโหลดได้ไม่มี error แล้วแก้จุดที่พัง
 
-### Phase 5 — Community & Content
-- Blog CMS, UGC gallery, Live shopping (video stream)
+## หมายเหตุด้านเทคนิค
 
-### Phase 6 — Enterprise ERP
-- Multi-branch inventory, Recipe/BOM costing, HR (attendance), Accounting export (CSV → GDrive)
-
-## รอบที่ 4
-
-### Phase 7 — Growth & Marketing
-- Advanced coupons (BOGO, tier), Email/SMS automation (Resend), A/B testing framework
-
-### Phase 8 — Trust & Security
-- 2FA (TOTP), PDPA consent center, Rate limiting on edge functions, i18n (th/en)
-
----
-
-## Technical Details (รอบ 1)
-
-**Connector**: ใช้ connection `Nattkorn's Google Drive` (std_01kwe81499ekb89jhwk79c66g1) ผ่าน gateway URL `https://connector-gateway.lovable.dev/google_drive/`
-
-**DB migrations รอบนี้**:
-- `gdrive_settings` (id, key text unique, value jsonb) — เก็บ folder_id ต่างๆ
-- `gdrive_backups` (id, file_id, file_name, size, tables jsonb, created_at, created_by)
-- `ai_chat_sessions` + `ai_chat_messages`
-- `product_recommendations` materialized-style table (product_id, recommended_ids jsonb, updated_at)
-
-**Files**: ~15 ไฟล์ (3 edge functions, 4 pages, 3 hooks, 2 components, 3 store/util)
-
-พร้อมลุยรอบ 1 เลยครับ — ตอบ "โอเค" หรือปรับแก้ได้เลย
+- ไม่แตะ migration/ฐานข้อมูล ในรอบนี้ (สคีมาครบแล้ว) เว้นแต่การทดสอบพบว่าขาด policy/grant จริง
+- ฟีเจอร์ที่ต้อง key ภายนอก (Resend email, Web Push, Live shopping, Stripe จริง) ยังไม่ทำในรอบนี้ — จะสรุปให้ตอนท้ายว่าต้องเชื่ออะไรบ้าง
