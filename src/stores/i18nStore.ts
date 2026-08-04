@@ -41,6 +41,7 @@ const dict: Record<Lang, Record<string, string>> = {
     copyright: 'สงวนลิขสิทธิ์',
     privacy_policy: 'นโยบายความเป็นส่วนตัว',
     terms_of_service: 'เงื่อนไขการให้บริการ',
+    announcement_text: 'โปรโมชั่นพิเศษ! ส่งฟรีเมื่อสั่งครบ 500 บาท หรือลด 20% เมื่อใช้โค้ด OMNI20',
   },
   en: {
     home: 'Home',
@@ -79,6 +80,7 @@ const dict: Record<Lang, Record<string, string>> = {
     copyright: 'All rights reserved.',
     privacy_policy: 'Privacy Policy',
     terms_of_service: 'Terms of Service',
+    announcement_text: 'Special Offer! Free shipping on orders over 500 THB or 20% off with code OMNI20',
   },
 };
 
