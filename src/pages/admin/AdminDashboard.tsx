@@ -46,6 +46,7 @@ import AdminUGC from './AdminUGC';
 import POS from './pos/POS';
 import ShiftManager from './pos/ShiftManager';
 import POSTransactions from './pos/POSTransactions';
+import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -123,13 +124,14 @@ export default function AdminDashboard() {
       // Fetch products
       const { data: products } = await supabase
         .from('products')
-        .select('*');
+        .select(PRODUCT_PUBLIC_FIELDS);
 
       // Fetch customers
       const { data: customers } = await supabase
         .from('profiles')
         .select('*')
         .eq('role', 'customer');
+
 
       // Calculate stats
       const now = new Date();

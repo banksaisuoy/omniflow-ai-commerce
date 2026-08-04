@@ -21,6 +21,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 import { ProductCard } from '@/components/products/ProductCard';
 import { toast } from 'sonner';
+import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 
 interface Product {
   id: string;
@@ -44,7 +45,7 @@ export default function ProductDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(PRODUCT_PUBLIC_FIELDS)
         .eq('slug', slug)
         .eq('status', 'active')
         .maybeSingle();
@@ -61,7 +62,7 @@ export default function ProductDetail() {
       if (!product?.category) return [];
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(PRODUCT_PUBLIC_FIELDS)
         .eq('category', product.category)
         .neq('id', product.id)
         .eq('status', 'active')
