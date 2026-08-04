@@ -44,6 +44,8 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
     e.preventDefault();
     e.stopPropagation();
     addItem({
+      id: product.id,
+      name: product.name,
       price: flashSaleData ? flashSaleData.sale_price : product.price,
       thumbnail_url: product.thumbnail_url,
     });

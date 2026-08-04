@@ -19,5 +19,5 @@ export const getRecommendations = async (
   }
 
   // Basic mock logic: try to filter out the currently viewed product
-  return data.filter((p) => p.id !== productId) as Product[];
+  return data.filter((p) => p.id !== productId) as unknown as Product[];
 };

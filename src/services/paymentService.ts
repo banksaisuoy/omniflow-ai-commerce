@@ -8,6 +8,9 @@ export interface OrderData {
   notes: string;
   paymentToken?: string;
   cardData?: any;
+  customerName?: string;
+  customerEmail?: string;
+  shippingAddress?: string;
 }
 
 
@@ -31,12 +34,16 @@ export const paymentService = {
     try {
       const { data, error } = await supabase.rpc('create_order', {
         _items: orderData.items.map((it: any) => ({ product_id: it.id, quantity: it.quantity })),
+        _customer_name: orderData.customerName ?? '',
+        _customer_email: orderData.customerEmail ?? '',
+        _shipping_address: {
+          address: orderData.shippingAddress ?? '',
+          notes: orderData.notes || '',
+          idempotency_key: key,
+        },
         _payment_method: orderData.paymentMethod,
-        _coupon_code: orderData.couponCode,
-        _notes: orderData.notes || '',
-        _idempotency_key: key, // Passing idempotency key to the RPC
-        _payment_token: encryptedToken, // Send encrypted token to backend
-      });
+        _coupon_code: orderData.couponCode ?? undefined,
+      } as any);
 
       if (error) {
         throw error;

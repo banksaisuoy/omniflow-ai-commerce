@@ -29,7 +29,10 @@ import { RecommendationCarousel } from '@/components/RecommendationCarousel';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, 'กรุณากรอกชื่อ'),
+  email: z.string().email('อีเมลไม่ถูกต้อง'),
+  phone: z.string().min(9, 'กรุณากรอกเบอร์โทร'),
   address: z.string().min(10, 'กรุณากรอกที่อยู่'),
+  couponCode: z.string().optional(),
   orderNotes: z.string().optional(),
 });
 
@@ -41,7 +44,6 @@ export default function Checkout() {
   const items = useCartStore((state) => state.items);
   const total = useCartStore((state) => state.getTotalPrice());
   const clearCart = useCartStore((state) => state.clearCart);
-  const appliedCoupon = useCartStore((state) => state.appliedCoupon);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,7 +51,10 @@ export default function Checkout() {
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       fullName: '',
+      email: '',
+      phone: '',
       address: '',
+      couponCode: '',
       orderNotes: '',
     },
   });
@@ -88,12 +93,18 @@ export default function Checkout() {
 
       const { data, error } = await supabase.rpc('create_order', {
         _items: items.map((it) => ({ product_id: it.id, quantity: it.quantity })),
+        _customer_name: formData.fullName,
+        _customer_email: formData.email,
+        _shipping_address: {
+          address: formData.address,
+          phone: formData.phone,
+          notes: formData.orderNotes || '',
+        },
         _payment_method: paymentMethod,
-        _coupon_code: appliedCoupon?.code || null,
-        _notes: formData.orderNotes || '',
+        _coupon_code: formData.couponCode?.trim() || null,
       });
       if (error) throw error;
-      const order: any = data;
+      const order = data as any;
 
       clearCart();
       toast.success('สร้างคำสั่งซื้อสำเร็จ');
@@ -134,6 +145,49 @@ export default function Checkout() {
                     <FormLabel>ชื่อ-นามสกุล</FormLabel>
                     <FormControl>
                       <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>อีเมล</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>เบอร์โทรศัพท์</FormLabel>
+                      <FormControl>
+                        <Input placeholder="0812345678" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="couponCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>โค้ดส่วนลด (ถ้ามี)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="KHANOM10" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
