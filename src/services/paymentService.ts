@@ -4,8 +4,8 @@ import { encryptPaymentData } from '@/payment/services/security';
 export interface OrderData {
   items: { id: string; quantity: number }[];
   paymentMethod: string;
-  couponCode: string | null;
-  notes: string;
+  couponCode?: string | null;
+  notes?: string;
   paymentToken?: string;
   cardData?: any;
   customerName?: string;
