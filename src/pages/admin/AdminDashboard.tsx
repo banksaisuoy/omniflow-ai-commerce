@@ -118,7 +118,7 @@ export default function AdminDashboard() {
       // Fetch orders
       const { data: orders } = await supabase
         .from('orders')
-        .select(PRODUCT_PUBLIC_FIELDS)
+        .select('*')
         .order('created_at', { ascending: false });
 
       // Fetch products
@@ -129,8 +129,9 @@ export default function AdminDashboard() {
       // Fetch customers
       const { data: customers } = await supabase
         .from('profiles')
-        .select(PRODUCT_PUBLIC_FIELDS)
+        .select('*')
         .eq('role', 'customer');
+
 
       // Calculate stats
       const now = new Date();
