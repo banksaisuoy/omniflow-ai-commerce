@@ -1,5 +1,6 @@
 import { Product } from '@/types/product';
 import { supabase } from '@/integrations/supabase/client';
+import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 
 export const getRecommendations = async (
   productId?: string,
@@ -9,7 +10,7 @@ export const getRecommendations = async (
   // Real implementation would invoke an Edge Function or AI service
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PRODUCT_PUBLIC_FIELDS)
     .eq('status', 'active')
     .limit(4);
 

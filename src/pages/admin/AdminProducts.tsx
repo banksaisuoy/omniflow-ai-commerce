@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Plus, Edit, Trash2, Package } from 'lucide-react';
 import { toast } from 'sonner';
+import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 
 export default function AdminProducts() {
   const [search, setSearch] = useState('');
@@ -23,7 +24,7 @@ export default function AdminProducts() {
   const { data: products, isLoading } = useQuery({
     queryKey: ['admin-products', statusFilter],
     queryFn: async () => {
-      let query = supabase.from('products').select('*').order('created_at', { ascending: false });
+      let query = supabase.from('products').select(PRODUCT_PUBLIC_FIELDS).order('created_at', { ascending: false });
       if (statusFilter !== 'all') query = query.eq('status', statusFilter);
       const { data, error } = await query;
       if (error) throw error;
