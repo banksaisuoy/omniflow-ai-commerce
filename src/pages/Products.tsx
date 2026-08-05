@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, LayoutGrid, List } from 'lucide-react';
+import { Search, LayoutGrid, List, X } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/products/ProductCard';
 import { VoiceSearchButton } from '@/components/products/VoiceSearchButton';
@@ -142,6 +142,21 @@ export default function Products() {
               {cat}
             </Button>
           ))}
+          {(searchQuery !== '' || selectedCategory !== null || sortBy !== 'newest' || maxPrice !== 2000) && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="ml-auto"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory(null);
+                setSortBy('newest');
+                setMaxPrice(2000);
+              }}
+            >
+              <X className="h-4 w-4 mr-1" /> ล้างตัวกรอง
+            </Button>
+          )}
         </div>
 
         {isLoading ? (
