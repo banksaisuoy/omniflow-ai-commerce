@@ -20,6 +20,9 @@ export const paymentService = {
     if (sanitizedOrderData.cardData) {
       sanitizedOrderData.cardData = '[REDACTED]';
     }
+    if (sanitizedOrderData.paymentToken) {
+      sanitizedOrderData.paymentToken = '[REDACTED]';
+    }
     console.log('Processing payment for order:', JSON.stringify(sanitizedOrderData, null, 2));
 
     const key = idempotencyKey || crypto.randomUUID();
@@ -42,6 +45,7 @@ export const paymentService = {
           idempotency_key: key,
         },
         _payment_method: orderData.paymentMethod,
+        _payment_token: encryptedToken,
         _coupon_code: orderData.couponCode ?? undefined,
       } as any);
 
