@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, LayoutGrid, List, X } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/products/ProductCard';
 import { VoiceSearchButton } from '@/components/products/VoiceSearchButton';
@@ -18,11 +19,34 @@ import { supabase } from '@/integrations/supabase/client';
 const CATEGORIES = ['ขนมไทยโบราณ', 'ขนมอบ', 'ขนมชุด', 'เครื่องดื่ม'];
 
 export default function Products() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState('newest');
-  const [maxPrice, setMaxPrice] = useState<number>(2000);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('category'));
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+  const [maxPrice, setMaxPrice] = useState<number>(searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 2000);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    if (searchQuery) params.set('q', searchQuery);
+    else params.delete('q');
+
+    if (selectedCategory) params.set('category', selectedCategory);
+    else params.delete('category');
+
+    if (viewMode !== 'grid') params.set('view', viewMode);
+    else params.delete('view');
+
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    else params.delete('sort');
+
+    if (maxPrice !== 2000) params.set('maxPrice', maxPrice.toString());
+    else params.delete('maxPrice');
+
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, selectedCategory, viewMode, sortBy, maxPrice, searchParams, setSearchParams]);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', selectedCategory, sortBy],
@@ -68,8 +92,18 @@ export default function Products() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ค้นหาขนม..."
-                className="pl-9"
+                className="pl-9 pr-8"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="ล้างข้อความค้นหา"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
             <VoiceSearchButton onTranscript={(text) => setSearchQuery(text)} />
           </div>
