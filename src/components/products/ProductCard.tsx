@@ -38,6 +38,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, viewMode = 'grid', flashSaleData }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const setIsOpen = useCartStore((state) => state.setIsOpen);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -49,6 +50,7 @@ export function ProductCard({ product, viewMode = 'grid', flashSaleData }: Produ
       price: flashSaleData ? flashSaleData.sale_price : product.price,
       thumbnail_url: product.thumbnail_url,
     });
+    setIsOpen(true);
     toast.success('เพิ่มลงตะกร้าแล้ว');
   };
 

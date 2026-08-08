@@ -13,6 +13,8 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   orderNote: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -27,6 +29,9 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       orderNote: '',
+      isOpen: false,
+
+      setIsOpen: (isOpen) => set({ isOpen }),
       
       addItem: (item) => set((state) => {
         const existingItem = state.items.find((i) => i.id === item.id);
@@ -60,6 +65,9 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'omniflow-cart',
+      partialize: (state) => Object.fromEntries(
+        Object.entries(state).filter(([key]) => key !== 'isOpen')
+      ) as CartState,
     }
   )
 );
