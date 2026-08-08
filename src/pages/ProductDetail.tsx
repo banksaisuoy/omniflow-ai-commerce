@@ -38,6 +38,7 @@ export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
+  const setIsOpen = useCartStore((state) => state.setIsOpen);
   const { products: recentlyViewedProducts, addProduct: addRecentlyViewedProduct } = useRecentlyViewedStore();
 
   const { data: product, isLoading } = useQuery({
@@ -98,6 +99,7 @@ export default function ProductDetail() {
         thumbnail_url: product.thumbnail_url,
       });
     }
+    setIsOpen(true);
     toast.success(`เพิ่ม ${quantity} ชิ้น ลงตะกร้าแล้ว`);
   };
 
