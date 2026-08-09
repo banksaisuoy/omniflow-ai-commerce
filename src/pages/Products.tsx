@@ -91,6 +91,9 @@ export default function Products() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setSearchQuery('');
+                }}
                 placeholder="ค้นหาขนม..."
                 className="pl-9 pr-8"
               />
