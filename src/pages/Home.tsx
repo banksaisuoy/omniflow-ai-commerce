@@ -153,18 +153,20 @@ export default function Home() {
             </div>
 
             <div className="flex overflow-x-auto pb-6 -mx-4 px-4 snap-x gap-4 md:gap-6 no-scrollbar">
-              {flashSale.items.map((item: any) => (
-                <div key={item.id} className="min-w-[280px] md:min-w-[320px] snap-start">
+              {flashSale.items.map((item: unknown) => {
+                const typedItem = item as { id: string; product: unknown; sale_price: number; stock_limit: number; sold_count: number; };
+                return (
+                <div key={typedItem.id} className="min-w-[280px] md:min-w-[320px] snap-start">
                   <ProductCard
-                    product={item.product}
+                    product={typedItem.product as { id: string; name: string; description: string | null; price: number; compare_at_price: number | null; thumbnail_url: string | null; category: string | null; slug: string; }}
                     flashSaleData={{
-                      sale_price: item.sale_price,
-                      stock_limit: item.stock_limit,
-                      sold_count: item.sold_count
+                      sale_price: typedItem.sale_price,
+                      stock_limit: typedItem.stock_limit,
+                      sold_count: typedItem.sold_count
                     }}
                   />
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         </section>
@@ -255,9 +257,9 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'ขนมหวาน', emoji: '🍡', color: 'bg-secondary/40' },
-              { label: 'ขนมเปียก', emoji: '🥥', color: 'bg-pandan/15' },
-              { label: 'ขนมแห้ง', emoji: '🍪', color: 'bg-mango/20' },
+              { label: 'ขนมไทยโบราณ', emoji: '🍡', color: 'bg-secondary/40' },
+              { label: 'ขนมชุด', emoji: '🥥', color: 'bg-pandan/15' },
+              { label: 'ขนมอบ', emoji: '🍪', color: 'bg-mango/20' },
               { label: 'เครื่องดื่ม', emoji: '🧊', color: 'bg-butterfly/20' },
             ].map((cat, i) => (
               <motion.div
@@ -266,7 +268,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: i * 0.08 }}
               >
                 <Link
-                  to="/products"
+                  to={`/products?category=${cat.label}`}
                   className={`bento-tile p-6 md:p-8 flex flex-col items-center justify-center text-center h-full ${cat.color}`}
                 >
                   <div className="text-5xl mb-3">{cat.emoji}</div>
