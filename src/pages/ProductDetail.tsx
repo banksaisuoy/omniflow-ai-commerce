@@ -261,9 +261,25 @@ export default function ProductDetail() {
                 variant="outline"
                 size="icon"
                 className="h-11 w-11 shrink-0"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('คัดลอกลิงก์สำเร็จ');
+                onClick={async () => {
+                  if (navigator.share) {
+                    try {
+                      await navigator.share({
+                        title: product.name,
+                        text: product.description || `ดูสินค้า ${product.name} จาก Khanom House`,
+                        url: window.location.href,
+                      });
+                    } catch (error) {
+                      // fallback to clipboard if share was aborted or failed
+                      if ((error as Error).name !== 'AbortError') {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast.success('คัดลอกลิงก์สำเร็จ');
+                      }
+                    }
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success('คัดลอกลิงก์สำเร็จ');
+                  }
                 }}
               >
                 <Share2 className="h-5 w-5" />
