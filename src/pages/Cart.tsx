@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Truck } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -23,6 +24,14 @@ import { ProductCard } from '@/components/products/ProductCard';
 export default function Cart() {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems, orderNote, setOrderNote } = useCartStore();
   const { products: recentlyViewedProducts } = useRecentlyViewedStore();
+
+  const subtotal = getTotalPrice();
+  const FREE_SHIPPING_THRESHOLD = 500;
+  const SHIPPING_FEE = 50;
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingCost = isFreeShipping ? 0 : SHIPPING_FEE;
+  const grandTotal = subtotal + shippingCost;
+  const shippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   if (items.length === 0) {
     return (
@@ -46,7 +55,7 @@ export default function Cart() {
             <h2 className="text-2xl font-bold mb-6 text-center">สินค้าที่คุณอาจสนใจ</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {recentlyViewedProducts.slice(0, 4).map((p) => (
-                <ProductCard key={p.id} product={p as any} />
+                <ProductCard key={p.id} product={p as unknown as { id: string; name: string; price: number; compare_at_price: number | null; thumbnail_url: string | null; category: string | null; slug: string; description: string | null; description_html: string | null; tags: unknown; created_at: string; updated_at: string; status: string; admin_id: string; is_archived: boolean; }} />
               ))}
             </div>
           </div>
@@ -157,18 +166,36 @@ export default function Cart() {
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h2 className="text-xl font-bold mb-4">สรุปคำสั่งซื้อ</h2>
+
+                <div className="bg-muted/50 p-4 rounded-xl mb-6 space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center font-medium">
+                      <Truck className="h-4 w-4 mr-2 text-primary" />
+                      {isFreeShipping
+                        ? <span className="text-success">ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรี</span>
+                        : <span>ซื้อเพิ่มอีก ฿{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} เพื่อรับสิทธิ์ส่งฟรี</span>
+                      }
+                    </div>
+                  </div>
+                  <Progress value={shippingProgress} className="h-2" />
+                </div>
+
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ยอดรวมสินค้า ({getTotalItems()} ชิ้น)</span>
-                    <span>฿{getTotalPrice().toLocaleString()}</span>
+                    <span>฿{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ค่าจัดส่ง</span>
-                    <span className="text-success">ฟรี</span>
+                    {isFreeShipping ? (
+                      <span className="text-success">ฟรี</span>
+                    ) : (
+                      <span>฿{SHIPPING_FEE.toLocaleString()}</span>
+                    )}
                   </div>
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>ยอดรวมทั้งหมด</span>
-                    <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                    <span className="text-primary">฿{grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
 

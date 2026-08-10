@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Truck } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -11,10 +11,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+
+  const subtotal = getTotalPrice();
+  const FREE_SHIPPING_THRESHOLD = 500;
+  const SHIPPING_FEE = 50;
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingCost = isFreeShipping ? 0 : SHIPPING_FEE;
+  const grandTotal = subtotal + shippingCost;
+  const shippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   return (
     <Sheet>
@@ -107,14 +116,34 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
         {items.length > 0 && (
           <div className="pt-4 border-t border-border/50 bg-background space-y-4">
-            <div className="space-y-1.5">
+
+            <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+              <div className="flex items-center text-xs font-medium">
+                <Truck className="h-3 w-3 mr-1.5 text-primary" />
+                {isFreeShipping
+                  ? <span className="text-success">ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรี</span>
+                  : <span>ซื้อเพิ่มอีก ฿{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} เพื่อรับสิทธิ์ส่งฟรี</span>
+                }
+              </div>
+              <Progress value={shippingProgress} className="h-1.5" />
+            </div>
+
+            <div className="space-y-1.5 px-1">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{subtotal.toLocaleString()}</span>
+              </div>
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>ค่าจัดส่ง</span>
-                <span className="text-success font-medium">ฟรี</span>
+                {isFreeShipping ? (
+                  <span className="text-success font-medium">ฟรี</span>
+                ) : (
+                  <span>฿{SHIPPING_FEE.toLocaleString()}</span>
+                )}
               </div>
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between font-bold text-lg pt-1.5 border-t border-border/50">
                 <span>ยอดรวมทั้งหมด</span>
-                <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                <span className="text-primary">฿{grandTotal.toLocaleString()}</span>
               </div>
             </div>
 
