@@ -42,9 +42,13 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const items = useCartStore((state) => state.items);
-  const total = useCartStore((state) => state.getTotalPrice());
+  const subtotal = useCartStore((state) => state.getTotalPrice());
   const clearCart = useCartStore((state) => state.clearCart);
   
+  const freeShippingThreshold = 500;
+  const shippingFee = subtotal >= freeShippingThreshold ? 0 : 50;
+  const total = subtotal + shippingFee;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
@@ -104,13 +108,14 @@ export default function Checkout() {
         _coupon_code: formData.couponCode?.trim() || null,
       });
       if (error) throw error;
-      const order = data as any;
+      const order = data as unknown as { id: string };
 
       clearCart();
       toast.success('สร้างคำสั่งซื้อสำเร็จ');
       navigate('/order-success', { state: { orderId: order?.id } });
-    } catch (error: any) {
-      toast.error(error.message || 'เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ');
+    } catch (error: unknown) {
+      const err = error as Error;
+      toast.error(err.message || 'เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ');
     } finally {
       setIsSubmitting(false);
     }
@@ -278,7 +283,21 @@ export default function Checkout() {
                 </div>
               ))}
             </div>
-            <div className="border-t pt-4 font-bold flex justify-between">
+            <div className="border-t pt-4 space-y-2">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ค่าจัดส่ง</span>
+                {shippingFee === 0 ? (
+                  <span className="text-success">ฟรี</span>
+                ) : (
+                  <span>฿{shippingFee.toLocaleString()}</span>
+                )}
+              </div>
+            </div>
+            <div className="border-t mt-4 pt-4 font-bold flex justify-between">
               <span>ยอดรวมทั้งสิ้น</span>
               <span className="text-xl">฿{total.toLocaleString()}</span>
             </div>
