@@ -5,6 +5,7 @@ import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,13 @@ import { ProductCard } from '@/components/products/ProductCard';
 export default function Cart() {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems, orderNote, setOrderNote } = useCartStore();
   const { products: recentlyViewedProducts } = useRecentlyViewedStore();
+
+  const subtotal = getTotalPrice();
+  const freeShippingThreshold = 500;
+  const shippingFee = subtotal >= freeShippingThreshold ? 0 : 50;
+  const total = subtotal + shippingFee;
+  const progressToFreeShipping = Math.min((subtotal / freeShippingThreshold) * 100, 100);
+  const remainingForFreeShipping = freeShippingThreshold - subtotal;
 
   if (items.length === 0) {
     return (
@@ -46,7 +54,16 @@ export default function Cart() {
             <h2 className="text-2xl font-bold mb-6 text-center">สินค้าที่คุณอาจสนใจ</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {recentlyViewedProducts.slice(0, 4).map((p) => (
-                <ProductCard key={p.id} product={p as any} />
+                <ProductCard key={p.id} product={p as unknown as {
+                  id: string;
+                  name: string;
+                  description: string | null;
+                  price: number;
+                  compare_at_price: number | null;
+                  thumbnail_url: string | null;
+                  category: string | null;
+                  slug: string;
+                }} />
               ))}
             </div>
           </div>
@@ -160,15 +177,35 @@ export default function Cart() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ยอดรวมสินค้า ({getTotalItems()} ชิ้น)</span>
-                    <span>฿{getTotalPrice().toLocaleString()}</span>
+                    <span>฿{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ค่าจัดส่ง</span>
-                    <span className="text-success">ฟรี</span>
+                    {shippingFee === 0 ? (
+                      <span className="text-success">ฟรี</span>
+                    ) : (
+                      <span>฿{shippingFee.toLocaleString()}</span>
+                    )}
                   </div>
+                  {shippingFee > 0 && (
+                    <div className="space-y-1">
+                      <Progress value={progressToFreeShipping} className="h-2" />
+                      <p className="text-xs text-muted-foreground text-center">
+                        ซื้อเพิ่มอีก ฿{remainingForFreeShipping.toLocaleString()} เพื่อรับสิทธิ์จัดส่งฟรี!
+                      </p>
+                    </div>
+                  )}
+                  {shippingFee === 0 && (
+                    <div className="space-y-1">
+                      <Progress value={100} className="h-2 bg-success/20 [&>div]:bg-success" />
+                      <p className="text-xs text-success text-center">
+                        ยินดีด้วย! คุณได้รับสิทธิ์จัดส่งฟรี
+                      </p>
+                    </div>
+                  )}
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>ยอดรวมทั้งหมด</span>
-                    <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                    <span className="text-primary">฿{total.toLocaleString()}</span>
                   </div>
                 </div>
 
