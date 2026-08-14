@@ -1,9 +1,9 @@
 import DOMPurify from 'dompurify';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Minus, Plus, Star, Truck, Shield, RotateCcw, Share2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,8 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
   const { products: recentlyViewedProducts, addProduct: addRecentlyViewedProduct } = useRecentlyViewedStore();
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const addToCartRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', slug],
@@ -87,6 +89,22 @@ export default function ProductDetail() {
       });
     }
   }, [product, addRecentlyViewedProduct]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Show sticky bar when the main add to cart button is out of view (scrolled past)
+        setShowStickyBar(entry.boundingClientRect.y < 0 && !entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    if (addToCartRef.current) {
+      observer.observe(addToCartRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -235,7 +253,7 @@ export default function ProductDetail() {
             )}
 
             {/* Quantity & Add to Cart */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4" ref={addToCartRef}>
               <div className="flex items-center border border-border rounded-lg">
                 <Button
                   variant="ghost"
@@ -315,6 +333,66 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
+
+      {/* Sticky Add to Cart Bar */}
+      <AnimatePresence>
+        {showStickyBar && (
+          <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:bottom-auto md:top-[72px] md:shadow-[0_4px_12px_rgba(0,0,0,0.05)] md:border-t-0 md:border-b"
+          >
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+              <div className="hidden md:flex items-center gap-4 flex-1">
+                {product.thumbnail_url && (
+                  <div className="h-12 w-12 rounded bg-muted overflow-hidden">
+                    <img
+                      src={product.thumbnail_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-semibold text-sm line-clamp-1">{product.name}</h3>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-bold text-primary">
+                      ฿{product.price.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <div className="flex items-center border border-border rounded-lg bg-background">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-10 text-center font-medium">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button className="flex-1 md:w-48" onClick={handleAddToCart}>
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  เพิ่มลงตะกร้า
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }
