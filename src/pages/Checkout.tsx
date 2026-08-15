@@ -38,13 +38,20 @@ const checkoutSchema = z.object({
 
 type PaymentMethod = 'cod' | 'promptpay';
 
+const FREE_SHIPPING_THRESHOLD = 500;
+const SHIPPING_FEE = 50;
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const items = useCartStore((state) => state.items);
-  const total = useCartStore((state) => state.getTotalPrice());
+  const subtotal = useCartStore((state) => state.getTotalPrice());
   const clearCart = useCartStore((state) => state.clearCart);
   
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingFee = isFreeShipping ? 0 : SHIPPING_FEE;
+  const total = subtotal + shippingFee;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
@@ -277,10 +284,22 @@ export default function Checkout() {
                   <span>฿{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
+              <div className="flex justify-between text-sm text-muted-foreground border-t pt-4">
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ค่าจัดส่ง</span>
+                {isFreeShipping ? (
+                  <span className="text-success font-medium">ฟรี</span>
+                ) : (
+                  <span>฿{shippingFee.toLocaleString()}</span>
+                )}
+              </div>
             </div>
             <div className="border-t pt-4 font-bold flex justify-between">
               <span>ยอดรวมทั้งสิ้น</span>
-              <span className="text-xl">฿{total.toLocaleString()}</span>
+              <span className="text-xl text-primary">฿{total.toLocaleString()}</span>
             </div>
           </div>
           
