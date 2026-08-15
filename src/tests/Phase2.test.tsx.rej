@@ -1,0 +1,9 @@
+--- Phase2.test.tsx
+@@ -4,6 +4,7 @@
+ 
+ import { describe, it, expect, vi, beforeEach } from 'vitest';
+ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
++import '@testing-library/jest-dom/vitest';
+ import { BrowserRouter } from 'react-router-dom';
+ import ForYouFeed from '../components/recommendations/ForYouFeed';
+ import SmartReorder from '../components/recommendations/SmartReorder';
