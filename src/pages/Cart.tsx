@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Truck } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,9 +21,19 @@ import { useCartStore } from '@/stores/cartStore';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 import { ProductCard } from '@/components/products/ProductCard';
 
+const FREE_SHIPPING_THRESHOLD = 500;
+const SHIPPING_FEE = 50;
+
 export default function Cart() {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart, getTotalItems, orderNote, setOrderNote } = useCartStore();
   const { products: recentlyViewedProducts } = useRecentlyViewedStore();
+
+  const subtotal = getTotalPrice();
+  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const shippingFee = isFreeShipping ? 0 : SHIPPING_FEE;
+  const total = subtotal + shippingFee;
+  const progressToFreeShipping = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - subtotal, 0);
 
   if (items.length === 0) {
     return (
@@ -157,18 +168,33 @@ export default function Cart() {
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h2 className="text-xl font-bold mb-4">สรุปคำสั่งซื้อ</h2>
+
+                <div className="space-y-2 bg-muted/50 p-3 rounded-lg mb-6">
+                  <div className="flex justify-between items-center text-sm font-medium">
+                    <span className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-primary" />
+                      {isFreeShipping ? 'คุณได้รับสิทธิ์ส่งฟรี!' : `ซื้อเพิ่มอีก ฿${remainingForFreeShipping.toLocaleString()} เพื่อส่งฟรี`}
+                    </span>
+                  </div>
+                  <Progress value={progressToFreeShipping} className="h-2" />
+                </div>
+
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ยอดรวมสินค้า ({getTotalItems()} ชิ้น)</span>
-                    <span>฿{getTotalPrice().toLocaleString()}</span>
+                    <span>฿{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ค่าจัดส่ง</span>
-                    <span className="text-success">ฟรี</span>
+                    {isFreeShipping ? (
+                      <span className="text-success font-medium">ฟรี</span>
+                    ) : (
+                      <span>฿{shippingFee.toLocaleString()}</span>
+                    )}
                   </div>
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>ยอดรวมทั้งหมด</span>
-                    <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                    <span className="text-primary">฿{total.toLocaleString()}</span>
                   </div>
                 </div>
 
