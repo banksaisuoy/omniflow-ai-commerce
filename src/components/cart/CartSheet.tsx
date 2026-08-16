@@ -11,10 +11,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingFee, getFinalTotal } = useCartStore();
+
+  const totalPrice = getTotalPrice();
+  const shippingFee = getShippingFee();
+  const amountToFreeShipping = 500 - totalPrice;
+  const progressPercent = Math.min((totalPrice / 500) * 100, 100);
 
   return (
     <Sheet>
@@ -107,14 +113,32 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
         {items.length > 0 && (
           <div className="pt-4 border-t border-border/50 bg-background space-y-4">
+
+            <div className="space-y-2 bg-muted/50 p-3 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="font-medium">
+                  {amountToFreeShipping > 0 ? `ซื้ออีก ฿${amountToFreeShipping.toLocaleString()} เพื่อรับสิทธิ์ส่งฟรี` : 'ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรี'}
+                </span>
+              </div>
+              <Progress value={progressPercent} className="h-2" />
+            </div>
+
             <div className="space-y-1.5">
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>ค่าจัดส่ง</span>
-                <span className="text-success font-medium">ฟรี</span>
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{totalPrice.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ค่าจัดส่ง</span>
+                {shippingFee === 0 ? (
+                  <span className="text-success font-medium">ฟรี</span>
+                ) : (
+                  <span>฿{shippingFee.toLocaleString()}</span>
+                )}
+              </div>
+              <div className="flex justify-between font-bold text-lg pt-2 border-t border-border/50">
                 <span>ยอดรวมทั้งหมด</span>
-                <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                <span className="text-primary">฿{getFinalTotal().toLocaleString()}</span>
               </div>
             </div>
 

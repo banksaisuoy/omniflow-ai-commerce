@@ -43,6 +43,8 @@ export default function Checkout() {
   const { user } = useAuth();
   const items = useCartStore((state) => state.items);
   const total = useCartStore((state) => state.getTotalPrice());
+  const finalTotal = useCartStore((state) => state.getFinalTotal());
+  const shippingFee = useCartStore((state) => state.getShippingFee());
   const clearCart = useCartStore((state) => state.clearCart);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,16 +66,16 @@ export default function Checkout() {
   const [qrCode, setQrCode] = useState<string | null>(null);
 
   useEffect(() => {
-    if (paymentMethod !== 'promptpay' || total <= 0) {
+    if (paymentMethod !== 'promptpay' || finalTotal <= 0) {
       setQrCode(null);
       return;
     }
     let active = true;
-    generatePromptPayQR(total)
+    generatePromptPayQR(finalTotal)
       .then((url) => { if (active) setQrCode(url); })
       .catch(() => { if (active) setQrCode(null); });
     return () => { active = false; };
-  }, [paymentMethod, total]);
+  }, [paymentMethod, finalTotal]);
 
   const onSubmit = async (formData: z.infer<typeof checkoutSchema>) => {
     setIsSubmitting(true);
@@ -82,7 +84,7 @@ export default function Checkout() {
       // Fraud Detection Check (Mocked data for demonstration)
       const fraudAnalysis = analyzeTransaction({
         userId: user?.id || null,
-        amount: total,
+        amount: finalTotal,
         paymentMethod: paymentMethod,
         timestamp: Date.now()
       });
@@ -104,13 +106,13 @@ export default function Checkout() {
         _coupon_code: formData.couponCode?.trim() || null,
       });
       if (error) throw error;
-      const order = data as any;
+      const order = data as unknown as { id: string; order_number: string };
 
       clearCart();
       toast.success('สร้างคำสั่งซื้อสำเร็จ');
       navigate('/order-success', { state: { orderId: order?.id } });
-    } catch (error: any) {
-      toast.error(error.message || 'เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ');
+    } catch (error: unknown) {
+      toast.error((error as Error).message || 'เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ');
     } finally {
       setIsSubmitting(false);
     }
@@ -248,7 +250,7 @@ export default function Checkout() {
 
               {paymentMethod === 'promptpay' && (
                 <div className="flex flex-col items-center gap-3 p-6 rounded-lg border bg-card">
-                  <p className="font-medium">สแกนเพื่อชำระเงิน ฿{total.toLocaleString()}</p>
+                  <p className="font-medium">สแกนเพื่อชำระเงิน ฿{finalTotal.toLocaleString()}</p>
                   {qrCode ? (
                     <img src={qrCode} alt="PromptPay QR สำหรับชำระเงิน" className="w-56 h-56" />
                   ) : (
@@ -278,9 +280,23 @@ export default function Checkout() {
                 </div>
               ))}
             </div>
+            <div className="border-t border-border/50 pt-4 space-y-2 mb-4">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{total.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ค่าจัดส่ง</span>
+                {shippingFee === 0 ? (
+                  <span className="text-success font-medium">ฟรี</span>
+                ) : (
+                  <span>฿{shippingFee.toLocaleString()}</span>
+                )}
+              </div>
+            </div>
             <div className="border-t pt-4 font-bold flex justify-between">
               <span>ยอดรวมทั้งสิ้น</span>
-              <span className="text-xl">฿{total.toLocaleString()}</span>
+              <span className="text-xl">฿{finalTotal.toLocaleString()}</span>
             </div>
           </div>
           
