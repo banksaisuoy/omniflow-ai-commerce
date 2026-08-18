@@ -27,12 +27,6 @@ export const mockWebhookEndpoint = async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Missing signature' }), { status: 400 });
     }
     
-    if (body.type === 'radar.early_fraud_warning.created') {
-      const chargeId = body.data.object.charge;
-      const fraudLevel = body.data.object.fraud_type;
-      
-      console.log(`Fraud detected for charge ${chargeId}: ${fraudLevel}`);
-    }
     
     return new Response(JSON.stringify({ received: true }), { status: 200 });
   } catch (err) {
