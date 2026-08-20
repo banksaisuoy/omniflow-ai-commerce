@@ -1,8 +1,16 @@
 import CryptoJS from 'crypto-js';
 
-// In a real application, this should be an environment variable.
-// We provide a fallback for demonstration purposes.
-const ENCRYPTION_KEY = import.meta.env.VITE_PAYMENT_ENCRYPTION_KEY || 'default-secure-key-32-chars-long!';
+/**
+ * Gets the encryption key from the environment.
+ * Throws an error if the key is not defined to prevent fallback to hardcoded secrets.
+ */
+const getEncryptionKey = (): string => {
+  const key = import.meta.env.VITE_PAYMENT_ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error('Critical Security Error: VITE_PAYMENT_ENCRYPTION_KEY is not defined.');
+  }
+  return key;
+};
 
 /**
  * Encrypts sensitive payment data using AES-256.
@@ -11,7 +19,7 @@ const ENCRYPTION_KEY = import.meta.env.VITE_PAYMENT_ENCRYPTION_KEY || 'default-s
  */
 export const encryptPaymentData = (data: any): string => {
   const jsonString = JSON.stringify(data);
-  const encrypted = CryptoJS.AES.encrypt(jsonString, ENCRYPTION_KEY).toString();
+  const encrypted = CryptoJS.AES.encrypt(jsonString, getEncryptionKey()).toString();
   return encrypted;
 };
 
@@ -21,7 +29,7 @@ export const encryptPaymentData = (data: any): string => {
  * @returns The decrypted data object.
  */
 export const decryptPaymentData = (encryptedData: string): any => {
-  const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+  const bytes = CryptoJS.AES.decrypt(encryptedData, getEncryptionKey());
   const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
   if (!decryptedString) {
     throw new Error('Failed to decrypt payment data. Invalid key or corrupted data.');
