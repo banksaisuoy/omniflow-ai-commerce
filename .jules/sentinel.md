@@ -5,3 +5,7 @@
 **Vulnerability:** The application was logging raw payment data directly to the console in `src/services/paymentService.ts`, which violates PCI-DSS and leaks sensitive tokens.
 **Learning:** This repo logs the entire `orderData` object, failing to proactively redact internal, non-redacted keys like `paymentToken` prior to serialization.
 **Prevention:** Always implement an explicit redaction layer over unstructured or dynamically-composed data objects before writing to logs, particularly those handling PCI/PII data.
+## 2024-08-08 - Prevent fallback to hardcoded keys
+**Vulnerability:** A hardcoded string was used as a fallback for `ENCRYPTION_KEY` if the environment variable was missing, meaning keys could be exposed in the client bundle.
+**Learning:** Hardcoded secrets as fallbacks negate the purpose of environment variables and expose sensitive data.
+**Prevention:** Never use hardcoded strings as fallbacks for secrets. Throw an error if the environment variable is not defined to fail securely.
