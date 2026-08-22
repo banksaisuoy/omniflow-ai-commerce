@@ -1,26 +1,103 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export type Lang = 'th' | 'en';
+
+const dict: Record<Lang, Record<string, string>> = {
+  th: {
+    home: 'หน้าแรก',
+    products: 'เมนูขนม',
+    bundles: 'เซ็ตของขวัญ',
+    gift_cards: 'บัตรของขวัญ',
+    rewards: 'Rewards',
+    blog: 'บทความ',
+    track: 'ติดตามคำสั่งซื้อ',
+    ai_concierge: 'AI แนะนำ',
+    visual_search: 'ค้นด้วยรูป',
+    loyalty: 'สะสมแต้ม',
+    wishlist: 'รายการโปรด',
+    cart: 'ตะกร้า',
+    signin: 'เข้าสู่ระบบ',
+    signout: 'ออกจากระบบ',
+    admin: 'จัดการร้าน',
+    search: 'ค้นหา',
+    pages: 'หน้า',
+    search_pages: 'ค้นหาหน้า...',
+    search_placeholder: 'ค้นหาสินค้า...',
+    voice_search: 'ค้นด้วยเสียง',
+    subtitle: 'ขนมไทยโฮมเมด',
+    footer_desc: 'สืบสานความอร่อยของขนมไทยโบราณ ด้วยวัตถุดิบคุณภาพและสูตรลับที่ตกทอดจากรุ่นสู่รุ่น',
+    shopping: 'ช้อปปิ้ง',
+    all_products: 'เมนูขนมทั้งหมด',
+    customer: 'ลูกค้า',
+    my_account: 'บัญชีของฉัน',
+    loyalty_system: 'ระบบสมาชิก',
+    refer_friend: 'ชวนเพื่อนรับโบนัส',
+    refer_friend_short: 'ชวนเพื่อน',
+    contact_us: 'ติดต่อเรา',
+    address: '123 ซอยขนมหวาน ถนนสุขุมวิท<br />กรุงเทพมหานคร 10110',
+    phone: 'โทร: 02-123-4567',
+    email: 'อีเมล: hello@khanomhouse.com',
     copyright: 'สงวนลิขสิทธิ์',
     privacy_policy: 'นโยบายความเป็นส่วนตัว',
     terms_of_service: 'เงื่อนไขการให้บริการ',
-    faq: 'คำถามที่พบบ่อย',
-    faq_q1: 'ฉันสามารถสั่งซื้อสินค้าได้อย่างไร?',
-    faq_a1: 'คุณสามารถสั่งซื้อผ่านเว็บไซต์นี้ โดยเลือกสินค้าที่ต้องการลงตะกร้า และทำตามขั้นตอนการชำระเงิน',
-    faq_q2: 'มีบริการจัดส่งที่ไหนบ้าง?',
-    faq_a2: 'เรามีบริการจัดส่งทั่วประเทศผ่านบริษัทขนส่งชั้นนำ',
-    faq_q3: 'มีค่าจัดส่งเท่าไหร่?',
-    faq_a3: 'ค่าจัดส่งเริ่มต้นที่ 50 บาท ส่งฟรีเมื่อสั่งซื้อครบ 500 บาทขึ้นไป',
     announcement_text: 'โปรโมชั่นพิเศษ! ส่งฟรีเมื่อสั่งครบ 500 บาท หรือลด 20% เมื่อใช้โค้ด OMNI20',
   },
   en: {
+    home: 'Home',
+    products: 'Shop',
+    bundles: 'Gift Sets',
+    gift_cards: 'Gift Cards',
+    rewards: 'Rewards',
+    blog: 'Blog',
+    track: 'Track Order',
+    ai_concierge: 'AI Concierge',
+    visual_search: 'Visual Search',
+    loyalty: 'Loyalty',
+    wishlist: 'Wishlist',
+    cart: 'Cart',
+    signin: 'Sign In',
+    signout: 'Sign Out',
+    admin: 'Admin',
+    search: 'Search',
+    pages: 'Pages',
+    search_pages: 'Search pages...',
+    search_placeholder: 'Search products...',
+    voice_search: 'Voice search',
+    subtitle: 'Homemade Thai Desserts',
+    footer_desc: 'Preserving the deliciousness of traditional Thai desserts with quality ingredients and a secret recipe passed down from generation to generation.',
+    shopping: 'Shopping',
+    all_products: 'All Products',
+    customer: 'Customer',
+    my_account: 'My Account',
+    loyalty_system: 'Loyalty System',
+    refer_friend: 'Refer a Friend Bonus',
+    refer_friend_short: 'Refer Friend',
+    contact_us: 'Contact Us',
+    save_changes: 'Save Changes',
+    address: '123 Dessert Alley, Sukhumvit Road<br />Bangkok 10110',
+    phone: 'Tel: 02-123-4567',
+    email: 'Email: hello@khanomhouse.com',
     copyright: 'All rights reserved.',
     privacy_policy: 'Privacy Policy',
     terms_of_service: 'Terms of Service',
-    faq: 'FAQ',
-    faq_q1: 'How can I place an order?',
-    faq_a1: 'You can place an order through our website by adding desired items to the cart and following the checkout process.',
-    faq_q2: 'Where do you deliver?',
-    faq_a2: 'We offer nationwide delivery through leading courier services.',
-    faq_q3: 'How much is the shipping fee?',
-    faq_a3: 'Shipping fees start at 50 THB. Free shipping is available for orders over 500 THB.',
     announcement_text: 'Special Offer! Free shipping on orders over 500 THB or 20% off with code OMNI20',
   },
 };
+
+interface I18nState {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  t: (key: string) => string;
+}
+
+export const useI18n = create<I18nState>()(
+  persist(
+    (set, get) => ({
+      lang: 'th',
+      setLang: (lang) => set({ lang }),
+      t: (key) => dict[get().lang][key] ?? key,
+    }),
+    { name: 'kh-lang' }
+  )
+);
