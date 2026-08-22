@@ -5,64 +5,58 @@
 
 interface RecommendationCarouselProps {
   productId?: string;
-  cartIds?: string[];
   title?: string;
 }
 
-export const RecommendationCarousel: React.FC<RecommendationCarouselProps> = ({
-  productId,
-  cartIds,
-  title = 'You might also like',
+export const RecommendationCarousel: React.FC<RecommendationCarouselProps> = ({ 
+  productId, 
+  title = "You Might Also Like" 
 }) => {
   const [recommendations, setRecommendations] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchRecommendations = async () => {
-      setLoading(true);
       try {
-        const data = await getRecommendations(productId, cartIds);
-        setRecommendations(data);
+        setIsLoading(true);
+        const data = await getRecommendations(productId, 5);
+        setRecommendations(data || []);
       } catch (error) {
         console.error('Failed to fetch recommendations', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchRecommendations();
-  }, [productId, cartIds]);
+  }, [productId]);
 
-  if (loading) {
-    return <div className="py-8 text-center text-muted-foreground">Loading recommendations...</div>;
-  }
-
-  if (!recommendations || recommendations.length === 0) {
+  if (isLoading || recommendations.length === 0) {
     return null;
   }
 
   return (
-    <div className="recommendation-carousel w-full max-w-full">
+    <div className="w-full my-8">
       <h2 className="text-2xl font-bold mb-6">{title}</h2>
       <Carousel
         opts={{
-          align: "start",
-          loop: false,
+          align: 'start',
+          loop: true,
         }}
         className="w-full"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
           {recommendations.map((product) => (
-            <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+            <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/4">
               <ProductCard product={product} />
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex -left-4" />
-        <CarouselNext className="hidden md:flex -right-4" />
+        <div className="hidden sm:block">
+          <CarouselPrevious className="-left-4" />
+          <CarouselNext className="-right-4" />
+        </div>
       </Carousel>
     </div>
   );
 };
-
-export default RecommendationCarousel;
