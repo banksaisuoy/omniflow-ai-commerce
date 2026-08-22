@@ -1,44 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { Product } from '@/types/product';
-import { ProductCard } from '@/components/products/ProductCard';
-import { getRecommendations } from '@/api/recommendations';
-import {
-  Carousel,
-  CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel';
 
 interface RecommendationCarouselProps {
   productId?: string;
+  cartIds?: string[];
+  title?: string;
+}
+
+export const RecommendationCarousel: React.FC<RecommendationCarouselProps> = ({
+  productId,
+  cartIds,
+  title = 'You might also like',
+}) => {
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      setLoading(true);
+      try {
+        const data = await getRecommendations(productId, cartIds);
+        setRecommendations(data);
+      } catch (error) {
+        console.error('Failed to fetch recommendations', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, [productId, cartIds]);
+
+  if (loading) {
+    return <div className="py-8 text-center text-muted-foreground">Loading recommendations...</div>;
+  }
+
+  if (!recommendations || recommendations.length === 0) {
     return null;
   }
 
   return (
-    <div className="recommendation-carousel mt-8 pt-8 border-t border-border">
+    <div className="recommendation-carousel mt-8 pt-8 border-t border-border px-8">
       <h2 className="text-2xl font-bold mb-6">{title}</h2>
       <Carousel
         opts={{
-          align: "start",
+          align: 'start',
           loop: false,
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className="-ml-4">
           {recommendations.map((product) => (
-            <CarouselItem key={product.id} className="pl-2 md:pl-4 sm:basis-1/2 lg:basis-1/3">
-              <ProductCard product={product} />
+            <CarouselItem key={product.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+              <div className="p-1">
+                <ProductCard product={product} />
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="relative inset-0 translate-y-0 h-10 w-10" />
-          <CarouselNext className="relative inset-0 translate-y-0 h-10 w-10" />
-        </div>
+        <CarouselPrevious />
+        <CarouselNext />
       </Carousel>
     </div>
   );
-};
-
-export default RecommendationCarousel;
