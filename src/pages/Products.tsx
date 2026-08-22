@@ -1,220 +1,82 @@
-import { RecommendationCarousel } from "@/components/RecommendationCarousel";
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, LayoutGrid, List, X } from 'lucide-react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/products/ProductCard';
+import { RecommendationCarousel } from '@/components/RecommendationCarousel';
 import { VoiceSearchButton } from '@/components/products/VoiceSearchButton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-
-const CATEGORIES = ['ขนมไทยโบราณ', 'ขนมอบ', 'ขนมชุด', 'เครื่องดื่ม'];
+import { Search } from 'lucide-react';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('category'));
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
-  const [maxPrice, setMaxPrice] = useState<number>(searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 2000);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-
-    if (searchQuery) params.set('q', searchQuery);
-    else params.delete('q');
-
-    if (selectedCategory) params.set('category', selectedCategory);
-    else params.delete('category');
-
-    if (viewMode !== 'grid') params.set('view', viewMode);
-    else params.delete('view');
-
-    if (sortBy !== 'newest') params.set('sort', sortBy);
-    else params.delete('sort');
-
-    if (maxPrice !== 2000) params.set('maxPrice', maxPrice.toString());
-    else params.delete('maxPrice');
-
-    setSearchParams(params, { replace: true });
-  }, [searchQuery, selectedCategory, viewMode, sortBy, maxPrice, searchParams, setSearchParams]);
+  const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
+  const searchQuery = searchParams.get('q') || '';
+  const categoryFilter = searchParams.get('category') || '';
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products', selectedCategory, sortBy],
+    queryKey: ['products', searchQuery, categoryFilter],
     queryFn: async () => {
       let query = supabase
         .from('products')
-        .select('id, name, description, price, compare_at_price, thumbnail_url, category, slug')
+        .select('*')
         .eq('status', 'active');
 
-      if (selectedCategory) query = query.eq('category', selectedCategory);
-
-      if (sortBy === 'price_asc') query = query.order('price', { ascending: true });
-      else if (sortBy === 'price_desc') query = query.order('price', { ascending: false });
-      else if (sortBy === 'name') query = query.order('name', { ascending: true });
-      else query = query.order('created_at', { ascending: false });
+      if (searchQuery) {
+        query = query.ilike('name', `%${searchQuery}%`);
+      }
+      
+      if (categoryFilter) {
+        query = query.eq('category', categoryFilter);
+      }
 
       const { data, error } = await query;
       if (error) throw error;
-      return data ?? [];
+      return data;
     },
   });
 
-  const filteredProducts = products?.filter(
-    (product) =>
-      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      product.price <= maxPrice
-  );
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      setSearchParams({ q: searchInput });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold">สินค้าทั้งหมด</h1>
-          <p className="text-muted-foreground mt-2">ขนมไทยทำสดใหม่ทุกวัน จากครัว Khanom House</p>
-        </header>
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div className="flex gap-2 items-center flex-1 max-w-md">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ค้นหาขนม..."
-                className="pl-9 pr-8"
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">All Products</h1>
+          <form onSubmit={handleSearch} className="flex gap-2 w-full max-w-sm">
+            <div className="relative w-full">
+              <Input 
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search products..."
+                className="pr-10"
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label="ล้างข้อความค้นหา"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <VoiceSearchButton onResult={(text) => setSearchInput(text)} />
+              </div>
             </div>
-            <VoiceSearchButton onTranscript={(text) => setSearchQuery(text)} />
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <div className="hidden md:flex items-center gap-2 mr-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                ราคาไม่เกิน ฿{maxPrice}
-              </span>
-              <input
-                type="range"
-                min="0"
-                max="2000"
-                step="50"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-24 accent-primary"
-                aria-label="กรองตามราคาสูงสุด"
-              />
-            </div>
-
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="เรียงตาม" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">มาใหม่ล่าสุด</SelectItem>
-                <SelectItem value="price_asc">ราคาต่ำ - สูง</SelectItem>
-                <SelectItem value="price_desc">ราคาสูง - ต่ำ</SelectItem>
-                <SelectItem value="name">ชื่อ A - Z</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="hidden sm:flex border rounded-md">
-              <Button
-                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                size="icon"
-                onClick={() => setViewMode('grid')}
-                aria-label="มุมมองตาราง"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                size="icon"
-                onClick={() => setViewMode('list')}
-                aria-label="มุมมองรายการ"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 mb-8">
-          <Button
-            variant={selectedCategory === null ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedCategory(null)}
-          >
-            ทั้งหมด
-          </Button>
-          {CATEGORIES.map((cat) => (
-            <Button
-              key={cat}
-              variant={selectedCategory === cat ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat}
+            <Button type="submit">
+              <Search className="w-4 h-4" />
             </Button>
-          ))}
-          {(searchQuery !== '' || selectedCategory !== null || sortBy !== 'newest' || maxPrice !== 2000) && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="ml-auto"
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory(null);
-                setSortBy('newest');
-                setMaxPrice(2000);
-              }}
-            >
-              <X className="h-4 w-4 mr-1" /> ล้างตัวกรอง
-            </Button>
-          )}
+          </form>
         </div>
 
         {isLoading ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-72 rounded-lg bg-muted animate-pulse" />
-            ))}
-          </div>
-        ) : filteredProducts && filteredProducts.length > 0 ? (
-          <div
-            className={
-              viewMode === 'grid'
-                ? 'grid gap-6 sm:grid-cols-2 lg:grid-cols-4'
-                : 'flex flex-col gap-4'
-            }
-          >
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} viewMode={viewMode} />
-            ))}
-          </div>
+          <div className="flex justify-center py-12">Loading...</div>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground">ไม่พบสินค้าที่ค้นหา</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products?.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </div>
