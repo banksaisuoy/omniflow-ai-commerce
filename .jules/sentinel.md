@@ -9,3 +9,7 @@
 **Vulnerability:** A hardcoded string was used as a fallback for `ENCRYPTION_KEY` if the environment variable was missing, meaning keys could be exposed in the client bundle.
 **Learning:** Hardcoded secrets as fallbacks negate the purpose of environment variables and expose sensitive data.
 **Prevention:** Never use hardcoded strings as fallbacks for secrets. Throw an error if the environment variable is not defined to fail securely.
+## 2026-08-25 - Prevent XSS in Markdown Links
+**Vulnerability:** The AI chat widget used `ReactMarkdown` to render markdown links into HTML anchor tags without validating the `href` attribute. An attacker or hallucinating AI could inject `javascript:alert('XSS')` into the `href`, which would execute malicious scripts when a user clicked the link.
+**Learning:** Even when using popular Markdown parsers like `ReactMarkdown`, custom element renderers (`components={{ a: ... }}`) bypass built-in sanitization. The developer must manually validate attributes like `href` within these custom overrides.
+**Prevention:** Always validate and sanitize user-controlled or AI-generated `href` values in custom renderers. Block dangerous URI schemes (`javascript:`, `data:`, `vbscript:`) by falling back to a safe value like `#`.
