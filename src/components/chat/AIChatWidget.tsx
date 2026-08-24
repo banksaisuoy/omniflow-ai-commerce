@@ -71,7 +71,10 @@ export function AIChatWidget() {
                   <div className="prose prose-sm max-w-none [&>*]:my-1 [&_a]:text-primary [&_a]:underline">
                     <ReactMarkdown
                       components={{
-                        a: ({ href, children }) => href?.startsWith("/") ? <Link to={href}>{children}</Link> : <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>,
+                        a: ({ href, children }) => {
+                          const safeHref = href && (href.trim().toLowerCase().startsWith('javascript:') || href.trim().toLowerCase().startsWith('data:')) ? '#' : href;
+                          return safeHref?.startsWith("/") ? <Link to={safeHref}>{children}</Link> : <a href={safeHref} target="_blank" rel="noopener noreferrer">{children}</a>;
+                        },
                       }}
                     >{m.content}</ReactMarkdown>
                   </div>
