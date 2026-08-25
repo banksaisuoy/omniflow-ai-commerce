@@ -1,24 +1,17 @@
-
-  const updateMutation = useMutation({
-    mutationFn: async (product: any) => {
-      if (!product.name || product.name.trim() === '') {
-        throw new Error('กรุณากรอกชื่อสินค้า');
-      }
-      if (typeof product.price !== 'number' || isNaN(product.price) || product.price < 0) {
         throw new Error('ราคาสินค้าต้องเป็นตัวเลขที่มากกว่าหรือเท่ากับ 0');
       }
 
+      const sanitizedName = product.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').trim();
+      const sanitizedCategory = product.category ? product.category.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').trim() : null;
+
       const { error } = await supabase.from('products').update({
-        name: product.name.trim(),
+        name: sanitizedName,
         price: product.price,
         status: product.status,
-        category: product.category,
+        category: sanitizedCategory,
+      });
+
+      if (error) throw error;
       setIsDialogOpen(false);
       toast.success('อัปเดตสินค้าแล้ว');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'เกิดข้อผิดพลาดในการอัปเดตสินค้า');
-    },
-  });
-
-  const filtered = products?.filter(p =>
