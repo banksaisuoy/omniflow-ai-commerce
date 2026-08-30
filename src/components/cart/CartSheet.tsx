@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal } = useCartStore();
 
   return (
     <Sheet>
@@ -109,12 +109,20 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
           <div className="pt-4 border-t border-border/50 bg-background space-y-4">
             <div className="space-y-1.5">
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>ค่าจัดส่ง</span>
-                <span className="text-success font-medium">ฟรี</span>
+                <span>ยอดรวมสินค้า</span>
+                <span>฿{getTotalPrice().toLocaleString()}</span>
               </div>
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>ค่าจัดส่ง {getTotalPrice() < 500 && '(ฟรีเมื่อซื้อครบ 500 บาท)'}</span>
+                {getShippingCost() === 0 ? (
+                  <span className="text-success font-medium">ฟรี</span>
+                ) : (
+                  <span>฿{getShippingCost().toLocaleString()}</span>
+                )}
+              </div>
+              <div className="flex justify-between font-bold text-lg pt-1.5 border-t border-border/50">
                 <span>ยอดรวมทั้งหมด</span>
-                <span className="text-primary">฿{getTotalPrice().toLocaleString()}</span>
+                <span className="text-primary">฿{getFinalTotal().toLocaleString()}</span>
               </div>
             </div>
 
