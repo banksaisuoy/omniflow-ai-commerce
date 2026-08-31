@@ -1,27 +1,15 @@
-    message: z.string().max(1000).nullable().optional()
-  });
-
-  const handleCreate = async () => {
-    setBusy(true);
-    let validatedRecipient;
-    try {
-      validatedRecipient = giftCardSchema.parse({
-        name: recipient.name,
-        email: recipient.email || null,
-        message: recipient.message || null
-      });
-    } catch (e: any) {
-      setBusy(false);
-      const errorMessage = e?.errors?.[0]?.message || 'Invalid input';
-      toast.error(errorMessage);
       return;
     }
 
+    const sanitizedName = validatedRecipient.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').trim();
+    const sanitizedEmail = validatedRecipient.email ? validatedRecipient.email.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').trim() : null;
+    const sanitizedMessage = validatedRecipient.message ? validatedRecipient.message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').trim() : null;
+
     const { data, error } = await supabase.rpc('admin_create_gift_card', {
       _amount: amount,
-      _recipient_name: validatedRecipient.name,
-      _recipient_email: validatedRecipient.email || null,
-      _message: validatedRecipient.message || null
+      _recipient_name: sanitizedName,
+      _recipient_email: sanitizedEmail,
+      _message: sanitizedMessage
     });
     setBusy(false);
     if (error) {
