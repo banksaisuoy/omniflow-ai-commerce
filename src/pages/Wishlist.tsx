@@ -7,7 +7,9 @@ import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Bell } from 'lucide-react';
+import { useCartStore } from '@/stores/cartStore';
+import { Bell, ShoppingCart } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function Wishlist() {
   const { user, loading } = useAuth();
@@ -36,16 +38,30 @@ export default function Wishlist() {
             {items.map((it: any) => it.product && (
               <div key={it.id} className="flex flex-col gap-3">
                 <ProductCard product={it.product} />
-                <div className="flex items-center justify-between px-2 bg-muted/30 p-2 rounded-xl border">
-                  <div className="flex items-center gap-2">
-                    <Bell className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor={`notify-${it.id}`} className="text-xs cursor-pointer text-muted-foreground">แจ้งเตือนราคาลด</Label>
+                <div className="flex flex-col gap-2 px-2 bg-muted/30 p-2 rounded-xl border">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const { addItem } = useCartStore.getState();
+                      addItem(it.product);
+                      toast.success('Added to cart');
+                    }}
+                  >
+                    <ShoppingCart className="h-4 w-4" /> Add to Cart
+                  </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-muted-foreground" />
+                      <Label htmlFor={`notify-${it.id}`} className="text-xs cursor-pointer text-muted-foreground">แจ้งเตือนราคาลด</Label>
+                    </div>
+                    <Switch
+                      id={`notify-${it.id}`}
+                      checked={!!it.notify_on_price_drop}
+                      onCheckedChange={(checked) => updateSettings({ productId: it.product_id, notify_on_price_drop: checked })}
+                    />
                   </div>
-                  <Switch
-                    id={`notify-${it.id}`}
-                    checked={!!it.notify_on_price_drop}
-                    onCheckedChange={(checked) => updateSettings({ productId: it.product_id, notify_on_price_drop: checked })}
-                  />
                 </div>
               </div>
             ))}
