@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart } = useCartStore();
 
   return (
     <Sheet>
@@ -23,12 +23,24 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col h-full">
         <SheetHeader className="pb-4 border-b border-border/50">
-          <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5" />
-            ตะกร้าของฉัน
-            <Badge variant="secondary" className="ml-2 rounded-full">
-              {getTotalItems()}
-            </Badge>
+          <SheetTitle className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              ตะกร้าของฉัน
+              <Badge variant="secondary" className="ml-2 rounded-full">
+                {getTotalItems()}
+              </Badge>
+            </div>
+            {items.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearCart}
+                className="text-muted-foreground hover:text-destructive h-8 px-2 text-xs font-normal"
+              >
+                ล้างตะกร้า
+              </Button>
+            )}
           </SheetTitle>
         </SheetHeader>
 
