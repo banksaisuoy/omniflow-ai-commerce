@@ -9,6 +9,7 @@ import { RecommendationCarousel } from '@/components/RecommendationCarousel';
 import { toast } from 'sonner';
 import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 import { motion } from 'framer-motion';
+import { Share2 } from 'lucide-react';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -68,6 +69,15 @@ export default function ProductDetail() {
     toast.success('Added to cart');
   };
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('ลิงก์ถูกคัดลอกเรียบร้อยแล้ว');
+    } catch (err) {
+      toast.error('ไม่สามารถคัดลอกลิงก์ได้');
+    }
+  };
+
   return (
     <div className="container py-8">
       <motion.div 
@@ -82,12 +92,21 @@ export default function ProductDetail() {
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-xl font-semibold">฿{product.price}</p>
           <p className="text-muted-foreground">{product.description}</p>
-          <button 
-            onClick={handleAddToCart}
-            className="w-full bg-primary text-primary-foreground py-3 rounded-lg"
-          >
-            Add to Cart
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleShare}
+              className="px-6 border border-border rounded-lg hover:bg-accent transition flex items-center justify-center"
+              title="Share"
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
