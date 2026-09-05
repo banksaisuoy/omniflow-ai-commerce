@@ -13,6 +13,7 @@ import khanomChan from '@/assets/feature-khanom-chan.jpg';
 import mangoSticky from '@/assets/feature-mango-sticky.jpg';
 import { ForYouFeed } from '@/components/recommendations/ForYouFeed';
 import { SmartReorder } from '@/components/recommendations/SmartReorder';
+import { RecentlyViewed } from '@/components/recommendations/RecentlyViewed';
 
 
 const fadeUp = {
@@ -244,6 +245,9 @@ export default function Home() {
 
       {/* For You Feed */}
       <ForYouFeed />
+
+      {/* Recently Viewed */}
+      <RecentlyViewed />
 
       {/* Categories */}
       <section className="py-16 md:py-20 bg-gradient-soft">
