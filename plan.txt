@@ -1,0 +1,9 @@
+Based on the roadmap, the user settings page (theme, notification preferences) is missing. I will implement a settings page for user profile.
+
+1.  **Add Translation Keys**: Add translation keys for `settings`, `profile`, `notifications`, `language`, `appearance` to `src/stores/i18nStore.ts`.
+2.  **Create Settings Page Component**: Create `src/pages/Settings.tsx`. This component will fetch the user from `useAuth()`, allow editing profile information, setting the language via `useI18n()`, setting the theme via `next-themes` (`useTheme`), and setting mock notification preferences.
+3.  **Update Routing**: Add the `/settings` route to `src/App.tsx`.
+4.  **Update Navigation**: Add a link to the settings page in the user dropdown in `src/components/layout/Navbar.tsx`.
+5.  **Pre-commit checks**: Run `npx eslint .`, `npx vitest run`, and `npm run build` to verify the application builds and works properly. Ensure all newly added codes pass the required testing. Include pre-commit steps.
+6.  **Message User**: Present the details to the user using the format described.
+7.  **Submit**: Commit the changes.
