@@ -11,6 +11,17 @@ import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 import { motion } from 'framer-motion';
 import { Share2 } from 'lucide-react';
 
+import { Link } from 'react-router-dom';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -80,6 +91,33 @@ export default function ProductDetail() {
 
   return (
     <div className="container py-8">
+
+      <div className="mb-6">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            {product.category && (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/products?category=${encodeURIComponent(product.category)}`}>{product.category}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            )}
+            <BreadcrumbItem>
+              <BreadcrumbPage className="truncate max-w-[200px] sm:max-w-md">{product.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
