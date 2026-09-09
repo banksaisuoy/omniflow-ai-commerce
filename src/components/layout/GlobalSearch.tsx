@@ -87,6 +87,12 @@ export function GlobalSearch() {
             <CommandItem onSelect={() => runCommand(() => navigate("/track"))}>
               {t("track")}
             </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/profile"))}>
+              {t("profile")}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/wishlist"))}>
+              {t("wishlist")}
+            </CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
