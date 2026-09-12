@@ -12,6 +12,10 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  savedItems: CartItem[];
+  saveForLater: (id: string) => void;
+  moveToCart: (id: string) => void;
+  removeSavedItem: (id: string) => void;
   orderNote: string;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
@@ -28,6 +32,53 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      savedItems: [],
+
+      saveForLater: (id) => set((state) => {
+        const itemToSave = state.items.find((i) => i.id === id);
+        if (!itemToSave) return state;
+
+        // Remove from cart
+        const newItems = state.items.filter((i) => i.id !== id);
+
+        // Add to savedItems if not already there
+        const existingSaved = state.savedItems.find((i) => i.id === id);
+        if (existingSaved) return { items: newItems };
+
+        return {
+          items: newItems,
+          savedItems: [...state.savedItems, { ...itemToSave, quantity: 1 }]
+        };
+      }),
+
+      moveToCart: (id) => set((state) => {
+        const itemToMove = state.savedItems.find((i) => i.id === id);
+        if (!itemToMove) return state;
+
+        // Remove from savedItems
+        const newSavedItems = state.savedItems.filter((i) => i.id !== id);
+
+        // Add to cart
+        const existingCartItem = state.items.find((i) => i.id === id);
+        if (existingCartItem) {
+          return {
+            savedItems: newSavedItems,
+            items: state.items.map((i) =>
+              i.id === id ? { ...i, quantity: i.quantity + 1 } : i
+            ),
+          };
+        }
+
+        return {
+          savedItems: newSavedItems,
+          items: [...state.items, { ...itemToMove, quantity: 1 }]
+        };
+      }),
+
+      removeSavedItem: (id) => set((state) => ({
+        savedItems: state.savedItems.filter((i) => i.id !== id),
+      })),
+
       orderNote: '',
       
       addItem: (item) => set((state) => {

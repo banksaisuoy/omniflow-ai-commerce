@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Bookmark } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart } = useCartStore();
+  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem } = useCartStore();
 
   return (
     <Sheet>
@@ -100,12 +100,23 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:text-destructive h-7 w-7"
-                          onClick={() => removeItem(item.id)}
-                        >
+
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-primary h-7 w-7"
+                            onClick={() => saveForLater(item.id)}
+                            title="Save for later"
+                          >
+                            <Bookmark className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive h-7 w-7"
+                            onClick={() => removeItem(item.id)}
+                          >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -114,6 +125,61 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
             )}
+              {savedItems.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-border/50">
+                  <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" />
+                    บันทึกไว้ดูภายหลัง ({savedItems.length})
+                  </h3>
+                  <div className="space-y-4">
+                    {savedItems.map((item) => (
+                      <div key={item.id} className="flex gap-4 opacity-75 hover:opacity-100 transition-opacity">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                          {item.thumbnail_url ? (
+                            <img
+                              src={item.thumbnail_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[8px]">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-medium text-xs line-clamp-2 leading-tight mb-1">{item.name}</h4>
+                            <p className="text-primary font-medium text-xs">
+                              ฿{item.price.toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs px-2"
+                              onClick={() => moveToCart(item.id)}
+                            >
+                              <ShoppingCart className="h-3 w-3 mr-1" />
+                              ย้ายลงตะกร้า
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground hover:text-destructive h-7 w-7"
+                              onClick={() => removeSavedItem(item.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
           </ScrollArea>
         </div>
 
