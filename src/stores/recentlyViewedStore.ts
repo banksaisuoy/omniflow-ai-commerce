@@ -15,12 +15,14 @@ export interface RecentlyViewedProduct {
 interface RecentlyViewedState {
   products: RecentlyViewedProduct[];
   addProduct: (product: RecentlyViewedProduct) => void;
+  clearProducts: () => void;
 }
 
 export const useRecentlyViewedStore = create<RecentlyViewedState>()(
   persist(
     (set) => ({
       products: [],
+      clearProducts: () => set({ products: [] }),
       addProduct: (product) => set((state) => {
         const existingIndex = state.products.findIndex(p => p.id === product.id);
         const newProducts = [...state.products];
