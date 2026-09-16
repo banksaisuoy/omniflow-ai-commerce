@@ -28,6 +28,7 @@ export default function ProductDetail() {
   const { items, addItem } = useCartStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addProduct);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -76,8 +77,8 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
-    addItem(product, 1);
-    toast.success('Added to cart');
+    addItem(product, quantity);
+    toast.success(`เพิ่มสินค้าลงตะกร้า ${quantity} ชิ้น`);
   };
 
   const handleShare = async () => {
@@ -130,6 +131,28 @@ export default function ProductDetail() {
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-xl font-semibold">฿{product.price}</p>
           <p className="text-muted-foreground">{product.description}</p>
+
+          <div className="flex items-center gap-4 py-2">
+            <span className="font-medium text-sm">จำนวน:</span>
+            <div className="flex items-center border border-border rounded-lg">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition rounded-l-lg"
+                aria-label="Decrease quantity"
+              >
+                -
+              </button>
+              <span className="w-10 text-center font-medium">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition rounded-r-lg"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
           <div className="flex gap-4">
             <button
               onClick={handleAddToCart}
