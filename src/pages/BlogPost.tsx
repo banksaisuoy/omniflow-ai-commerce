@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Share2, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
@@ -30,6 +30,16 @@ export default function BlogPost() {
     } catch (err) {
       toast.error('ไม่สามารถคัดลอกลิงก์ได้');
     }
+  };
+  const calculateReadingTime = (text: string | null | undefined) => {
+    if (!text) return 0;
+    const strippedText = text.replace(/<[^>]*>?/gm, '');
+    const cleanText = strippedText.trim();
+    if (!cleanText) return 0;
+
+    const wordsPerMinute = 200;
+    const words = cleanText.split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
   };
   const { slug } = useParams<{ slug: string }>();
 
@@ -75,13 +85,19 @@ export default function BlogPost() {
             )}
             <h1 className="font-display text-4xl md:text-5xl mb-4">{post.title}</h1>
             <div className="flex items-center justify-between mb-8 border-b border-border pb-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                {post.published_at
-                  ? new Date(post.published_at).toLocaleDateString('th-TH', {
-                      year: 'numeric', month: 'long', day: 'numeric',
-                    })
-                  : ''}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {post.published_at
+                    ? new Date(post.published_at).toLocaleDateString('th-TH', {
+                        year: 'numeric', month: 'long', day: 'numeric',
+                      })
+                    : ''}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {calculateReadingTime(post.content)} นาทีในการอ่าน
+                </div>
               </div>
               <Button variant="outline" size="sm" onClick={handleShare}>
                 <Share2 className="h-4 w-4 mr-2" />
