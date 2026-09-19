@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Bookmark } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Bookmark, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Sheet,
   SheetContent,
@@ -15,6 +16,18 @@ import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem } = useCartStore();
+
+  const handleShareCart = async () => {
+    if (items.length === 0) return;
+    try {
+      const summary = items.map(item => `${item.quantity}x ${item.name} (฿${item.price.toLocaleString()})`).join('\n');
+      const text = `ตะกร้าของฉัน:\n${summary}\n\nรวม: ฿${getTotalPrice().toLocaleString()}`;
+      await navigator.clipboard.writeText(text);
+      toast.success('คัดลอกรายการสินค้าแล้ว', { description: 'คุณสามารถวางในแชทเพื่อแชร์ได้เลย' });
+    } catch (err) {
+      toast.error('ไม่สามารถคัดลอกได้');
+    }
+  };
 
   return (
     <Sheet>
@@ -210,8 +223,12 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                   <Link to="/cart">ดูตะกร้า</Link>
                 </Button>
               </SheetClose>
+              <Button variant="outline" className="w-full" onClick={handleShareCart}>
+                <Share2 className="mr-1.5 h-4 w-4" />
+                แชร์ตะกร้า
+              </Button>
               <SheetClose asChild>
-                <Button className="w-full" asChild>
+                <Button className="w-full col-span-2" asChild>
                   <Link to="/checkout">
                     ชำระเงิน
                     <ArrowRight className="ml-1.5 h-4 w-4" />
