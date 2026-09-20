@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
@@ -198,6 +199,23 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
         {items.length > 0 && (
           <div className="pt-4 border-t border-border/50 bg-background space-y-4">
+            {/* Free Shipping Progress */}
+            {getShippingCost() > 0 ? (
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>ซื้ออีก ฿{(500 - getTotalPrice()).toLocaleString()} เพื่อจัดส่งฟรี</span>
+                </div>
+                <Progress value={(getTotalPrice() / 500) * 100} className="h-2" />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium text-primary">
+                  <span>ยินดีด้วย! คุณได้รับสิทธิ์จัดส่งฟรี 🎉</span>
+                </div>
+                <Progress value={100} className="h-2" />
+              </div>
+            )}
+
             <div className="space-y-1.5">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>ยอดรวมสินค้า</span>
