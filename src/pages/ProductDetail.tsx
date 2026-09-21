@@ -27,7 +27,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { items, addItem } = useCartStore();
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addProduct);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<number>(0);
   const [quantity, setQuantity] = useState(1);
 
   const { data: product, isLoading } = useQuery({
@@ -64,7 +64,16 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (product) {
-      addRecentlyViewed(product);
+      addRecentlyViewed({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        compare_at_price: product.compare_at_price,
+        thumbnail_url: product.thumbnail_url || product.images?.[0] || null,
+        category: product.category,
+        slug: product.slug,
+        description: product.description
+      });
     }
   }, [product, addRecentlyViewed]);
 
@@ -77,7 +86,12 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
-    addItem(product, quantity);
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      thumbnail_url: product.thumbnail_url || product.images?.[0] || null,
+    }, quantity);
     toast.success(`เพิ่มสินค้าลงตะกร้า ${quantity} ชิ้น`);
   };
 
@@ -125,7 +139,26 @@ export default function ProductDetail() {
         className="grid md:grid-cols-2 gap-8"
       >
         <div className="space-y-4">
-          <img src={product.image_url} alt={product.name} className="w-full rounded-lg" />
+          <img
+            src={product.images?.[selectedImage] || product.thumbnail_url || '/placeholder.png'}
+            alt={product.name}
+            className="w-full rounded-lg aspect-square object-cover"
+          />
+          {product.images && product.images.length > 1 && (
+            <div className="flex gap-4 overflow-x-auto py-2 scrollbar-hide">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`w-20 h-20 rounded-md overflow-hidden border-2 flex-shrink-0 transition-all ${
+                    selectedImage === idx ? 'border-primary opacity-100' : 'border-transparent opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt={`${product.name} - Image ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.name}</h1>
