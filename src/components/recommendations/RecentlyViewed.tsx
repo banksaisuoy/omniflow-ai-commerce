@@ -25,7 +25,11 @@ export function RecentlyViewed() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={clearProducts}
+            onClick={() => {
+              if (window.confirm('คุณต้องการล้างประวัติการเข้าชมใช่หรือไม่?')) {
+                clearProducts();
+              }
+            }}
             className="text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-4 w-4 mr-2" />

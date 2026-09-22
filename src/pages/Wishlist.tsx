@@ -46,10 +46,10 @@ export default function Wishlist() {
                     onClick={() => {
                       const { addItem } = useCartStore.getState();
                       addItem(it.product);
-                      toast.success('Added to cart');
+                      toast.success('เพิ่มลงตะกร้าแล้ว');
                     }}
                   >
-                    <ShoppingCart className="h-4 w-4" /> Add to Cart
+                    <ShoppingCart className="h-4 w-4" /> เพิ่มลงตะกร้า
                   </Button>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
