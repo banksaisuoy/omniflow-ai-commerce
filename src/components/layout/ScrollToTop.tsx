@@ -1,40 +1,20 @@
 import { useState, useEffect } from 'react';
+import { useScrollProgress } from '@/hooks/useScrollProgress';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ScrollToTop() {
+  const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollProgress = useScrollProgress();
 
   useEffect(() => {
-    let ticking = false;
-
     const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          // Toggle visibility
-          setIsVisible(window.scrollY > 300);
-
-          // Calculate progress
-          const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-          if (scrollHeight > 0) {
-            const progress = (window.scrollY / scrollHeight) * 100;
-            setScrollProgress(Math.min(100, Math.max(0, progress)));
-          } else {
-            setScrollProgress(0);
-          }
-
-          ticking = false;
-        });
-        ticking = true;
-      }
+      setIsVisible(window.scrollY > 300);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Initial check
     handleScroll();
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -85,8 +65,8 @@ export function ScrollToTop() {
             className="relative rounded-full shadow-lg h-12 w-12 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-110 transition-all duration-300"
             onClick={scrollToTop}
             aria-label="Scroll to top"
-          >
-            <ArrowUp className="h-6 w-6" />
+           onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            {isHovered ? <span className="text-xs font-bold">{Math.round(scrollProgress)}%</span> : <ArrowUp className="h-6 w-6" />}
           </Button>
         </motion.div>
       )}

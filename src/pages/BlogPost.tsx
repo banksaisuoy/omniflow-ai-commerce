@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Calendar, Share2, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useScrollProgress } from '@/hooks/useScrollProgress';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
 import { Layout } from '@/components/layout/Layout';
@@ -9,19 +10,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function BlogPost() {
-  const [readingProgress, setReadingProgress] = useState(0);
-
-  useEffect(() => {
-    const updateScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight > 0) {
-        setReadingProgress(Math.min(100, Math.max(0, (currentScrollY / scrollHeight) * 100)));
-      }
-    };
-    window.addEventListener('scroll', updateScroll, { passive: true });
-    return () => window.removeEventListener('scroll', updateScroll);
-  }, []);
+  const readingProgress = useScrollProgress();
 
   const handleShare = async () => {
     try {
