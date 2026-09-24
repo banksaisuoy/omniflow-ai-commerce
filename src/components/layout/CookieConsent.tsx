@@ -22,6 +22,15 @@ export function CookieConsent() {
     setIsVisible(false);
   };
 
+  const handleDecline = () => {
+    try {
+      localStorage.setItem('cookie-consent', 'declined');
+    } catch (e) {
+      console.error('Failed to save cookie consent', e);
+    }
+    setIsVisible(false);
+  };
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -39,6 +48,9 @@ export function CookieConsent() {
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <Button onClick={handleAccept} className="w-full sm:w-auto">
                 ยอมรับ
+              </Button>
+              <Button variant="outline" onClick={handleDecline} className="w-full sm:w-auto">
+                ปฏิเสธ
               </Button>
               <button
                 onClick={() => setIsVisible(false)}
