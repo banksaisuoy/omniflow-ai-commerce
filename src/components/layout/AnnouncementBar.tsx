@@ -1,9 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import { useI18n } from '@/stores/i18nStore';
 
 export function AnnouncementBar() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem('announcement-dismissed')) {
+      setIsVisible(true);
+    }
+  }, []);
+
+  const handleClose = () => {
+    sessionStorage.setItem('announcement-dismissed', 'true');
+    setIsVisible(false);
+  };
   const { t } = useI18n();
 
   if (!isVisible) return null;
@@ -15,7 +26,7 @@ export function AnnouncementBar() {
         <span>{t('announcement_text')}</span>
       </div>
       <button
-        onClick={() => setIsVisible(false)}
+        onClick={handleClose}
         className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-primary-foreground/20 rounded-full transition-colors"
         aria-label="Close announcement"
       >
