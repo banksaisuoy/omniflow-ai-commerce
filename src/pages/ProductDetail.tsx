@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { PRODUCT_PUBLIC_FIELDS } from '@/lib/productFields';
 import { motion } from 'framer-motion';
 import { Share2 } from 'lucide-react';
+import { WishlistButton } from '@/components/products/WishlistButton';
+
 
 import { Link } from 'react-router-dom';
 import {
@@ -193,13 +195,16 @@ export default function ProductDetail() {
             >
               Add to Cart
             </button>
-            <button
-              onClick={handleShare}
-              className="px-6 border border-border rounded-lg hover:bg-accent transition flex items-center justify-center"
-              title="Share"
-            >
-              <Share2 className="h-5 w-5" />
-            </button>
+            <div className="flex gap-2">
+              <WishlistButton productId={product.id} className="h-[46px] w-[46px] rounded-lg bg-transparent border border-border shadow-none hover:bg-accent flex items-center justify-center relative scale-100 transition-colors" />
+              <button
+                onClick={handleShare}
+                className="h-[46px] w-[46px] border border-border rounded-lg hover:bg-accent transition flex items-center justify-center"
+                title="Share"
+              >
+                <Share2 className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
