@@ -2,7 +2,7 @@ import { Layout } from '@/components/layout/Layout';
 import { useI18n } from '@/stores/i18nStore';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -46,8 +46,16 @@ const FAQ = () => {
             placeholder={t('search_placeholder') || 'ค้นหาคำถาม...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 pr-10"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {filteredFaqs.length === 0 ? (
