@@ -16,6 +16,7 @@ interface CartState {
   saveForLater: (id: string) => void;
   moveToCart: (id: string) => void;
   removeSavedItem: (id: string) => void;
+  clearSavedItems: () => void;
   orderNote: string;
   addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
   removeItem: (id: string) => void;
@@ -78,6 +79,7 @@ export const useCartStore = create<CartState>()(
       removeSavedItem: (id) => set((state) => ({
         savedItems: state.savedItems.filter((i) => i.id !== id),
       })),
+      clearSavedItems: () => set({ savedItems: [] }),
 
       orderNote: '',
       
