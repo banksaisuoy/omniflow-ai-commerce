@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem } = useCartStore();
+  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem, clearSavedItems } = useCartStore();
 
   const handleShareCart = async () => {
     if (items.length === 0) return;
@@ -141,10 +141,20 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
             )}
               {savedItems.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-border/50">
-                  <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
-                    <Bookmark className="h-4 w-4" />
-                    บันทึกไว้ดูภายหลัง ({savedItems.length})
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-medium flex items-center gap-2">
+                      <Bookmark className="h-4 w-4" />
+                      บันทึกไว้ดูภายหลัง ({savedItems.length})
+                    </h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearSavedItems}
+                      className="text-muted-foreground hover:text-destructive h-8 px-2 text-xs font-normal"
+                    >
+                      ล้างทั้งหมด
+                    </Button>
+                  </div>
                   <div className="space-y-4">
                     {savedItems.map((item) => (
                       <div key={item.id} className="flex gap-4 opacity-75 hover:opacity-100 transition-opacity">
