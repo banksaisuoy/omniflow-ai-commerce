@@ -99,10 +99,20 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success('ลิงก์ถูกคัดลอกเรียบร้อยแล้ว');
+      if (navigator.share) {
+        await navigator.share({
+          title: product?.name || 'Khanom House',
+          text: product?.description || 'ดูสินค้านี้ที่ Khanom House',
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('ลิงก์ถูกคัดลอกเรียบร้อยแล้ว');
+      }
     } catch (err) {
-      toast.error('ไม่สามารถคัดลอกลิงก์ได้');
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast.error('ไม่สามารถแชร์หรือคัดลอกลิงก์ได้');
+      }
     }
   };
 
