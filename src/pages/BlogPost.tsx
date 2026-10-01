@@ -14,10 +14,20 @@ export default function BlogPost() {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success('ลิงก์ถูกคัดลอกเรียบร้อยแล้ว'); // Link copied
+      if (navigator.share) {
+        await navigator.share({
+          title: post?.title || 'Khanom House',
+          text: post?.excerpt || 'อ่านบทความนี้ที่ Khanom House',
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('ลิงก์ถูกคัดลอกเรียบร้อยแล้ว');
+      }
     } catch (err) {
-      toast.error('ไม่สามารถคัดลอกลิงก์ได้');
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast.error('ไม่สามารถแชร์หรือคัดลอกลิงก์ได้');
+      }
     }
   };
   const calculateReadingTime = (text: string | null | undefined) => {
