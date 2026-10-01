@@ -52,7 +52,20 @@ export default function Referral() {
                 {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
               </button>
             </div>
-            <Button variant="secondary" onClick={() => navigator.share?.({ title: 'Khanom House', text: 'มาลองขนมไทยกันสิ!', url: link })}>
+            <Button variant="secondary" onClick={async () => {
+              try {
+                if (navigator.share) {
+                  await navigator.share({ title: 'Khanom House', text: 'มาลองขนมไทยกันสิ!', url: link });
+                } else {
+                  await navigator.clipboard.writeText(link);
+                  toast.success('คัดลอกลิงก์แล้ว!');
+                }
+              } catch (err) {
+                if (err instanceof Error && err.name !== 'AbortError') {
+                  toast.error('ไม่สามารถแชร์หรือคัดลอกลิงก์ได้');
+                }
+              }
+            }}>
               แชร์ให้เพื่อน
             </Button>
           </CardContent>
