@@ -5,6 +5,7 @@ import { ScrollToTop } from './ScrollToTop';
 import { AnnouncementBar } from './AnnouncementBar';
 import { OfflineIndicator } from './OfflineIndicator';
 import { CookieConsent } from './CookieConsent';
+import { FloatingContact } from './FloatingContact';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ export function Layout({ children }: LayoutProps) {
       <Footer />
       <ScrollToTop />
       <CookieConsent />
+      <FloatingContact />
     </div>
   );
 }
