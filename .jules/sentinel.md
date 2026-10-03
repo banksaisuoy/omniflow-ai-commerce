@@ -1,15 +1,4 @@
-## 2026-08-02 - [Token Leakage in Payment Service]
-**Vulnerability:** The secure payment token from Stripe/API was being appended directly to the `_notes` field when calling the `create_order` RPC, causing the token to be stored unencrypted in the database.
-**Learning:** Notes fields are often assumed to be safe for unstructured data but are frequently logged or displayed in admin interfaces, leading to unintentional exposure of sensitive tokens.
-**Prevention:** Never append sensitive tokens or credentials to unstructured text fields intended for user notes or generic logging. Pass them strictly via dedicated secure headers, specific encrypted database fields, or avoid persisting them entirely if they are only needed for a single API transaction.## 2024-08-07 - Prevent payment token leakage in logs
-**Vulnerability:** The application was logging raw payment data directly to the console in `src/services/paymentService.ts`, which violates PCI-DSS and leaks sensitive tokens.
-**Learning:** This repo logs the entire `orderData` object, failing to proactively redact internal, non-redacted keys like `paymentToken` prior to serialization.
-**Prevention:** Always implement an explicit redaction layer over unstructured or dynamically-composed data objects before writing to logs, particularly those handling PCI/PII data.
-## 2024-08-08 - Prevent fallback to hardcoded keys
-**Vulnerability:** A hardcoded string was used as a fallback for `ENCRYPTION_KEY` if the environment variable was missing, meaning keys could be exposed in the client bundle.
-**Learning:** Hardcoded secrets as fallbacks negate the purpose of environment variables and expose sensitive data.
-**Prevention:** Never use hardcoded strings as fallbacks for secrets. Throw an error if the environment variable is not defined to fail securely.
-## 2026-08-25 - Prevent XSS in Markdown Links
-**Vulnerability:** The AI chat widget used `ReactMarkdown` to render markdown links into HTML anchor tags without validating the `href` attribute. An attacker or hallucinating AI could inject `javascript:alert('XSS')` into the `href`, which would execute malicious scripts when a user clicked the link.
-**Learning:** Even when using popular Markdown parsers like `ReactMarkdown`, custom element renderers (`components={{ a: ... }}`) bypass built-in sanitization. The developer must manually validate attributes like `href` within these custom overrides.
-**Prevention:** Always validate and sanitize user-controlled or AI-generated `href` values in custom renderers. Block dangerous URI schemes (`javascript:`, `data:`, `vbscript:`) by falling back to a safe value like `#`.
+## $(date +%Y-%m-%d) - [CRITICAL/HIGH] Fix overly permissive CORS configuration
+**Vulnerability:** The `supabase/functions/_shared/cors.ts` configuration used `Access-Control-Allow-Origin: "*"` which allowed any website to make requests to the Edge Functions, potentially leading to unauthorized data access or CSRF-like attacks.
+**Learning:** Shared security configuration files like `cors.ts` dictate the security posture of multiple API endpoints (e.g. AI Chat, visual search).
+**Prevention:** Always use environment variables (e.g., `Deno.env.get("CORS_ORIGIN")`) coupled with safe fallbacks (e.g., `http://localhost:5173` for development) instead of `"*"` to properly restrict allowed origins for API calls.
