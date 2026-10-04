@@ -7,6 +7,8 @@ import { Layout } from '@/components/layout/Layout';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { RecentlyViewed } from '@/components/recommendations/RecentlyViewed';
+
 import { toast } from 'sonner';
 
 export default function Profile() {
@@ -110,6 +112,8 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <RecentlyViewed />
+
     </Layout>
   );
 }
