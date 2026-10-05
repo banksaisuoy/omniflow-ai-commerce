@@ -23,6 +23,25 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
     try {
       const summary = items.map(item => `${item.quantity}x ${item.name} (฿${item.price.toLocaleString()})`).join('\n');
       const text = `ตะกร้าของฉัน:\n${summary}\n\nรวม: ฿${getTotalPrice().toLocaleString()}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'ตะกร้าของฉัน',
+            text: text,
+          });
+          toast.success('แชร์รายการสินค้าแล้ว');
+          return;
+        } catch (err: any) {
+          if (err.name !== 'AbortError') {
+            console.error('Error sharing:', err);
+            // Fallback to clipboard
+          } else {
+             return; // User cancelled
+          }
+        }
+      }
+
       await navigator.clipboard.writeText(text);
       toast.success('คัดลอกรายการสินค้าแล้ว', { description: 'คุณสามารถวางในแชทเพื่อแชร์ได้เลย' });
     } catch (err) {
