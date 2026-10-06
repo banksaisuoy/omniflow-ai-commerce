@@ -6,6 +6,7 @@ import { AnnouncementBar } from './AnnouncementBar';
 import { OfflineIndicator } from './OfflineIndicator';
 import { CookieConsent } from './CookieConsent';
 import { FloatingContact } from './FloatingContact';
+import { FloatingShare } from './FloatingShare';
 
 interface LayoutProps {
   children: ReactNode;
@@ -22,6 +23,7 @@ export function Layout({ children }: LayoutProps) {
       <ScrollToTop />
       <CookieConsent />
       <FloatingContact />
+      <FloatingShare />
     </div>
   );
 }
