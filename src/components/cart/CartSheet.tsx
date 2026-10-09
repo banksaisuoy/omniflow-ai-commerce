@@ -23,10 +23,19 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
     try {
       const summary = items.map(item => `${item.quantity}x ${item.name} (฿${item.price.toLocaleString()})`).join('\n');
       const text = `ตะกร้าของฉัน:\n${summary}\n\nรวม: ฿${getTotalPrice().toLocaleString()}`;
-      await navigator.clipboard.writeText(text);
-      toast.success('คัดลอกรายการสินค้าแล้ว', { description: 'คุณสามารถวางในแชทเพื่อแชร์ได้เลย' });
+      if (navigator.share) {
+        await navigator.share({
+          title: 'ตะกร้าของฉัน',
+          text: text,
+        });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast.success('คัดลอกรายการสินค้าแล้ว', { description: 'คุณสามารถวางในแชทเพื่อแชร์ได้เลย' });
+      }
     } catch (err) {
-      toast.error('ไม่สามารถคัดลอกได้');
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast.error('ไม่สามารถแชร์หรือคัดลอกได้');
+      }
     }
   };
 
