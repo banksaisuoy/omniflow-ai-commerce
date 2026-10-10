@@ -18,6 +18,8 @@ interface CartState {
   removeSavedItem: (id: string) => void;
   clearSavedItems: () => void;
   orderNote: string;
+  discountAmount: number;
+  setDiscountAmount: (amount: number) => void;
   addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -82,6 +84,8 @@ export const useCartStore = create<CartState>()(
       clearSavedItems: () => set({ savedItems: [] }),
 
       orderNote: '',
+      discountAmount: 0,
+      setDiscountAmount: (amount) => set({ discountAmount: amount }),
       
       addItem: (item, quantity = 1) => set((state) => {
         const existingItem = state.items.find((i) => i.id === item.id);
@@ -105,7 +109,7 @@ export const useCartStore = create<CartState>()(
           : state.items.filter((i) => i.id !== id),
       })),
       
-      clearCart: () => set({ items: [], orderNote: '' }),
+      clearCart: () => set({ items: [], orderNote: '', discountAmount: 0 }),
 
       setOrderNote: (note) => set({ orderNote: note }),
       
@@ -118,7 +122,10 @@ export const useCartStore = create<CartState>()(
         return total >= 500 ? 0 : 50;
       },
       getFinalTotal: () => {
-        return get().getTotalPrice() + get().getShippingCost();
+        const subtotal = get().getTotalPrice();
+        const shipping = get().getShippingCost();
+        const discount = get().discountAmount;
+        return Math.max(0, subtotal + shipping - discount);
       },
     }),
     {
