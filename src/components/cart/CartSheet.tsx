@@ -13,10 +13,29 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem, clearSavedItems } = useCartStore();
+  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem, clearSavedItems, discountAmount, setDiscountAmount } = useCartStore();
+  const [promoCode, setPromoCode] = useState('');
+
+  const handleApplyPromo = () => {
+    if (!promoCode.trim()) return;
+    if (promoCode.toUpperCase() === 'KHANOM10') {
+      setDiscountAmount(50);
+      toast.success('ใช้โค้ดส่วนลด 50 บาทสำเร็จ!');
+      setPromoCode('');
+    } else {
+      toast.error('โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว');
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setDiscountAmount(0);
+    toast.success('ยกเลิกการใช้โค้ดส่วนลดแล้ว');
+  };
 
   const handleShareCart = async () => {
     if (items.length === 0) return;
@@ -235,6 +254,18 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               </div>
             )}
 
+            <div className="flex gap-2 pb-2 border-b border-border/50">
+              <Input
+                placeholder="กรอกโค้ดส่วนลด..."
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                className="h-9 text-sm"
+              />
+              <Button size="sm" onClick={handleApplyPromo} className="h-9 px-4 shrink-0">
+                ใช้โค้ด
+              </Button>
+            </div>
+
             <div className="space-y-1.5">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>ยอดรวมสินค้า</span>
@@ -248,6 +279,17 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                   <span>฿{getShippingCost().toLocaleString()}</span>
                 )}
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm text-success font-medium">
+                  <span>ส่วนลด</span>
+                  <div className="flex items-center gap-2">
+                    <span>-฿{discountAmount.toLocaleString()}</span>
+                    <Button variant="ghost" size="icon" className="h-4 w-4 text-muted-foreground hover:text-destructive" onClick={handleRemovePromo}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg pt-1.5 border-t border-border/50">
                 <span>ยอดรวมทั้งหมด</span>
                 <span className="text-primary">฿{getFinalTotal().toLocaleString()}</span>
