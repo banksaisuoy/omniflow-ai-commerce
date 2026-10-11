@@ -112,6 +112,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [], orderNote: '', discountAmount: 0 }),
 
       setOrderNote: (note) => set({ orderNote: note }),
+
       
       getTotalItems: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
       
