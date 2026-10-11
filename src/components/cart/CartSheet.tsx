@@ -14,11 +14,12 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { useCartStore } from '@/stores/cartStore';
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem, clearSavedItems, discountAmount, setDiscountAmount } = useCartStore();
+  const { items, savedItems = [], removeItem, updateQuantity, getTotalPrice, getTotalItems, getShippingCost, getFinalTotal, clearCart, saveForLater, moveToCart, removeSavedItem, clearSavedItems, discountAmount, setDiscountAmount, orderNote, setOrderNote } = useCartStore();
   const [promoCode, setPromoCode] = useState('');
 
   const handleApplyPromo = () => {
@@ -254,7 +255,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               </div>
             )}
 
-            <div className="flex gap-2 pb-2 border-b border-border/50">
+            <div className="flex gap-2 pb-2">
               <Input
                 placeholder="กรอกโค้ดส่วนลด..."
                 value={promoCode}
@@ -264,6 +265,15 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               <Button size="sm" onClick={handleApplyPromo} className="h-9 px-4 shrink-0">
                 ใช้โค้ด
               </Button>
+            </div>
+
+            <div className="pb-2 border-b border-border/50">
+              <Textarea
+                placeholder="หมายเหตุเพิ่มเติม (ตัวเลือก)..."
+                value={orderNote || ''}
+                onChange={(e) => setOrderNote(e.target.value)}
+                className="min-h-[60px] text-sm resize-none"
+              />
             </div>
 
             <div className="space-y-1.5">
