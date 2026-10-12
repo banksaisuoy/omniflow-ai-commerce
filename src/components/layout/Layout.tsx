@@ -8,6 +8,7 @@ import { OfflineIndicator } from './OfflineIndicator';
 import { CookieConsent } from './CookieConsent';
 import { FloatingContact } from './FloatingContact';
 import { FloatingShare } from './FloatingShare';
+import { FloatingRecentlyViewed } from './FloatingRecentlyViewed';
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,6 +33,7 @@ export function Layout({ children }: LayoutProps) {
       <CookieConsent />
       <FloatingContact />
       <FloatingShare />
+      <FloatingRecentlyViewed />
     </div>
   );
 }
