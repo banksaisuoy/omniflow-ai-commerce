@@ -17,10 +17,14 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-background focus:text-foreground">
+        Skip to main content
+      </a>
       <AnnouncementBar />
       <OfflineIndicator />
       <Navbar />
       <motion.main
+        id="main-content"
         className="flex-1"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
