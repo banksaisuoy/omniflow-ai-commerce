@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 export function FloatingRecentlyViewed() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { products } = useRecentlyViewedStore();
+  const { products, clearProducts } = useRecentlyViewedStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,9 +55,14 @@ export function FloatingRecentlyViewed() {
                   <h3 className="text-sm font-semibold flex items-center gap-2">
                     <History className="h-4 w-4" /> ดูล่าสุด
                   </h3>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={() => setIsOpen(false)}>
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive" onClick={clearProducts}>
+                      ล้าง
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={() => setIsOpen(false)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 scrollbar-hide">
