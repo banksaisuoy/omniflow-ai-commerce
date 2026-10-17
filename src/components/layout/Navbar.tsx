@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
+import { useWishlist } from '@/hooks/useWishlist';
 import { useCartStore } from '@/stores/cartStore';
 import { cn } from '@/lib/utils';
 import { CartSheet } from '@/components/cart/CartSheet';
@@ -33,6 +34,7 @@ function LangToggle() {
 }
 
 export function Navbar() {
+  const { productIds } = useWishlist();
   const { user, isAdmin, signOut } = useAuth();
   const getTotalItems = useCartStore((state) => state.getTotalItems);
   const navigate = useNavigate();
@@ -105,8 +107,15 @@ export function Navbar() {
             <ThemeToggle />
             <LangToggle />
             {user && (
-              <Button variant="ghost" size="icon" className="rounded-full hidden md:inline-flex" asChild>
-                <Link to="/wishlist"><Heart className="h-5 w-5" /></Link>
+              <Button variant="ghost" size="icon" className="relative rounded-full hidden md:inline-flex" asChild>
+                <Link to="/wishlist">
+                  <Heart className="h-5 w-5" />
+                  {productIds.size > 0 && (
+                    <Badge className="absolute -top-0.5 -right-0.5 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary">
+                      {productIds.size}
+                    </Badge>
+                  )}
+                </Link>
               </Button>
             )}
             <CartSheet>
@@ -170,7 +179,7 @@ export function Navbar() {
 
         <div className={cn(
           'md:hidden overflow-hidden transition-all duration-300',
-          mobileMenuOpen ? 'max-h-60 pb-4' : 'max-h-0'
+          mobileMenuOpen ? 'max-h-[500px] pb-4' : 'max-h-0'
         )}>
           <div className="flex flex-col gap-1 pt-2">
             {[
@@ -178,6 +187,7 @@ export function Navbar() {
               { to: '/products', label: t('products') },
               { to: '/bundles', label: t('bundles') },
               { to: '/concierge', label: t('ai_concierge') },
+              ...(user ? [{ to: '/wishlist', label: t('wishlist') }] : []),
               ...(isAdmin ? [{ to: '/admin', label: t('admin') }] : []),
             ].map((it) => (
               <Link
