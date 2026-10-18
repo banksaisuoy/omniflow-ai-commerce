@@ -9,6 +9,7 @@ import { CookieConsent } from './CookieConsent';
 import { FloatingContact } from './FloatingContact';
 import { FloatingShare } from './FloatingShare';
 import { FloatingRecentlyViewed } from './FloatingRecentlyViewed';
+import { FloatingCartSummary } from './FloatingCartSummary';
 
 interface LayoutProps {
   children: ReactNode;
@@ -38,6 +39,7 @@ export function Layout({ children }: LayoutProps) {
       <FloatingContact />
       <FloatingShare />
       <FloatingRecentlyViewed />
+      <FloatingCartSummary />
     </div>
   );
 }
