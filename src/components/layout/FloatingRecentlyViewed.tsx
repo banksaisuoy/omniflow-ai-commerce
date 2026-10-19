@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 import { Link } from 'react-router-dom';
+import { useI18n } from '@/stores/i18nStore';
 
 export function FloatingRecentlyViewed() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { products, clearProducts } = useRecentlyViewedStore();
+  const { t } = useI18n();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +40,7 @@ export function FloatingRecentlyViewed() {
             aria-label="Recently Viewed"
           >
             <History className="h-5 w-5 text-primary" />
-            {!isOpen && <span className="text-xs font-medium">ล่าสุด</span>}
+            {!isOpen && <span className="text-xs font-medium">{t('recently_viewed_short') || 'ล่าสุด'}</span>}
           </Button>
 
           {/* Expanded Drawer */}
@@ -53,11 +55,11 @@ export function FloatingRecentlyViewed() {
               >
                 <div className="flex items-center justify-between mb-3 border-b border-border/50 pb-2">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <History className="h-4 w-4" /> ดูล่าสุด
+                    <History className="h-4 w-4" /> {t('recently_viewed') || 'ดูล่าสุด'}
                   </h3>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive" onClick={clearProducts}>
-                      ล้าง
+                      {t('clear') || 'ล้าง'}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={() => setIsOpen(false)}>
                       <X className="h-4 w-4" />
@@ -77,7 +79,7 @@ export function FloatingRecentlyViewed() {
                         {product.thumbnail_url ? (
                           <img src={product.thumbnail_url} alt={product.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">ไม่มีรูป</div>
+                          <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">{t('no_image') || 'ไม่มีรูป'}</div>
                         )}
                       </div>
                       <div className="flex-1 overflow-hidden">
