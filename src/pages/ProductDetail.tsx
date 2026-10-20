@@ -128,6 +128,12 @@ export default function ProductDetail() {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/products">Products</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
             {product.category && (
               <>
                 <BreadcrumbItem>
