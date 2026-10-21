@@ -97,6 +97,16 @@ export default function ProductDetail() {
     toast.success(`เพิ่มสินค้าลงตะกร้า ${quantity} ชิ้น`);
   };
 
+  const handleBuyNow = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      thumbnail_url: product.thumbnail_url || product.images?.[0] || null,
+    }, quantity);
+    navigate('/checkout');
+  };
+
   const handleShare = async () => {
     try {
       if (navigator.share) {
@@ -204,14 +214,22 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <button
-              onClick={handleAddToCart}
-              className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition"
-            >
-              Add to Cart
-            </button>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-secondary text-secondary-foreground py-3 rounded-lg hover:bg-secondary/80 transition border border-border"
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition"
+              >
+                Buy Now
+              </button>
+            </div>
+            <div className="flex gap-4 justify-center">
               <WishlistButton productId={product.id} className="h-[46px] w-[46px] rounded-lg bg-transparent border border-border shadow-none hover:bg-accent flex items-center justify-center relative scale-100 transition-colors" />
               <button
                 onClick={handleShare}
