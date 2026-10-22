@@ -78,7 +78,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={clearCart}
+                onClick={() => { if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างตะกร้าสินค้าทั้งหมด?')) clearCart(); }}
                 className="text-muted-foreground hover:text-destructive h-8 px-2 text-xs font-normal"
               >
                 ล้างตะกร้า
@@ -178,7 +178,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={clearSavedItems}
+                      onClick={() => { if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างรายการที่บันทึกไว้ทั้งหมด?')) clearSavedItems(); }}
                       className="text-muted-foreground hover:text-destructive h-8 px-2 text-xs font-normal"
                     >
                       ล้างทั้งหมด
