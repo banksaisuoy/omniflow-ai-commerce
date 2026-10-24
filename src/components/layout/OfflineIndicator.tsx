@@ -31,6 +31,7 @@ export function OfflineIndicator() {
     <AnimatePresence>
       {isOffline && isVisible && (
         <motion.div
+          role="alert"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
@@ -44,6 +45,12 @@ export function OfflineIndicator() {
             aria-label="Dismiss offline warning"
           >
             <X className="h-3 w-3" />
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="ml-1 hover:bg-destructive-foreground/20 rounded-full px-2 py-0.5 transition-colors text-xs"
+          >
+            Retry
           </button>
         </motion.div>
       )}

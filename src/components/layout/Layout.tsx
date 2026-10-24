@@ -4,6 +4,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ScrollToTop } from './ScrollToTop';
 import { AnnouncementBar } from './AnnouncementBar';
+import { ScrollProgressBar } from './ScrollProgressBar';
 import { OfflineIndicator } from './OfflineIndicator';
 import { CookieConsent } from './CookieConsent';
 import { FloatingContact } from './FloatingContact';
@@ -21,6 +22,7 @@ export function Layout({ children }: LayoutProps) {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-background focus:text-foreground">
         Skip to main content
       </a>
+      <ScrollProgressBar />
       <AnnouncementBar />
       <OfflineIndicator />
       <Navbar />
