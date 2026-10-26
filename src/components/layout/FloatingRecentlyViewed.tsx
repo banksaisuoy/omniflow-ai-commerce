@@ -58,7 +58,7 @@ export function FloatingRecentlyViewed() {
                     <History className="h-4 w-4" /> {t('recently_viewed') || 'ดูล่าสุด'}
                   </h3>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive" onClick={clearProducts}>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive" onClick={() => { if (window.confirm(t('clear_confirm') || 'คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติการเข้าชม?')) clearProducts(); }}>
                       {t('clear') || 'ล้าง'}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={() => setIsOpen(false)}>
