@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, X, Phone } from 'lucide-react';
+import { MessageCircle, X, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -37,6 +37,13 @@ export function FloatingContact() {
             >
               <Phone className="h-4 w-4" />
               Call Us
+            </Button>
+            <Button
+              className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+              onClick={() => window.open('mailto:hello@khanomhouse.com', '_blank')}
+            >
+              <Mail className="h-4 w-4" />
+              Email Us
             </Button>
           </motion.div>
         )}
