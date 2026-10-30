@@ -3,9 +3,11 @@ import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/products/ProductCard';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
+import { useI18n } from '@/stores/i18nStore';
 
 export function RecentlyViewed() {
   const { products, clearProducts } = useRecentlyViewedStore();
+  const { t } = useI18n();
 
   if (!products || products.length === 0) return null;
 
@@ -19,21 +21,21 @@ export function RecentlyViewed() {
           className="mb-8 flex items-end justify-between"
         >
           <div>
-            <h2 className="font-display text-2xl md:text-3xl mb-2">เข้าชมล่าสุด</h2>
-            <p className="text-muted-foreground">สินค้าที่คุณเพิ่งเปิดดู</p>
+            <h2 className="font-display text-2xl md:text-3xl mb-2">{t('recently_viewed') || 'เข้าชมล่าสุด'}</h2>
+            <p className="text-muted-foreground">{t('recently_viewed_desc') || 'สินค้าที่คุณเพิ่งเปิดดู'}</p>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
-              if (window.confirm('คุณต้องการล้างประวัติการเข้าชมใช่หรือไม่?')) {
+              if (window.confirm(t('clear_confirm') || 'คุณต้องการล้างประวัติการเข้าชมใช่หรือไม่?')) {
                 clearProducts();
               }
             }}
             className="text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            ล้างประวัติ
+            {t('clear_history') || 'ล้างประวัติ'}
           </Button>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
