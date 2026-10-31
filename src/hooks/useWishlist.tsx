@@ -42,6 +42,20 @@ export function useWishlist() {
   });
 
 
+  const clearWishlist = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error('กรุณาเข้าสู่ระบบก่อน');
+      const { error } = await supabase.from('wishlists').delete().eq('user_id', user.id);
+      if (error) throw error;
+      return 'cleared';
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['wishlist'] });
+      toast.success('ล้างรายการโปรดทั้งหมดแล้ว');
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const updateSettings = useMutation({
     mutationFn: async ({ productId, notify_on_price_drop }: { productId: string, notify_on_price_drop: boolean }) => {
       if (!user) throw new Error('กรุณาเข้าสู่ระบบก่อน');
@@ -60,5 +74,5 @@ export function useWishlist() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  return { items, isLoading, productIds, toggle: toggle.mutate, isToggling: toggle.isPending, updateSettings: updateSettings.mutate, isUpdatingSettings: updateSettings.isPending };
+  return { items, isLoading, productIds, toggle: toggle.mutate, isToggling: toggle.isPending, updateSettings: updateSettings.mutate, isUpdatingSettings: updateSettings.isPending, clearWishlist: clearWishlist.mutate };
 }
