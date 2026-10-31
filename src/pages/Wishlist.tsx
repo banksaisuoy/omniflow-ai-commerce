@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 export default function Wishlist() {
   const { user, loading } = useAuth();
-  const { items, isLoading, updateSettings } = useWishlist();
+  const { items, isLoading, updateSettings, clearWishlist } = useWishlist();
 
   if (!loading && !user) return <Navigate to="/auth" replace />;
 
@@ -34,7 +34,22 @@ export default function Wishlist() {
             <Button asChild><Link to="/products">ไปเลือกซื้อขนม</Link></Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <>
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                onClick={() => {
+                  if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างรายการโปรดทั้งหมด?')) {
+                    clearWishlist();
+                  }
+                }}
+              >
+                ล้างรายการโปรด
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {items.map((it: any) => it.product && (
               <div key={it.id} className="flex flex-col gap-3">
                 <ProductCard product={it.product} />
@@ -66,6 +81,7 @@ export default function Wishlist() {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
     </Layout>
