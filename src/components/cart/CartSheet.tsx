@@ -132,6 +132,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           >
                             <Minus className="h-3 w-3" />
+                            <span className="sr-only">ลดจำนวน</span>
                           </Button>
                           <span className="w-6 text-center text-xs font-medium">{item.quantity}</span>
                           <Button
@@ -141,6 +142,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
                             <Plus className="h-3 w-3" />
+                            <span className="sr-only">เพิ่มจำนวน</span>
                           </Button>
                         </div>
 
@@ -153,6 +155,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                             title="Save for later"
                           >
                             <Bookmark className="h-4 w-4" />
+                            <span className="sr-only">บันทึกไว้ดูภายหลัง</span>
                           </Button>
                           <Button
                             variant="ghost"
@@ -161,6 +164,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                             onClick={() => removeItem(item.id)}
                           >
                           <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">ลบสินค้า</span>
                         </Button>
                       </div>
                     </div>
@@ -260,6 +264,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                 placeholder="กรอกโค้ดส่วนลด..."
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                 className="h-9 text-sm"
               />
               <Button size="sm" onClick={handleApplyPromo} className="h-9 px-4 shrink-0">
@@ -273,6 +278,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                 value={orderNote || ''}
                 onChange={(e) => setOrderNote(e.target.value)}
                 className="min-h-[60px] text-sm resize-none"
+                maxLength={500}
               />
             </div>
 
