@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { History, X } from 'lucide-react';
+import { History, X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
 import { Link } from 'react-router-dom';
 import { useI18n } from '@/stores/i18nStore';
+import { useCartStore } from '@/stores/cartStore';
+import { toast } from 'sonner';
 
 export function FloatingRecentlyViewed() {
   const [isVisible, setIsVisible] = useState(false);
@@ -69,24 +71,46 @@ export function FloatingRecentlyViewed() {
 
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 scrollbar-hide">
                   {products.slice(0, 5).map((product) => (
-                    <Link
-                      key={product.id}
-                      to={`/products/${product.id}`}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <div className="w-12 h-12 rounded-md bg-muted overflow-hidden flex-shrink-0">
+                    <div key={product.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
+                      <Link
+                        to={`/products/${product.id}`}
+                        className="flex-shrink-0 w-12 h-12 rounded-md bg-muted overflow-hidden"
+                        onClick={() => setIsOpen(false)}
+                      >
                         {product.thumbnail_url ? (
                           <img src={product.thumbnail_url} alt={product.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">{t('no_image') || 'ไม่มีรูป'}</div>
                         )}
-                      </div>
-                      <div className="flex-1 overflow-hidden">
+                      </Link>
+                      <Link
+                        to={`/products/${product.id}`}
+                        className="flex-1 overflow-hidden"
+                        onClick={() => setIsOpen(false)}
+                      >
                         <p className="text-xs font-medium line-clamp-1">{product.name}</p>
                         <p className="text-xs text-primary font-semibold">฿{product.price}</p>
-                      </div>
-                    </Link>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full flex-shrink-0 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          useCartStore.getState().addItem({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            thumbnail_url: product.thumbnail_url
+                          });
+                          toast.success('เพิ่มลงตะกร้าแล้ว', {
+                            description: `${product.name} ถูกเพิ่มลงตะกร้าเรียบร้อย`
+                          });
+                        }}
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </motion.div>
