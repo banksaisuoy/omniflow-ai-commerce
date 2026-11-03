@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, Sun, Moon, Languages } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import {
   CommandDialog,
@@ -17,7 +18,8 @@ import { useI18n } from "@/stores/i18nStore";
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
+  const { setTheme } = useTheme();
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -92,6 +94,21 @@ export function GlobalSearch() {
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => navigate("/wishlist"))}>
               {t("wishlist")}
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading={t('settings') || "Preferences"}>
+            <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
+              <Sun className="mr-2 h-4 w-4" />
+              {lang === 'th' ? 'สว่าง' : 'Light Theme'}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
+              <Moon className="mr-2 h-4 w-4" />
+              {lang === 'th' ? 'มืด' : 'Dark Theme'}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setLang(lang === 'th' ? 'en' : 'th'))}>
+              <Languages className="mr-2 h-4 w-4" />
+              {lang === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
             </CommandItem>
           </CommandGroup>
         </CommandList>
