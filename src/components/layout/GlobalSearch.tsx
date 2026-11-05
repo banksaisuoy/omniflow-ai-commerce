@@ -95,6 +95,21 @@ export function GlobalSearch() {
             <CommandItem onSelect={() => runCommand(() => navigate("/wishlist"))}>
               {t("wishlist")}
             </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/cart"))}>
+              {t("cart") || "Cart"}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/faq"))}>
+              {t("faq") || "FAQ"}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/referral"))}>
+              {t("referral") || "Referral"}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/visual-search"))}>
+              {t("visual_search") || "Visual Search"}
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => navigate("/concierge"))}>
+              {t("ai_concierge") || "AI Concierge"}
+            </CommandItem>
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup heading={t('settings') || "Preferences"}>
