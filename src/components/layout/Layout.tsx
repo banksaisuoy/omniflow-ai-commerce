@@ -1,4 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useCartStore } from '@/stores/cartStore';
+
 import { motion } from 'framer-motion';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
@@ -17,6 +20,22 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const { pathname } = useLocation();
+  const cartItems = useCartStore((state) => state.items);
+  const itemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (itemsCount > 0) {
+      document.title = `(${itemsCount}) Khanom House`;
+    } else {
+      document.title = 'Khanom House';
+    }
+  }, [itemsCount]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-background focus:text-foreground">
