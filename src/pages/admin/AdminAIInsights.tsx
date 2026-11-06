@@ -10,7 +10,10 @@ export default function AdminAIInsights() {
     queryKey: ['ai-insights-sales'],
     queryFn: async () => {
       const now = new Date();
-      const { data: orders } = await supabase.from('orders').select('*');
+      // Get a safe boundary for the last 30 days starting at midnight
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      thirtyDaysAgo.setHours(0, 0, 0, 0);
+      const { data: orders } = await supabase.from('orders').select('*').gte('created_at', thirtyDaysAgo.toISOString());
       const salesByDay: Record<string, { revenue: number; orders: number }> = {};
       for (let i = 29; i >= 0; i--) {
         const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
