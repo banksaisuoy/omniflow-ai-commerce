@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { History, X, ShoppingCart } from 'lucide-react';
+import { History, X, ShoppingCart, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore';
@@ -7,12 +7,15 @@ import { Link } from 'react-router-dom';
 import { useI18n } from '@/stores/i18nStore';
 import { useCartStore } from '@/stores/cartStore';
 import { toast } from 'sonner';
+import { useWishlist } from '@/hooks/useWishlist';
+import { cn } from '@/lib/utils';
 
 export function FloatingRecentlyViewed() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { products, clearProducts } = useRecentlyViewedStore();
   const { t } = useI18n();
+  const { toggle, productIds } = useWishlist();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,25 +94,43 @@ export function FloatingRecentlyViewed() {
                         <p className="text-xs font-medium line-clamp-1">{product.name}</p>
                         <p className="text-xs text-primary font-semibold">฿{product.price}</p>
                       </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full flex-shrink-0 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          useCartStore.getState().addItem({
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                            thumbnail_url: product.thumbnail_url
-                          });
-                          toast.success('เพิ่มลงตะกร้าแล้ว', {
-                            description: `${product.name} ถูกเพิ่มลงตะกร้าเรียบร้อย`
-                          });
-                        }}
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(
+                            "h-8 w-8 rounded-full flex-shrink-0 transition-colors",
+                            productIds?.has(product.id)
+                              ? "text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100"
+                              : "text-muted-foreground hover:text-red-500 hover:bg-red-50"
+                          )}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggle(product.id);
+                          }}
+                        >
+                          <Heart className={cn("h-4 w-4", productIds?.has(product.id) && "fill-current")} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full flex-shrink-0 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            useCartStore.getState().addItem({
+                              id: product.id,
+                              name: product.name,
+                              price: product.price,
+                              thumbnail_url: product.thumbnail_url
+                            });
+                            toast.success('เพิ่มลงตะกร้าแล้ว', {
+                              description: `${product.name} ถูกเพิ่มลงตะกร้าเรียบร้อย`
+                            });
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
