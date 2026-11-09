@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, LayoutDashboard, Menu, X, Heart, Sparkles, Gift, Users } from 'lucide-react';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -40,6 +40,34 @@ export function Navbar() {
   const navigate = useNavigate();
   const { t } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 100) {
+        setIsVisible(true);
+        lastScrollY.current = currentScrollY;
+      } else {
+        const direction = currentScrollY > lastScrollY.current ? 'down' : 'up';
+        const delta = Math.abs(currentScrollY - lastScrollY.current);
+
+        if (delta > 10) {
+          if (direction === 'down') {
+            setIsVisible(false);
+            setMobileMenuOpen(false);
+          } else {
+            setIsVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,7 +75,10 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <nav className={cn(
+      "sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 transition-transform duration-300",
+      isVisible ? "translate-y-0" : "-translate-y-full"
+    )}>
       <div className="container mx-auto px-4">
         <div className="flex h-18 md:h-20 items-center justify-between py-3">
           {/* Logo */}
