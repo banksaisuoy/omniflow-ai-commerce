@@ -26,7 +26,7 @@ export function FloatingContact() {
             <p className="text-xs text-muted-foreground mb-1">มีคำถามเกี่ยวกับขนมไทย? ทักหาเราได้เลยค่ะ</p>
             <Button
               className="w-full justify-start gap-2 bg-[#00B900] hover:bg-[#009900] text-white shadow-sm"
-              onClick={() => window.open('https://line.me/ti/p/~', '_blank')}
+              onClick={() => window.open('https://line.me/ti/p/~', '_blank', 'noopener,noreferrer')}
             >
               <MessageCircle className="h-4 w-4" />
               Chat on LINE
@@ -40,7 +40,7 @@ export function FloatingContact() {
             </Button>
             <Button
               className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-              onClick={() => window.open('mailto:hello@khanomhouse.com', '_blank')}
+              onClick={() => window.open('mailto:hello@khanomhouse.com', '_blank', 'noopener,noreferrer')}
             >
               <Mail className="h-4 w-4" />
               Email Us
