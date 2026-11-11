@@ -16,6 +16,7 @@ interface RecentlyViewedState {
   products: RecentlyViewedProduct[];
   addProduct: (product: RecentlyViewedProduct) => void;
   clearProducts: () => void;
+  removeProduct: (id: string) => void;
 }
 
 export const useRecentlyViewedStore = create<RecentlyViewedState>()(
@@ -23,6 +24,7 @@ export const useRecentlyViewedStore = create<RecentlyViewedState>()(
     (set) => ({
       products: [],
       clearProducts: () => set({ products: [] }),
+      removeProduct: (id) => set((state) => ({ products: state.products.filter(p => p.id !== id) })),
       addProduct: (product) => set((state) => {
         const existingIndex = state.products.findIndex(p => p.id === product.id);
         const newProducts = [...state.products];

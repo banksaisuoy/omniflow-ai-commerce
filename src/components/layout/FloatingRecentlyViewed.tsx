@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 export function FloatingRecentlyViewed() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { products, clearProducts } = useRecentlyViewedStore();
+  const { products, clearProducts, removeProduct } = useRecentlyViewedStore();
   const { t } = useI18n();
   const { toggle, productIds } = useWishlist();
 
@@ -129,6 +129,18 @@ export function FloatingRecentlyViewed() {
                           }}
                         >
                           <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full flex-shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            removeProduct(product.id);
+                          }}
+                          title={t('remove') || 'ลบ'}
+                        >
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
